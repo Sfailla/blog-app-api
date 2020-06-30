@@ -1,0 +1,28 @@
+{
+  "name": "express-api-generator",
+  "version": "1.0.0",
+  "description": "a generator for quick development of rest API's",
+  "main": "server.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "helmet": "^3.23.3",
+    "morgan": "^1.10.0",
+    "mongoose": "^5.9.20"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sfailla/express-api-generator.git"
+  },
+  "author": "Steven Failla",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Sfailla/express-api-generator/issues"
+  },
+  "homepage": "https://github.com/Sfailla/express-api-generator#readme"
+}
