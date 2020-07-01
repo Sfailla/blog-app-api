@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const logger = require('morgan');
 const path = require('path');
 const helmet = require('helmet');
+// server
 
 const index = 'index routes';
 const users = 'user routes';
