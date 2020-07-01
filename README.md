@@ -1,4 +1,5 @@
-# express-api-generator
-:rocket: boilerplate for creating rest API's: express, node, mongoose, jest
+## express-api-generator
 
-## created by Steven Failla
+:rocket: boilerplate for creating rest API's: contains express, node, mongoose, jest
+
+### created by Steven Failla
