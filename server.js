@@ -1,17 +1,20 @@
+// SECURE ENV VARIABLES WITH DOTENV
+const dotenv = require('dotenv');
+dotenv.config();
+
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const path = require('path');
 const helmet = require('helmet');
-// server
 
 const index = 'index routes';
 const users = 'user routes';
 
 const app = express();
 
-app.use(logger('dev'));
+app.use(logger('combined'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(helmet());
@@ -36,7 +39,9 @@ app.use(function(err, req, res, next) {
 
 	// render the error page
 	res.status(err.status || 500);
-	res.render('error');
+	res.json({
+		error: err
+	});
 });
 
 const port = process.env.PORT || 3000;
