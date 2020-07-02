@@ -1,5 +1,10 @@
 ## express-api-generator
 
-boilerplate for creating rest API's: contains express, node, mongoose, jest
+:rocket:
+> RESTfull API's: contains express, node, mongoose, jest
 
-### created by Steven Failla :rocket:
+## Installation
+First, clone or download then ```cd``` into directory and install using npm or yarn
+``` npm install ```
+
+## created by Steven Failla

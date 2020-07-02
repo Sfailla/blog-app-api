@@ -1,4 +1,3 @@
-// SECURE ENV VARIABLES WITH DOTENV
 require('./config/index');
 
 const express = require('express');
@@ -8,8 +7,8 @@ const logger = require('morgan');
 const path = require('path');
 const helmet = require('helmet');
 
-const indexRoute = require('./routes/index/indexRoute');
-const users = 'user routes';
+const indexRoutes = require('./routes/index/indexRoutes');
+const userRoutes = require('./routes/user/userRoutes');
 
 const app = express();
 
@@ -20,8 +19,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRoute);
-// app.use('/users', users);
+app.use('/', indexRoutes);
+app.use('/users', userRoutes);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
