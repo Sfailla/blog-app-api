@@ -16,10 +16,7 @@ router.get('/', (req, res) => {
 router.get('/data', (req, res) => {
 	fs.readFile(DATA_FILE, (err, data) => {
 		if (err) throw err;
-		let file = JSON.parse(data);
-		res.status(200).json({
-			data: file
-		});
+		res.status(200).json(JSON.parse(data));
 	});
 });
 
