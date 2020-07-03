@@ -1,9 +1,23 @@
 [
-	{
-		"id": "G-127",
-		"title": "PROJECT 1",
-		"description": "this is the first project",
-		"author": "Steven Failla",
-		"createdAt": 1456225941911
-	}
+    {
+        "id": "G-127",
+        "title": "PROJECT 1",
+        "description": "this is the first project",
+        "author": "Steven Failla",
+        "createdAt": 1456225941911
+    },
+    {
+        "id": "G-128",
+        "title": "PROJECT 2",
+        "description": "this is the second project",
+        "author": "Jack Black",
+        "createdAt": 1593777486509
+    },
+    {
+        "id": "G-129",
+        "title": "PROJECT 3",
+        "description": "this is the third project",
+        "author": "Maria Mendez",
+        "createdAt": 1593778004192
+    }
 ]
