@@ -9,14 +9,32 @@ const DATA_FILE = path.join(__dirname, '..', '..', 'data.json');
 
 router.get('/', (req, res) => {
 	res.status(200).json({
-		message: 'welcome to api routes 🎢'
+		message: 'welcome to api routes 🚂'
 	});
 });
 
-router.get('/data', (req, res) => {
+router.get('/projects', (req, res) => {
 	fs.readFile(DATA_FILE, (err, data) => {
 		if (err) throw err;
 		res.status(200).json(JSON.parse(data));
+	});
+});
+
+router.post('/projects', (req, res) => {
+	fs.readFile(DATA_FILE, (err, data) => {
+		if (err) throw err;
+		let projects = JSON.parse(data);
+		let newProject = {
+			id: req.body.id,
+			title: req.body.title,
+			description: req.body.description,
+			author: req.body.author,
+			createdAt: Date.now()
+		};
+		projects.push(newProject);
+		fs.writeFile(DATA_FILE, JSON.stringify(projects, null, 4), () => {
+			res.status(200).json(projects);
+		});
 	});
 });
 
