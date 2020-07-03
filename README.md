@@ -5,6 +5,6 @@
 
 ## Installation
 First, clone or download then ```cd``` into directory and install using npm or yarn
-``` npm install ```
+``` npm install ``` or ```yarn```
 
 ## created by Steven Failla
