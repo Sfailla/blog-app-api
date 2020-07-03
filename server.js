@@ -1,3 +1,4 @@
+// bring in env variables and all configuration and/or middleware
 require('./config/index');
 
 const express = require('express');
@@ -8,7 +9,7 @@ const path = require('path');
 const helmet = require('helmet');
 
 const indexRoutes = require('./routes/index/indexRoutes');
-const userRoutes = require('./routes/user/userRoutes');
+const apiRoutes = require('./routes/api/apiRoutes');
 
 const app = express();
 
@@ -17,10 +18,10 @@ app.use(helmet());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
-
+// uncomment this line whenever your ready for frontend
+// app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRoutes);
-app.use('/users', userRoutes);
+app.use('/api', apiRoutes);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
@@ -50,3 +51,5 @@ app.listen(port, () =>
 		`port listening on ${port} \nNODE_ENV=${process.env.NODE_ENV}`
 	)
 );
+
+module.exports = app;
