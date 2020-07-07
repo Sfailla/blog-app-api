@@ -1,7 +1,7 @@
 {
 	"name": "express-api-generator",
 	"version": "1.0.0",
-	"description": "a generator for quick development of rest API's",
+	"description": "a generator for quick development of REST API's",
 	"main": "server.js",
 	"dependencies": {
 		"body-parser": "^1.19.0",
