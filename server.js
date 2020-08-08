@@ -8,13 +8,10 @@ const logger = require('morgan');
 const path = require('path');
 const helmet = require('helmet');
 
-const {
-	errorHandler,
-	notFound
-} = require('./routes/middleware/errors');
+const { errorHandler, notFound } = require('./api/middleware/errors');
 
-const indexRoutes = require('./routes/index/indexRoutes');
-const apiRoutes = require('./routes/api/apiRoutes');
+const indexRoutes = require('./api/routes/indexRoutes');
+const apiRoutes = require('./api/routes/userAuth');
 
 // // uncomment when mongoose connection is established
 // const { makeMongooseConnection } = require('./config/index');
