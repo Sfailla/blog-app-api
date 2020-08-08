@@ -22,7 +22,7 @@ app.use(helmet());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-// uncomment this line whenever your ready for frontend
+// uncomment this line whenever your ready for client code
 // app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRoutes);
 app.use('/api', apiRoutes);
