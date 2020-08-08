@@ -8,7 +8,10 @@ const logger = require('morgan');
 const path = require('path');
 const helmet = require('helmet');
 
-const { errorHandler, notFound } = require('./api/middleware/errors');
+const {
+	errorHandler,
+	notFound
+} = require('./api/middleware/error-handler');
 
 const indexRoutes = require('./api/routes/indexRoutes');
 const apiRoutes = require('./api/routes/userAuth');
