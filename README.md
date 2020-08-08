@@ -1,10 +1,5 @@
-## express-api-generator
+## Blog App API
 
-:rocket:
-> RESTfull API GENERATOR: contains express, node, mongoose, jest
-
-## Installation
-First, clone or download then ```cd``` into directory and install using npm or yarn
-``` npm install ``` or ```yarn```
+  creating a rest api for a blog app
 
 ## created by Steven Failla
