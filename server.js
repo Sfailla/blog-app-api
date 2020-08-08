@@ -10,6 +10,10 @@ const helmet = require('helmet');
 
 const indexRoutes = require('./routes/index/indexRoutes');
 const apiRoutes = require('./routes/api/apiRoutes');
+const { makeMongooseConnection } = require('./config/index');
+
+// // uncomment when mongoose connection is established
+// makeMongooseConnection();
 
 const app = express();
 
@@ -36,6 +40,8 @@ app.use((err, req, res, next) => {
 	res.locals.message = err.message;
 	res.locals.error = req.app.get('env') === 'development' ? err : {};
 
+	next(err);
+
 	// render the error page
 	res.status(err.status || 500);
 	res.json({
@@ -44,7 +50,7 @@ app.use((err, req, res, next) => {
 	});
 });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 app.listen(port, () =>
 	console.log(
