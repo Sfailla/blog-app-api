@@ -1,5 +1,5 @@
 // catch 404 and forward to error handler
-const notFound = (req, res, next) => {
+const notFoundHandler = (req, res, next) => {
 	let error = new Error(`Not Found 🤔 - ${req.originalUrl}`);
 	error.status = 404;
 	res.status(404);
@@ -24,6 +24,6 @@ const errorHandler = (error, req, res, next) => {
 };
 
 module.exports = {
-	notFound,
+	notFoundHandler,
 	errorHandler
 };

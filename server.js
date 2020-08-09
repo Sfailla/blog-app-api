@@ -9,11 +9,10 @@ const helmet = require('helmet');
 
 const {
 	errorHandler,
-	notFound
+	notFoundHandler
 } = require('./api/middleware/error-handler');
 
 const apiRoutes = require('./api/routes/userAuth');
-// const UserModel = require('./api/models/user/user');
 
 // uncomment when mongoose connection is established
 const { makeMongooseConnection } = require('./config/index');
@@ -30,7 +29,7 @@ app.use(bodyParser.json());
 // app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/v1', apiRoutes);
 // Error and 404 handler middleware
-app.use(notFound);
+app.use(notFoundHandler);
 app.use(errorHandler);
 
 const port = process.env.PORT || 3001;
