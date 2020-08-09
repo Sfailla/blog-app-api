@@ -1,16 +1,17 @@
 const { Router } = require('express');
-const controller = require('../controllers/userAuth');
+const AuthService = require('../controllers/userAuth');
 
 const router = Router();
+const authController = new AuthService();
 
 /**
  * =============================
  * 	USER AUTH ROUTES
  * =============================
  */
-
-router.get('/users', controller.getUser);
-
-router.post('/users', controller.createUser);
+// get all users
+router.get('/users', authController.getUser);
+// create users
+router.post('/users', authController.createUser);
 
 module.exports = router;
