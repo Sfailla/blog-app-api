@@ -1,16 +1,16 @@
 const { Router } = require('express');
+const controller = require('../controllers/userAuth');
 
 const router = Router();
 
-router.get('/', (req, res) => {
-	res.setHeader('Cache-Control', 'no-cache');
-	res.status(200).json({
-		message: 'welcome to api routes 🚀'
-	});
-});
+/**
+ * =============================
+ * 	USER AUTH ROUTES
+ * =============================
+ */
 
-router.get('/users', (req, res) => {
-	res.send('this is /api/users route 😎');
-});
+router.get('/users', controller.getUser);
+
+router.post('/users', controller.createUser);
 
 module.exports = router;
