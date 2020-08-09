@@ -13,10 +13,11 @@ const {
 } = require('./api/middleware/error-handler');
 
 const apiRoutes = require('./api/routes/userAuth');
+// const UserModel = require('./api/models/user/user');
 
-// // uncomment when mongoose connection is established
-// const { makeMongooseConnection } = require('./config/index');
-// makeMongooseConnection();
+// uncomment when mongoose connection is established
+const { makeMongooseConnection } = require('./config/index');
+makeMongooseConnection();
 
 const app = express();
 
