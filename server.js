@@ -12,7 +12,6 @@ const {
 	notFound
 } = require('./api/middleware/error-handler');
 
-const indexRoutes = require('./api/routes/indexRoutes');
 const apiRoutes = require('./api/routes/userAuth');
 
 // // uncomment when mongoose connection is established
@@ -28,7 +27,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // uncomment this line whenever your ready for client code
 // app.use(express.static(path.join(__dirname, 'public')));
-app.use('/', indexRoutes);
 app.use('/api/v1', apiRoutes);
 // Error and 404 handler middleware
 app.use(notFound);
