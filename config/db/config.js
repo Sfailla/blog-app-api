@@ -3,12 +3,13 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
 function makeMongooseConnection() {
-	if (process.env.MONGOOSE_URI) {
+	if (process.env.MONGOOSE_URL) {
 		return mongoose
-			.connect(process.env.MONGOOSE_URI, {
+			.connect(process.env.MONGOOSE_URL, {
 				useNewUrlParser: true,
 				useFindAndModify: false,
-				useCreateIndex: true
+				useCreateIndex: true,
+				useUnifiedTopology: true
 			})
 			.then(() =>
 				console.log('connection established to MLAB database')
