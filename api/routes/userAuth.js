@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const AuthService = require('../controllers/userAuth');
+const AuthService = require('../controllers/userRequest');
 
 const router = Router();
 const authController = new AuthService();
@@ -10,8 +10,12 @@ const authController = new AuthService();
  * =============================
  */
 // get all users
-router.get('/users', authController.getUser);
+router.get('/users', authController.getAllUsers);
+
+// get specific user
+router.get('/users/:id');
+
 // create users
-router.post('/users', authController.createUser);
+router.post('/users/register', authController.registerUser);
 
 module.exports = router;
