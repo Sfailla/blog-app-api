@@ -1,30 +1,71 @@
 const mongoose = require('mongoose');
-
-const requiredString = validateMessage => ({
-	type: String,
-	required: [ true, validateMessage ]
-});
+const validator = require('validator');
 
 const UserSchema = new mongoose.Schema({
-	username: requiredString('username is required'),
-	email: requiredString('email is required'),
+	username: {
+		type: String,
+		required: [ true, 'username is required' ]
+	},
+	email: {
+		type: String,
+		required: [ true, 'email is required' ],
+		validate: {
+			validator: value => {
+				return validator.isEmail(value);
+			},
+			message: '{VALUE} is not a valid email address'
+		}
+	},
 	password: {
 		type: String,
 		required: true,
 		minlength: 5,
 		maxlength: 15,
 		validate: {
-			validator: 'some validation',
-			message: 'password must meet criteria'
+			validator: value => {
+				return validator.isHash(value).isLength({ min: 5, max: 15 });
+			},
+			message: '{VALUE} cannot be empty'
 		}
 	},
-	role: {
-		type: String,
-		default: 'user'
-	},
+	// role: {
+	// 	type: String,
+	// 	enum: [ 'user', 'admin' ],
+	// 	default: 'user'
+	// },
+	// tokens: [
+	// 	{
+	// 		access: {
+	// 			type: String,
+	// 			required: true,
+	// 			validate: {
+	// 				validator: value => {
+	// 					return validator.isAlphanumeric(value);
+	// 				},
+	// 				message: '{VALUE} must be type string or int'
+	// 			}
+	// 		},
+	// 		token: {
+	// 			type: String,
+	// 			required: true,
+	// 			validate: {
+	// 				validator: value => {
+	// 					return validator.isJWT(value);
+	// 				},
+	// 				message: '{VALUE} must be valid jason-web-token'
+	// 			}
+	// 		}
+	// 	}
+	// ],
 	createdAt: {
 		type: Date,
-		default: Date.now
+		default: Date.now,
+		validate: {
+			validator: value => {
+				return validator.isDate(value);
+			},
+			message: '{VALUE} must be type date'
+		}
 	}
 });
 
