@@ -1,7 +1,7 @@
 const { randomBytes } = require('crypto');
 const UserModel = require('../models/user/user');
 
-module.exports = class AuthService {
+module.exports = class AuthController {
 	constructor() {
 		this.users = {};
 	}
@@ -21,10 +21,10 @@ module.exports = class AuthService {
 		await res.status(200).send(this.users);
 	};
 
-	getAllUsers = async (req, res) => {
-		await res.status(200).json({
-			userMessage: 'here are the users 😎 ',
-			users: this.users
-		});
-	};
+	// getAllUsersRequest = async (req, res) => {
+	// 	await res.status(200).json({
+	// 		userMessage: 'here are the users 😎 ',
+	// 		users: this.users
+	// 	});
+	// };
 };
