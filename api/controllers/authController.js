@@ -1,30 +1,19 @@
-const { randomBytes } = require('crypto');
-const UserModel = require('../models/user/user');
-
 module.exports = class AuthController {
-	constructor() {
-		this.users = {};
+	constructor(AuthService) {
+		this.auth = AuthService;
 	}
 
 	registerUser = async (req, res) => {
-		const id = randomBytes(4).toString('hex');
 		const { username, email, password } = req.body;
-
-		this.users[id] = {
-			id,
+		const { user } = await this.auth.registerUser(
 			username,
 			email,
-			password,
-			createdAt: Date.now()
-		};
+			password
+		);
 
-		await res.status(200).send(this.users);
+		await res.status(200).json({ user });
 	};
 
-	// getAllUsersRequest = async (req, res) => {
-	// 	await res.status(200).json({
-	// 		userMessage: 'here are the users 😎 ',
-	// 		users: this.users
-	// 	});
-	// };
+	loginUser = async (req, res) => {};
+	getUser = async (req, res) => {};
 };
