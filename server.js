@@ -12,9 +12,11 @@ const {
 	notFoundHandler
 } = require('./api/middleware/error-handler');
 
+const { makeMongooseConnection } = require('./config/index');
 const apiRoutes = require('./api/routes/authRoute');
 
 const app = express();
+makeMongooseConnection();
 
 app.use(logger('dev'));
 app.use(helmet());
