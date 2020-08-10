@@ -1,11 +1,11 @@
 module.exports = class AuthController {
-	constructor(AuthService) {
-		this.auth = AuthService;
+	constructor(authService) {
+		this.auth = authService;
 	}
 
 	registerUser = async (req, res) => {
 		const { username, email, password } = req.body;
-		const { user } = await this.auth.registerUser(
+		const { user } = await this.auth.createUser(
 			username,
 			email,
 			password
