@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 
-mongoose.Promise = global.Promise;
-
 function makeMongooseConnection() {
 	if (process.env.MONGOOSE_URL) {
 		return mongoose
@@ -9,7 +7,9 @@ function makeMongooseConnection() {
 				useNewUrlParser: true,
 				useFindAndModify: false,
 				useCreateIndex: true,
-				useUnifiedTopology: true
+				useUnifiedTopology: true,
+				connectTimeoutMS: 1000,
+				promiseLibrary: global.Promise
 			})
 			.then(() =>
 				console.log('connection established to MLAB database')
