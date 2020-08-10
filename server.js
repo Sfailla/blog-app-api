@@ -12,11 +12,7 @@ const {
 	notFoundHandler
 } = require('./api/middleware/error-handler');
 
-const apiRoutes = require('./api/routes/userAuth');
-
-// uncomment when mongoose connection is established
-const { makeMongooseConnection } = require('./config/index');
-makeMongooseConnection();
+const apiRoutes = require('./api/routes/authRoute');
 
 const app = express();
 
