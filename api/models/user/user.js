@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema({
 		maxlength: 15,
 		validate: {
 			validator: value => {
-				return validator.isHash(value).isLength({ min: 5, max: 15 });
+				return !validator.isEmpty(value);
 			},
 			message: '{VALUE} cannot be empty'
 		}
