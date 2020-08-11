@@ -5,6 +5,17 @@ const hashPasswordBcrypt = async (password, salt = 10) => {
 	return await bcrypt.hash(password, salt);
 };
 
+const verifyPasswordReturnToken = async (password, user) => {
+	const checkPassword = await bcrypt.compare(password, user.password);
+
+	if (!checkPassword) {
+		// respond with errorHandler
+	}
+
+	const token = generateAuthToken(user._id);
+	return token;
+};
+
 const generateAuthToken = userId => {
 	const exp =
 		Math.floor(Date.now() / 1000) + 60 * process.env.JWT_EXPIRES;
@@ -23,5 +34,6 @@ const generateAuthToken = userId => {
 
 module.exports = {
 	hashPasswordBcrypt,
-	generateAuthToken
+	generateAuthToken,
+	verifyPasswordReturnToken
 };
