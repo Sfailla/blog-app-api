@@ -1,11 +1,11 @@
 module.exports = class AuthController {
-	constructor(authService) {
-		this.auth = authService;
+	constructor(database) {
+		this.db = database;
 	}
 
 	registerUser = async (req, res) => {
 		const { username, email, password } = req.body;
-		const { user, token } = await this.auth.createUser(
+		const { user, token } = await this.db.createUser(
 			username,
 			email,
 			password
@@ -17,7 +17,7 @@ module.exports = class AuthController {
 	loginUser = async (req, res) => {
 		const { email, password } = req.body;
 
-		const { user, token } = await this.auth.getUserByEmailAndPassword(
+		const { user, token } = await this.db.getUserByEmailAndPassword(
 			email,
 			password
 		);
@@ -28,7 +28,7 @@ module.exports = class AuthController {
 	getCurrentUser = async (req, res) => {};
 
 	getAllUsers = async (req, res) => {
-		const { users } = await this.auth.getAllUsers();
+		const { users } = await this.db.getAllUsers();
 
 		await res.status(200).json({ users });
 	};
