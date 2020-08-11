@@ -4,6 +4,7 @@ const validator = require('validator');
 const UserSchema = new mongoose.Schema({
 	username: {
 		type: String,
+		unique: true,
 		required: [ true, 'username is required' ]
 	},
 	email: {
@@ -19,8 +20,6 @@ const UserSchema = new mongoose.Schema({
 	password: {
 		type: String,
 		required: true,
-		minlength: 5,
-		maxlength: 15,
 		validate: {
 			validator: value => {
 				return !validator.isEmpty(value);
@@ -33,30 +32,6 @@ const UserSchema = new mongoose.Schema({
 		enum: [ 'user', 'admin' ],
 		default: 'user'
 	},
-	// tokens: [
-	// 	{
-	// 		access: {
-	// 			type: String,
-	// 			required: true,
-	// 			validate: {
-	// 				validator: value => {
-	// 					return validator.isAlphanumeric(value);
-	// 				},
-	// 				message: '{VALUE} must be type string or int'
-	// 			}
-	// 		},
-	// 		token: {
-	// 			type: String,
-	// 			required: true,
-	// 			validate: {
-	// 				validator: value => {
-	// 					return validator.isJWT(value);
-	// 				},
-	// 				message: '{VALUE} must be valid jason-web-token'
-	// 			}
-	// 		}
-	// 	}
-	// ],
 	createdAt: {
 		type: Date,
 		default: Date.now,
