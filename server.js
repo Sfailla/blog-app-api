@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const helmet = require('helmet');
+const cors = require('cors');
 const apiRoutes = require('./api/routes/user-routes');
 const {
 	errorHandler,
@@ -14,6 +15,11 @@ const {
 
 const app = express();
 
+app.use(
+	cors({
+		origin: 'http://localhost:3000/api'
+	})
+);
 app.use(logger('dev'));
 app.use(helmet());
 app.use(cookieParser());
