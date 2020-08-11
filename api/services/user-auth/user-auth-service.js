@@ -1,0 +1,38 @@
+const {
+	generateAuthToken
+} = require('../../helpers/user-auth-token');
+
+class UserDatabaseService {
+	constructor(userModel) {
+		this.userModel = userModel;
+	}
+
+	createUser = async (username, email, password) => {
+		const user = await this.userModel.create({
+			username,
+			email,
+			password
+		});
+
+		const token = generateAuthToken(user._id);
+
+		return { user, token };
+	};
+
+	getUserByEmailAndPassword = async (email, password) => {
+		const user = await this.userModel.findOne({ email, password });
+		const token = generateAuthToken(user._id);
+
+		return { user, token };
+	};
+
+	getUserById = async id => {};
+
+	getAllUsers = async () => {
+		const users = await this.userModel.find({});
+
+		return { users };
+	};
+}
+
+module.exports = UserDatabaseService;
