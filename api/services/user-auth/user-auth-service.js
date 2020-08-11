@@ -1,6 +1,7 @@
 const {
-	generateAuthToken
-} = require('../../helpers/user-auth-token');
+	generateAuthToken,
+	hashPasswordBcrypt
+} = require('../../helpers/user-auth');
 
 class UserDatabaseService {
 	constructor(userModel) {
@@ -8,10 +9,12 @@ class UserDatabaseService {
 	}
 
 	createUser = async (username, email, password) => {
+		const hashedPassword = await hashPasswordBcrypt(password);
+
 		const user = await this.userModel.create({
 			username,
 			email,
-			password
+			password: hashedPassword
 		});
 
 		const token = generateAuthToken(user._id);

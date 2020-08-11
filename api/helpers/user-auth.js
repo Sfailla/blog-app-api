@@ -1,6 +1,10 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+const hashPasswordBcrypt = async (password, salt = 10) => {
+	return await bcrypt.hash(password, salt);
+};
+
 const generateAuthToken = userId => {
 	const exp =
 		Math.floor(Date.now() / 1000) + 60 * process.env.JWT_EXPIRES;
@@ -18,5 +22,6 @@ const generateAuthToken = userId => {
 };
 
 module.exports = {
+	hashPasswordBcrypt,
 	generateAuthToken
 };
