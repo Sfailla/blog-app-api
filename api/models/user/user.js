@@ -28,11 +28,11 @@ const UserSchema = new mongoose.Schema({
 			message: '{VALUE} cannot be empty'
 		}
 	},
-	// role: {
-	// 	type: String,
-	// 	enum: [ 'user', 'admin' ],
-	// 	default: 'user'
-	// },
+	role: {
+		type: String,
+		enum: [ 'user', 'admin' ],
+		default: 'user'
+	},
 	// tokens: [
 	// 	{
 	// 		access: {
