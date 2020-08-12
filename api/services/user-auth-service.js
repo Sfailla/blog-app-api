@@ -17,7 +17,7 @@ class UserDatabaseService {
 			password: hashedPassword
 		});
 
-		const token = generateAuthToken(user._id);
+		const token = generateAuthToken(user);
 
 		return { user, token };
 	};
@@ -29,7 +29,15 @@ class UserDatabaseService {
 		return { user, token };
 	};
 
-	getUserById = async id => {};
+	getUserByEmail = async email => {
+		const user = await this.userModel.find({ email });
+		return { user };
+	};
+
+	getUserById = async id => {
+		const user = await this.userModel.find({ _id: id });
+		return { user };
+	};
 
 	getAllUsers = async () => {
 		const users = await this.userModel.find({});
