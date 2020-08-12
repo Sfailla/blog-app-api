@@ -11,7 +11,7 @@ module.exports = class AuthController {
 			password
 		);
 
-		await res.status(200).json({ user, token });
+		await res.header('x-auth', token).status(200).json({ user });
 	};
 
 	loginUser = async (req, res) => {
@@ -22,7 +22,7 @@ module.exports = class AuthController {
 			password
 		);
 
-		res.status(200).json({ user, token });
+		await res.header('x-auth', token).status(200).json({ user });
 	};
 
 	getCurrentUser = async (req, res) => {};
