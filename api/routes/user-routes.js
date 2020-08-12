@@ -3,7 +3,7 @@ const UserDatabaseService = require('../services/user-auth-service');
 const AuthController = require('../controllers/user-auth');
 const { Router } = require('express');
 const { makeMongooseConnection } = require('../config/index');
-const authenticate = require('../middleware/utils/authenticate');
+const authenticateJWT = require('../middleware/utils/authenticate');
 
 makeMongooseConnection();
 
@@ -19,7 +19,7 @@ const router = Router();
  */
 
 // get all users
-router.get('/users', authenticate, authController.getAllUsers);
+router.get('/users', authenticateJWT, authController.getAllUsers);
 
 // get specific user
 router.get('/users/:id', authController.getCurrentUser);

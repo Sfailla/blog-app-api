@@ -1,11 +1,14 @@
 const { verifyAuthToken } = require('../../helpers/user-auth');
 
-const authenticate = async (req, res, next) => {
-	const token = req.header('x-auth') || req.headers['authorization'];
+const authenticateJWT = async (req, res, next) => {
+	const token =
+		req.header('x-auth-token') || req.headers['authorization'];
+	const user = verifyAuthToken(token);
 
-	const response = verifyAuthToken(token);
-	console.log(response);
+	req.user = user;
+	req.token = token;
+
 	next();
 };
 
-module.exports = authenticate;
+module.exports = authenticateJWT;
