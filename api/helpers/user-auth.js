@@ -1,19 +1,37 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+const comparePasswordBcrypt = async (password, userPassword) => {
+	const isValidPassword = await bcrypt.compare(
+		password,
+		userPassword
+	);
+
+	return { isValidPassword };
+};
+
+/**
+ * =========================
+ * ==  PUBLIC FUNCTIONS   ==
+ * =========================
+ */
+
 const hashPasswordBcrypt = async (password, salt = 10) => {
 	return await bcrypt.hash(password, salt);
 };
 
 const verifyPasswordReturnToken = async (password, user) => {
-	const checkPassword = await bcrypt.compare(password, user.password);
+	const { isValidPassword } = await comparePasswordBcrypt(
+		password,
+		user.password
+	);
 
-	if (!checkPassword) {
-		// respond with errorHandler
+	if (!isValidPassword) {
+		// errorHandler
+		return 'sorry error verifying password';
 	}
 
-	const token = generateAuthToken(user._id);
-	return token;
+	return generateAuthToken(user._id);
 };
 
 const generateAuthToken = userId => {
