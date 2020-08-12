@@ -2,7 +2,7 @@ const {
 	generateAuthToken,
 	hashPasswordBcrypt,
 	verifyPasswordReturnToken
-} = require('../../helpers/user-auth');
+} = require('../helpers/user-auth');
 
 class UserDatabaseService {
 	constructor(userModel) {

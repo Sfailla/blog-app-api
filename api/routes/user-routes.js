@@ -1,8 +1,13 @@
 const { Router } = require('express');
+const UserModel = require('../models/user/user');
+const UserDatabaseService = require('../services/user-auth-service');
+const AuthController = require('../controllers/user-auth');
+const { makeMongooseConnection } = require('../config/index');
 
-const {
-	authController
-} = require('../services/user-auth/export-user-service');
+makeMongooseConnection();
+
+const authService = new UserDatabaseService(UserModel);
+const authController = new AuthController(authService);
 
 const router = Router();
 
