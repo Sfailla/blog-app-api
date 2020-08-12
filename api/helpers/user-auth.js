@@ -36,24 +36,15 @@ const verifyPasswordReturnToken = async (password, user) => {
 };
 
 const generateAuthToken = user => {
-	const exp =
-		Math.floor(Date.now() / 1000) + 60 * process.env.JWT_EXPIRES;
-	const userId = user._id;
-	const access = 'auth';
-	const role = user.role;
-	const username = user.username;
-	const token = sign(
-		{
-			userId,
-			username,
-			role,
-			access,
-			exp
-		},
-		process.env.JWT_SECRET
-	);
+	const credentials = {
+		user_id: user._id,
+		user_role: user.role,
+		user_name: user.username,
+		access: 'auth-token',
+		exp: Math.floor(Date.now() / 1000) + 60 * process.env.JWT_EXPIRES
+	};
 
-	return token;
+	return sign(credentials, process.env.JWT_SECRET);
 };
 
 module.exports = {
