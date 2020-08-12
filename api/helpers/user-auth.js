@@ -2,9 +2,7 @@ const { compare, hash } = require('bcryptjs');
 const { sign, verify } = require('jsonwebtoken');
 
 const comparePasswordBcrypt = async (password, userPassword) => {
-	const isValidPassword = await compare(password, userPassword);
-
-	return { isValidPassword };
+	return await compare(password, userPassword);
 };
 
 /**
@@ -22,7 +20,7 @@ const verifyAuthToken = token => {
 };
 
 const verifyPasswordReturnToken = async (password, user) => {
-	const { isValidPassword } = await comparePasswordBcrypt(
+	const isValidPassword = await comparePasswordBcrypt(
 		password,
 		user.password
 	);
