@@ -1,8 +1,9 @@
-const { Router } = require('express');
 const UserModel = require('../models/user/user');
 const UserDatabaseService = require('../services/user-auth-service');
 const AuthController = require('../controllers/user-auth');
+const { Router } = require('express');
 const { makeMongooseConnection } = require('../config/index');
+const authenticate = require('../middleware/utils/authenticate');
 
 makeMongooseConnection();
 
@@ -18,7 +19,7 @@ const router = Router();
  */
 
 // get all users
-router.get('/users', authController.getAllUsers);
+router.get('/users', authenticate, authController.getAllUsers);
 
 // get specific user
 router.get('/users/:id', authController.getCurrentUser);
@@ -26,7 +27,7 @@ router.get('/users/:id', authController.getCurrentUser);
 // login user
 router.post('/users/login', authController.loginUser);
 
-// create users
+// create user
 router.post('/users/register', authController.registerUser);
 
 module.exports = router;
