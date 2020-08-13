@@ -3,7 +3,10 @@ const UserDatabaseService = require('../services/user-auth-service');
 const AuthController = require('../controllers/user-auth');
 const { Router } = require('express');
 const { makeMongooseConnection } = require('../config/index');
-const authenticateJWT = require('../middleware/utils/authenticate');
+const {
+	authenticateJWT,
+	requireAdmin
+} = require('../middleware/index');
 
 makeMongooseConnection();
 
@@ -18,8 +21,12 @@ const router = Router();
  * =============================
  */
 
-// get all users
-router.get('/users', authenticateJWT, authController.getAllUsers);
+// get all users  @todo make admin-only-route
+router.get('/users',
+	authenticateJWT,
+	requireAdmin,
+	authController.getAllUsers
+);
 
 // get specific user
 router.get('/users/:id', authController.getCurrentUser);
