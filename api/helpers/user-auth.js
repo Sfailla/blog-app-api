@@ -27,7 +27,6 @@ const verifyPasswordReturnToken = async (password, user) => {
 
 	if (!isValidPassword) {
 		// errorHandler
-		return 'sorry error verifying password';
 	}
 
 	return generateAuthToken(user._id);
