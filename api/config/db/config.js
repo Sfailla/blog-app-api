@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+const colorTerminal = require('../terminalColors');
 
-function makeMongooseConnection() {
+const makeMongooseConnection = async () => {
 	const mongooseOptions = {
 		useNewUrlParser: true,
 		useFindAndModify: false,
@@ -10,21 +11,22 @@ function makeMongooseConnection() {
 		promiseLibrary: global.Promise
 	};
 
+	const url = process.env.MONGOOSE_URL;
 	const userMessage = 'connection established to MLAB database';
-	const errorMessage = err =>
-		`${err.name} \n there is an error with mongoose connect: ${err.code} ${err.errmsg}`;
 
-	if (process.env.MONGOOSE_URL) {
-		return mongoose
-			.connect(process.env.MONGOOSE_URL, mongooseOptions)
-			.then(() => console.log(userMessage))
-			.catch(err => new Error(errorMessage(err)));
+	try {
+		await mongoose.connect(url, mongooseOptions);
+		console.log(colorTerminal('magenta'), userMessage);
+	} catch (err) {
+		return new Error(
+			`${err.name} \n there is an error with mongoose connect: ${err.code} ${err.errmsg}`
+		);
 	}
 
 	return {
 		message: 'mongoose is not connected'
 	};
-}
+};
 
 module.exports = {
 	makeMongooseConnection
