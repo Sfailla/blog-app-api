@@ -11,7 +11,7 @@ const apiRoutes = require('./api/routes/user-routes');
 const {
 	errorHandler,
 	notFoundHandler
-} = require('./api/middleware/errors/error-handleing');
+} = require('./api/middleware/utils/handlers');
 
 const app = express();
 
