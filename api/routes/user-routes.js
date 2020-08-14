@@ -22,9 +22,10 @@ const router = Router();
  */
 
 // get all users  @todo make admin-only-route
-router.get('/users',
+router.get(
+	'/users',
 	authenticateJWT,
-	requireAdmin,
+	requireAdmin('admin'),
 	authController.getAllUsers
 );
 
