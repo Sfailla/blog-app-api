@@ -11,6 +11,11 @@ const comparePasswordBcrypt = async (password, userPassword) => {
  * =========================
  */
 
+const checkUserPermissions = (user, next) => {
+	console.log(user);
+	next();
+};
+
 const hashPasswordBcrypt = async (password, salt = 10) => {
 	return await hash(password, salt);
 };
@@ -48,5 +53,6 @@ module.exports = {
 	hashPasswordBcrypt,
 	generateAuthToken,
 	verifyAuthToken,
-	verifyPasswordReturnToken
+	verifyPasswordReturnToken,
+	checkUserPermissions
 };
