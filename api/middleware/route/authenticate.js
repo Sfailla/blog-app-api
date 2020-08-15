@@ -1,14 +1,20 @@
 const { verifyAuthToken } = require('../../helpers/user-auth');
+const { buildErrorObject } = require('../utils/errors');
 
-const authenticateJWT = async (req, res, next) => {
-	const token =
-		req.header('x-auth-token') || req.headers['authorization'];
-	const user = verifyAuthToken(token);
+const authenticateJWT = (req, res, next) => {
+	const token = req.header('x-auth-token');
 
-	req.user = user;
-	req.token = token;
+	if (token) {
+		const user = verifyAuthToken(token);
 
-	next();
+		req.user = user;
+		req.token = token;
+
+		next();
+	} else {
+		const error = 'Invalid Token';
+		buildErrorObject(409, error);
+	}
 };
 
 module.exports = authenticateJWT;
