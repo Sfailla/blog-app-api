@@ -1,3 +1,5 @@
+const colorTerminal = require('../../config/terminalColors');
+
 // catch 404 and forward to error handler
 const notFoundHandler = (req, res, next) => {
 	let error = new Error(`Not Found 🤔 - ${req.originalUrl}`);
@@ -22,7 +24,15 @@ const errorHandler = (error, req, res, next) => {
 	});
 };
 
+const handleListen = (port, env) => {
+	console.log(
+		colorTerminal('yellow'),
+		`port listening on ${port} \nNODE_ENV=${env}`
+	);
+};
+
 module.exports = {
 	notFoundHandler,
-	errorHandler
+	errorHandler,
+	handleListen
 };
