@@ -15,10 +15,12 @@ const errorHandler = (error, req, res, next) => {
 	res.locals.error = isDevelopment ? error : {};
 	// render the error page
 	res.status(error.status || 500);
+
+	console.log('HANDLER', error);
 	res.json({
 		error: {
 			status: error.status,
-			message: isDevelopment ? error.message : {},
+			message: error.message,
 			stack: isDevelopment ? error.stack : {}
 		}
 	});

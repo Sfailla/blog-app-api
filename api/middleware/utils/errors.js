@@ -1,24 +1,17 @@
-// const handleError = (res, error) => {
-// 	if (process.env.NODE_ENV === 'development') {
-// 		console.log(error);
-// 	}
+const handleError = (res, error) => {
+	if (process.env.NODE_ENV === 'development') {
+		console.log(error);
+	}
 
-// 	const err = new Error(error);
-// 	res.status(err.code).send(err);
-// 	// next(err);
-// };
+	res.status(error.code).send(error.message);
+};
 
-// const buildErrorObject = (status, msg) => {
-// 	return {
-// 		status,
-// 		msg
-// 	};
-// };
-
-// module.exports = {
-// 	handleError,
-// 	buildErrorObject
-// };
+const buildErrorObject = (status, message) => {
+	return {
+		status,
+		message
+	};
+};
 
 class UserServiceError extends Error {
 	constructor(...args) {
@@ -38,5 +31,7 @@ class InvalidInputError extends Error {
 	}
 }
 
-module.exports = UserServiceError;
-module.exports = InvalidInputError;
+module.exports = {
+	handleError,
+	buildErrorObject
+};
