@@ -19,20 +19,8 @@ const verifyAuthToken = token => {
 	return verify(token, process.env.JWT_SECRET);
 };
 
-const verifyPasswordReturnToken = async (password, user) => {
-	const isValidPassword = await comparePasswordBcrypt(
-		password,
-		user.password
-	);
-
-	if (!isValidPassword) {
-		// errorHandler
-	}
-
-	return generateAuthToken(user._id);
-};
-
 const generateAuthToken = user => {
+	console.log(user);
 	const credentials = {
 		user_id: user._id,
 		user_role: user.role,
@@ -48,5 +36,5 @@ module.exports = {
 	hashPasswordBcrypt,
 	generateAuthToken,
 	verifyAuthToken,
-	verifyPasswordReturnToken
+	comparePasswordBcrypt
 };
