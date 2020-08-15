@@ -1,7 +1,7 @@
 const {
 	generateAuthToken,
 	hashPasswordBcrypt,
-	verifyPasswordReturnToken
+	comparePasswordBcrypt
 } = require('../helpers/user-auth');
 
 class UserDatabaseService {
@@ -24,7 +24,16 @@ class UserDatabaseService {
 
 	getUserByEmailAndPassword = async (email, password) => {
 		const user = await this.userModel.findOne({ email });
-		const token = await verifyPasswordReturnToken(password, user);
+		const isValidPassword = await comparePasswordBcrypt(
+			password,
+			user.password
+		);
+
+		if (!isValidPassword) {
+			// error handler
+		}
+
+		const token = generateAuthToken(user);
 
 		return { user, token };
 	};
@@ -41,7 +50,6 @@ class UserDatabaseService {
 
 	getAllUsers = async () => {
 		const users = await this.userModel.find({});
-
 		return { users };
 	};
 }
