@@ -10,7 +10,8 @@ const cors = require('cors');
 const apiRoutes = require('./api/routes/user-routes');
 const {
 	errorHandler,
-	notFoundHandler
+	notFoundHandler,
+	handleListen
 } = require('./api/middleware/utils/handlers');
 
 const app = express();
@@ -30,17 +31,16 @@ app.use(bodyParser.json());
 app.use('/api/v1', apiRoutes);
 
 app.get('/', (req, res) =>
-	res.status(200).json({ message: 'hello world 🌎🚀 🎃🎃🔐🗝' })
+	res.status(200).json({ message: 'hello world 🌎🚀🎃🎃🔐🗝' })
 );
 
 // Error and 404 handler middleware
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-app.listen(process.env.PORT || 3001, () => {
-	const PORT = process.env.PORT || 3001;
-	const NODE_ENV = process.env.NODE_ENV;
-	console.log(`port listening on ${PORT} \nNODE_ENV=${NODE_ENV}`);
-});
+const port = process.env.PORT || 3001;
+const env = process.env.NODE_ENV || 'development';
+
+app.listen(port, handleListen(port, env));
 
 module.exports = app;
