@@ -44,4 +44,10 @@ const UserSchema = new mongoose.Schema({
 	}
 });
 
+UserSchema.methods.isValidObjectId = function(userId) {
+	return (
+		ObjectId.isValid(id) && new ObjectId(id).toString() === userId
+	);
+};
+
 module.exports = mongoose.model('User', UserSchema);
