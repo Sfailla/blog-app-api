@@ -20,7 +20,6 @@ const verifyAuthToken = token => {
 };
 
 const generateAuthToken = user => {
-	console.log(user);
 	const credentials = {
 		user_id: user._id,
 		user_role: user.role,
