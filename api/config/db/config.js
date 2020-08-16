@@ -18,14 +18,9 @@ const makeMongooseConnection = async () => {
 		await mongoose.connect(url, mongooseOptions);
 		console.log(colorTerminal('magenta'), userMessage);
 	} catch (err) {
-		return new Error(
-			`${err.name} \n there is an error with mongoose connect: ${err.code} ${err.errmsg}`
-		);
+		console.error(err);
+		process.exit(1);
 	}
-
-	return {
-		message: 'mongoose is not connected'
-	};
 };
 
 module.exports = {
