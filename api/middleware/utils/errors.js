@@ -1,17 +1,32 @@
-const handleError = (res, error) => {
-	if (process.env.NODE_ENV === 'development') {
-		console.log(error);
+class UniqueConstraintError extends Error {
+	constructor(value) {
+		super(`${value} must be unique.`);
+
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, UniqueConstraintError);
+		}
 	}
+}
 
-	res.status(error.code).send(error.message);
-};
+class InvalidPropertyError extends Error {
+	constructor(msg) {
+		super(msg);
 
-const buildErrorObject = (status, message) => {
-	return {
-		status,
-		message
-	};
-};
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, InvalidPropertyError);
+		}
+	}
+}
+
+class RequiredParameterError extends Error {
+	constructor(param) {
+		super(`${param} can not be null or undefined.`);
+
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, RequiredParameterError);
+		}
+	}
+}
 
 class UserServiceError extends Error {
 	constructor(...args) {
@@ -32,6 +47,7 @@ class InvalidInputError extends Error {
 }
 
 module.exports = {
-	handleError,
-	buildErrorObject
+	UniqueConstraintError,
+	InvalidPropertyError,
+	RequiredParameterError
 };
