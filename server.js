@@ -12,7 +12,7 @@ const {
 	errorHandler,
 	notFoundHandler,
 	handleListen
-} = require('./api/middleware/utils/handlers');
+} = require('./api/middleware/route/handlers');
 
 const app = express();
 
