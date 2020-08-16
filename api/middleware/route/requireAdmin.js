@@ -1,25 +1,26 @@
-const { handleError, buildErrorObject } = require('../utils/errors');
+const {
+	buildErrorObject,
+	handleError
+} = require('../utils/http-error');
 
-const checkUserPermissions = (user, next) => {
-	const { id, role, requiredRole } = user;
+const checkUserPermissions = async (user, next) => {
+	return new Promise((resolve, reject) => {
+		const { id, role, requiredRole } = user;
 
-	// check user id in database
-	console.log(requiredRole);
-	console.log(role);
+		if (requiredRole && role === requiredRole) {
+			return resolve(next());
+		}
 
-	if (requiredRole && role === requiredRole) {
-		next();
-	} else {
 		const error = buildErrorObject(
 			401,
-			'this requires admin level authorization'
+			'admin level authorization is required'
 		);
-		next(error);
-	}
+		return reject(error);
+	});
 };
 
 const requireAdmin = requiredRole => async (req, res, next) => {
-	if (requiredRole) {
+	try {
 		const { user_id, user_role } = req.user;
 		const userData = {
 			id: user_id,
@@ -27,13 +28,9 @@ const requireAdmin = requiredRole => async (req, res, next) => {
 			requiredRole
 		};
 
-		checkUserPermissions(userData, next);
-	} else {
-		const error = buildErrorObject(
-			400,
-			'must provide a required authentication role'
-		);
-		next(error);
+		await checkUserPermissions(userData, next);
+	} catch (error) {
+		handleError(res, error);
 	}
 };
 

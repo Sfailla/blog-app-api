@@ -12,8 +12,8 @@ const authenticateJWT = (req, res, next) => {
 
 		next();
 	} else {
-		const error = 'Invalid Token';
-		buildErrorObject(409, error);
+		const error = buildErrorObject(409, 'Token must be provided');
+		next(error);
 	}
 };
 
