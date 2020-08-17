@@ -1,43 +1,47 @@
-const { handleError } = require('../middleware/utils/http-error');
+const {
+	buildErrorObject
+} = require('../middleware/utils/http-error');
 
 module.exports = class AuthController {
 	constructor(database) {
 		this.db = database;
 	}
 
-	registerUser = async (req, res) => {
+	registerUser = async (req, res, next) => {
 		try {
 			const { username, email, password } = req.body;
-			const { user, token } = await this.db.createUser(
+			const { user, token, error } = await this.db.createUser(
 				username,
 				email,
 				password
 			);
+			if (error) throw Error(error.message);
 
 			await res
 				.header('x-auth-token', token)
 				.status(201)
 				.json({ user });
 		} catch (error) {
-			console.log('caught err');
-			handleError(res, error);
+			next(error);
 		}
 	};
 
 	loginUser = async (req, res) => {
 		try {
 			const { email, password } = req.body;
-			const { user, token } = await this.db.getUserByEmailAndPassword(
-				email,
-				password
-			);
+			const {
+				user,
+				token,
+				error
+			} = await this.db.getUserByEmailAndPassword(email, password);
+			if (error) throw Error(error.message);
 
 			await res
 				.header('x-auth-token', token)
 				.status(200)
 				.json({ user });
 		} catch (error) {
-			handleError(res, error);
+			next(error);
 		}
 	};
 
