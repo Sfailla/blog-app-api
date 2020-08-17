@@ -49,5 +49,7 @@ class InvalidInputError extends Error {
 module.exports = {
 	UniqueConstraintError,
 	InvalidPropertyError,
-	RequiredParameterError
+	RequiredParameterError,
+	UserServiceError,
+	InvalidInputError
 };
