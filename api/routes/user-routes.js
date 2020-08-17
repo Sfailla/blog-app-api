@@ -25,7 +25,7 @@ const router = Router();
 router.get(
 	'/users',
 	authenticateJWT,
-	requireAdmin('user'),
+	requireAdmin('admin'),
 	authController.getAllUsers
 );
 
