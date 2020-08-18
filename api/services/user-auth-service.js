@@ -29,7 +29,8 @@ class UserDatabaseService {
 	};
 
 	getUserByEmailAndPassword = async (email, password) => {
-		const user = await this.userModel.findOne({ email });
+		const user = null;
+		// await this.userModel.findOne({ email });
 
 		if (!user) {
 			return {
