@@ -3,6 +3,7 @@ const {
 	hashPasswordBcrypt,
 	comparePasswordBcrypt
 } = require('../helpers/user-auth');
+
 const {
 	buildErrorObject
 } = require('../middleware/utils/http-error');
@@ -21,30 +22,36 @@ class UserDatabaseService {
 		});
 
 		if (!user) {
-			console.log('user err');
-			return buildErrorObject(400, 'error creating user');
+			return { error: buildErrorObject(400, 'error creating user') };
 		} else {
-			const token = generateAuthToken(user);
-			return { user, token };
+			return { user, token: generateAuthToken(user) };
 		}
 	};
 
 	getUserByEmailAndPassword = async (email, password) => {
 		const user = await this.userModel.findOne({ email });
 
-		if (!user) buildErrorObject(400, 'user email does not match');
+		if (!user) {
+			return {
+				error: buildErrorObject(400, 'user email does not match')
+			};
+		}
 
 		const isValidPassword = await comparePasswordBcrypt(
 			password,
 			user.password
 		);
 
-		if (!isValidPassword)
-			buildErrorObject(400, 'user password does not match');
+		if (!isValidPassword) {
+			return {
+				error: buildErrorObject(
+					400,
+					'user password does not match our records'
+				)
+			};
+		}
 
-		const token = generateAuthToken(user);
-
-		return { user, token };
+		return { user, token: generateAuthToken(user) };
 	};
 
 	getUserByEmail = async email => {
