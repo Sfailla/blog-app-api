@@ -31,9 +31,13 @@ class RequiredParameterError extends Error {
 class UserServiceError extends Error {
 	constructor(...args) {
 		super(...args);
-		this.code = 'ERR_USER_SERVICE';
-		this.name = 'UserServiceError';
-		this.stack = `${this.message}\n${new Error().stack}`;
+		const [ code, message ] = args;
+
+		this.code = code || 500;
+		this.status = 'ERR_USER_SERVICE';
+		this.name = 'user-service-error';
+		this.message = message || 'something went wrong';
+		this.stack = `${new Error().stack}`;
 	}
 }
 
@@ -49,5 +53,7 @@ class InvalidInputError extends Error {
 module.exports = {
 	UniqueConstraintError,
 	InvalidPropertyError,
-	RequiredParameterError
+	RequiredParameterError,
+	UserServiceError,
+	InvalidInputError
 };
