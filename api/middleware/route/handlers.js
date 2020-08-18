@@ -10,20 +10,22 @@ const notFoundHandler = (req, res, next) => {
 
 const errorHandler = (error, req, res, next) => {
 	const isDevelopment = req.app.get('env') === 'development';
-	const { err_code, message, stack } = error;
+	const { code, status, name, message, stack } = error;
+	console.log(error);
+
 	// set locals, only providing error in development
+	res.locals.code = code;
+	res.locals.status = status;
 	res.locals.message = message;
-	res.locals.status = 'ERROR';
 	res.locals.error = isDevelopment ? error : {};
 
-	console.log(res.locals);
-
-	res.status(err_code || 500).json({
+	res.status(500).json({
 		error: {
-			err_code,
-			status: 'ERROR',
+			code,
+			status,
+			name,
 			message,
-			stack: isDevelopment ? stack : {}
+			stack
 		}
 	});
 };
