@@ -7,11 +7,15 @@ const {
 	authenticateJWT,
 	requireAdmin
 } = require('../middleware/index');
+const { UserServiceError } = require('../middleware/utils/errors');
 
 makeMongooseConnection();
 
 const authService = new UserDatabaseService(UserModel);
-const authController = new AuthController(authService);
+const authController = new AuthController(
+	authService,
+	UserServiceError
+);
 
 const router = Router();
 
@@ -25,7 +29,7 @@ const router = Router();
 router.get(
 	'/users',
 	authenticateJWT,
-	requireAdmin('admin'),
+	requireAdmin('user'),
 	authController.getAllUsers
 );
 
