@@ -1,8 +1,11 @@
+const { UserServiceError } = require('../middleware/utils/errors');
+
 module.exports = class AuthController {
 	constructor(database, userServiceError) {
 		this.db = database;
-		this.userError = (statusCode, message) =>
-			new userServiceError(statusCode, message);
+		this.userError = (status, message, ...rest) => {
+			return new userServiceError(status, message, ...rest);
+		};
 	}
 
 	registerUser = async (req, res, next) => {
@@ -14,7 +17,7 @@ module.exports = class AuthController {
 				password
 			);
 
-			if (error) throw this.userError(400, error.message);
+			if (error) throw new UserServiceError(400, error.message);
 
 			await res
 				.header('x-auth-token', token)
