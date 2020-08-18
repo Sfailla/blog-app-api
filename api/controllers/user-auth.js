@@ -1,10 +1,8 @@
-const {
-	buildErrorObject
-} = require('../middleware/utils/http-error');
-
 module.exports = class AuthController {
-	constructor(database) {
+	constructor(database, userServiceError) {
 		this.db = database;
+		this.userError = (statusCode, message) =>
+			new userServiceError(statusCode, message);
 	}
 
 	registerUser = async (req, res, next) => {
@@ -15,7 +13,8 @@ module.exports = class AuthController {
 				email,
 				password
 			);
-			if (error) throw Error(error.message);
+
+			if (error) throw this.userError(400, error.message);
 
 			await res
 				.header('x-auth-token', token)
@@ -26,7 +25,7 @@ module.exports = class AuthController {
 		}
 	};
 
-	loginUser = async (req, res) => {
+	loginUser = async (req, res, next) => {
 		try {
 			const { email, password } = req.body;
 			const {
@@ -34,7 +33,8 @@ module.exports = class AuthController {
 				token,
 				error
 			} = await this.db.getUserByEmailAndPassword(email, password);
-			if (error) throw Error(error.message);
+
+			if (error) throw this.userError(400, error.message);
 
 			await res
 				.header('x-auth-token', token)
