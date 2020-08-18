@@ -14,15 +14,16 @@ const errorHandler = (error, req, res, next) => {
 	console.log(error);
 
 	// set locals, only providing error in development
-	res.locals.code = code;
 	res.locals.status = status;
+	res.locals.code = code;
+	res.locals.name = name;
 	res.locals.message = message;
 	res.locals.error = isDevelopment ? error : {};
 
-	res.status(500).json({
+	res.status(status || 500).json({
 		error: {
-			code,
 			status,
+			code,
 			name,
 			message,
 			stack
