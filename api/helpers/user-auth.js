@@ -11,24 +11,6 @@ const comparePasswordBcrypt = async (password, userPassword) => {
  * =========================
  */
 
-const checkUserPassword = async (user, password) => {
-	const isValidPassword = await comparePasswordBcrypt(
-		password,
-		user.password
-	);
-
-	if (!isValidPassword) {
-		return {
-			error: buildErrorObject(
-				400,
-				'user password does not match our records'
-			)
-		};
-	}
-
-	return { isValidPassword };
-};
-
 const hashPasswordBcrypt = async (password, salt = 10) => {
 	return await hash(password, salt);
 };
