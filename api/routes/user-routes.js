@@ -3,11 +3,11 @@ const UserDatabaseService = require('../services/user-auth-service');
 const AuthController = require('../controllers/user-auth');
 const { Router } = require('express');
 const { makeMongooseConnection } = require('../config/index');
+const { UserServiceError } = require('../middleware/utils/errors');
 const {
 	authenticateJWT,
 	requireAdmin
 } = require('../middleware/index');
-const { UserServiceError } = require('../middleware/utils/errors');
 
 makeMongooseConnection();
 
@@ -29,7 +29,7 @@ const router = Router();
 router.get(
 	'/users',
 	authenticateJWT,
-	requireAdmin('user'),
+	requireAdmin('admin'),
 	authController.getAllUsers
 );
 
