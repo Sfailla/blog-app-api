@@ -1,10 +1,13 @@
 const checkUserPermissions = require('../utils/checkPermissions');
-const { buildErrorObject } = require('../utils/http-error');
+const { UserServiceError } = require('../utils/errors');
 
 const requireAdmin = requiredRole => async (req, res, next) => {
-	if (!requiredRole)
-		next(buildErrorObject(422, 'must provide authorization role'));
 	try {
+		if (!requiredRole) {
+			const errMsg = 'must provide authorization role';
+			throw new UserServiceError(422, errMsg);
+		}
+
 		const { user_id, user_role } = req.user;
 		const userData = {
 			id: user_id,

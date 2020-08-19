@@ -1,5 +1,5 @@
 const { verifyAuthToken } = require('../../helpers/user-auth');
-const { buildErrorObject } = require('../utils/http-error');
+const { buildErrorObject } = require('../utils/errors');
 
 const authenticateJWT = (req, res, next) => {
 	const token = req.header('x-auth-token');

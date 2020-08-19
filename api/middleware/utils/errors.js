@@ -1,5 +1,5 @@
 class UniqueConstraintError extends Error {
-	constructor(status = 500, message, value) {
+	constructor(status = 409, message, value) {
 		super(`${value} must be unique.`);
 
 		this.status = status;
@@ -15,7 +15,7 @@ class UniqueConstraintError extends Error {
 }
 
 class InvalidPropertyError extends Error {
-	constructor(status = 500, message) {
+	constructor(status = 400, message) {
 		super(message);
 
 		this.status = status;
@@ -31,7 +31,7 @@ class InvalidPropertyError extends Error {
 }
 
 class RequiredParameterError extends Error {
-	constructor(status = 500, message, param) {
+	constructor(status = 400, message, param) {
 		super(`${param} can not be null or undefined.`);
 
 		this.status = status;
@@ -47,7 +47,7 @@ class RequiredParameterError extends Error {
 }
 
 class UserServiceError extends Error {
-	constructor(status = 500, message) {
+	constructor(status = 400, message) {
 		super(message);
 
 		this.status = status;
@@ -78,10 +78,18 @@ class InvalidInputError extends Error {
 	}
 }
 
+const buildErrorObject = (code, msg) => {
+	return {
+		code,
+		msg
+	};
+};
+
 module.exports = {
 	UniqueConstraintError,
 	InvalidPropertyError,
 	RequiredParameterError,
 	UserServiceError,
-	InvalidInputError
+	InvalidInputError,
+	buildErrorObject
 };
