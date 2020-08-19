@@ -22,20 +22,19 @@ class UserDatabaseService {
 		});
 
 		if (!user) {
-			return { error: buildErrorObject(400, 'error creating user') };
+			return { err: buildErrorObject(400, 'error creating user') };
 		} else {
 			return { user, token: generateAuthToken(user) };
 		}
 	};
 
 	getUserByEmailAndPassword = async (email, password) => {
-		const user = null;
-		// await this.userModel.findOne({ email });
+		const user = await this.userModel.findOne({ email });
 
 		if (!user) {
-			return {
-				error: buildErrorObject(400, 'user email does not match')
-			};
+			const errMsg = 'user email does not match our records';
+			const err = buildErrorObject(400, errMsg);
+			return { err };
 		}
 
 		const isValidPassword = await comparePasswordBcrypt(
@@ -44,15 +43,13 @@ class UserDatabaseService {
 		);
 
 		if (!isValidPassword) {
-			return {
-				error: buildErrorObject(
-					400,
-					'user password does not match our records'
-				)
-			};
+			const errMsg = 'user password does not match our records';
+			const err = buildErrorObject(400, errMsg);
+			return { err };
 		}
 
-		return { user, token: generateAuthToken(user) };
+		const token = generateAuthToken(user);
+		return { user, token };
 	};
 
 	getUserByEmail = async email => {
@@ -60,13 +57,22 @@ class UserDatabaseService {
 		return { user };
 	};
 
-	getUserById = async id => {
-		const user = await this.userModel.find({ _id: id });
+	getUserById = async userId => {
+		const user = await this.userModel
+			.isValidObjectId(userId)
+			.find({ _id: userId });
 		return { user };
 	};
 
 	getAllUsers = async () => {
 		const users = await this.userModel.find({});
+
+		if (!users) {
+			const errMsg = 'there was an error locating users';
+			const err = buildErrorObject(400, errMsg);
+			return { err };
+		}
+
 		return { users };
 	};
 }
