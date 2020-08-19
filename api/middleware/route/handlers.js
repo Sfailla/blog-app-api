@@ -11,7 +11,6 @@ const notFoundHandler = (req, res, next) => {
 const errorHandler = (error, req, res, next) => {
 	const isDevelopment = req.app.get('env') === 'development';
 	const { code, status, name, message, stack } = error;
-	console.log(error);
 
 	// set locals, only providing error in development
 	res.locals.status = status;
