@@ -8,11 +8,10 @@ module.exports = class AuthController {
 
 	registerUser = async (req, res, next) => {
 		try {
-			const { username, email, password } = req.body;
 			const { user, token, err } = await this.db.createUser(
-				username,
-				email,
-				password
+				req.body.username,
+				req.body.email,
+				req.body.password
 			);
 
 			if (err) throw this.userError(err.code, err.msg);
@@ -28,11 +27,10 @@ module.exports = class AuthController {
 
 	loginUser = async (req, res, next) => {
 		try {
-			const { email, password } = req.body;
 			const { getUserByEmailAndPassword } = this.db;
 			const { user, token, err } = await getUserByEmailAndPassword(
-				email,
-				password
+				req.body.email,
+				req.body.password
 			);
 
 			if (err) throw this.userError(err.code, err.msg);
