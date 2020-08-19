@@ -1,4 +1,4 @@
-const { buildErrorObject } = require('./errors');
+const { UserServiceError } = require('./errors');
 
 const checkUserPermissions = async (user, next) => {
 	return new Promise((resolve, reject) => {
@@ -9,7 +9,7 @@ const checkUserPermissions = async (user, next) => {
 		}
 
 		const errMsg = 'admin level authorization is required';
-		const err = buildErrorObject(401, errMsg);
+		const err = new UserServiceError(401, errMsg);
 		return reject(err);
 	});
 };
