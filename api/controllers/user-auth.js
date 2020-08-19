@@ -44,7 +44,10 @@ module.exports = class AuthController {
 		}
 	};
 
-	getCurrentUser = async (req, res, next) => {};
+	getCurrentUser = async (req, res, next) => {
+		const userId = req.params.id;
+		const user = await this.auth.getUserById(userId);
+	};
 
 	getAllUsers = async (req, res, next) => {
 		try {
