@@ -6,10 +6,10 @@ const handleError = (res, error) => {
 	res.status(error.status).json({ error });
 };
 
-const buildErrorObject = (statusCode, message) => {
+const buildErrorObject = (code, msg) => {
 	return {
-		statusCode,
-		message
+		code,
+		msg
 	};
 };
 
