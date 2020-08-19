@@ -53,8 +53,8 @@ class UserServiceError extends Error {
 		this.status = status;
 		this.code = 'ERR_USER_SERVICE';
 		this.name = 'user-service-error';
-		this.message = message || 'something went wrong';
-		this.stack = `${new Error().stack}`;
+		this.message = message;
+		this.stack = `${this.stack}`;
 
 		if (Error.captureStackTrace) {
 			Error.captureStackTrace(this, UserServiceError);
