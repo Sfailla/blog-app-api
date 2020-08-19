@@ -1,23 +1,21 @@
-const { UserServiceError } = require('../middleware/utils/errors');
-
 module.exports = class AuthController {
-	constructor(database, userServiceError) {
-		this.db = database;
-		this.userError = (status, message, ...rest) => {
-			return new userServiceError(status, message, ...rest);
+	constructor(databaseService, userServiceError) {
+		this.db = databaseService;
+		this.userError = (statusCode, message) => {
+			return new userServiceError(statusCode, message);
 		};
 	}
 
 	registerUser = async (req, res, next) => {
 		try {
 			const { username, email, password } = req.body;
-			const { user, token, error } = await this.db.createUser(
+			const { user, token, err } = await this.db.createUser(
 				username,
 				email,
 				password
 			);
 
-			if (error) throw new UserServiceError(400, error.message);
+			if (err) throw this.userError(err.code, err.msg);
 
 			await res
 				.header('x-auth-token', token)
@@ -31,13 +29,13 @@ module.exports = class AuthController {
 	loginUser = async (req, res, next) => {
 		try {
 			const { email, password } = req.body;
-			const {
-				user,
-				token,
-				error
-			} = await this.db.getUserByEmailAndPassword(email, password);
+			const { getUserByEmailAndPassword } = this.db;
+			const { user, token, err } = await getUserByEmailAndPassword(
+				email,
+				password
+			);
 
-			if (error) throw this.userError(400, error.message);
+			if (err) throw this.userError(err.code, err.msg);
 
 			await res
 				.header('x-auth-token', token)
@@ -48,11 +46,16 @@ module.exports = class AuthController {
 		}
 	};
 
-	getCurrentUser = async (req, res) => {};
+	getCurrentUser = async (req, res, next) => {};
 
-	getAllUsers = async (req, res) => {
-		const { users } = await this.db.getAllUsers();
+	getAllUsers = async (req, res, next) => {
+		try {
+			const { users, err } = await this.db.getAllUsers();
+			if (err) throw this.userError(err.code, err.msg);
 
-		await res.status(200).json({ users });
+			await res.status(200).json({ users });
+		} catch (error) {
+			next(error);
+		}
 	};
 };
