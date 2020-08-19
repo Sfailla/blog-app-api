@@ -44,6 +44,15 @@ const UserSchema = new mongoose.Schema({
 	}
 });
 
+UserSchema.set('toJSON', {
+	virtuals: true,
+	versionKey: false,
+	transform: (doc, ret) => {
+		delete ret._id;
+		delete ret.password;
+	}
+});
+
 UserSchema.methods.isValidObjectId = function(userId) {
 	return (
 		ObjectId.isValid(id) && new ObjectId(id).toString() === userId
