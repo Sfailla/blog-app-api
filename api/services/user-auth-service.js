@@ -4,9 +4,7 @@ const {
 	comparePasswordBcrypt
 } = require('../helpers/user-auth');
 
-const {
-	buildErrorObject
-} = require('../middleware/utils/http-error');
+const { buildErrorObject } = require('../middleware/utils/errors');
 
 class UserDatabaseService {
 	constructor(userModel) {
