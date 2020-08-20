@@ -20,21 +20,10 @@ const authController = new AuthController(
 const router = Router();
 
 /**
- * =============================
- * 	USER AUTH ROUTES
- * =============================
+ * =================
+ * == USER ROUTES ==
+ * =================
  */
-
-// get all users  @todo make admin-only-route
-router.get(
-	'/',
-	authenticateJWT,
-	requireAdmin('user'),
-	authController.getAllUsers
-);
-
-// get specific user
-router.get('/user/:id', authController.getCurrentUser);
 
 // login user
 router.post('/login', authController.loginUser);
@@ -44,5 +33,29 @@ router.get('/logout', authController.logoutUser);
 
 // create user
 router.post('/register', authController.registerUser);
+
+/**
+ * =======================
+ * == ADMIN ONLY ROUTES ==
+ * =======================
+ */
+
+// get all users
+router.get(
+	'/',
+	authenticateJWT,
+	requireAdmin('user'),
+	authController.getAllUsers
+);
+
+// get specific user
+router.get(
+	'/user/:id',
+	authenticateJWT,
+	requireAdmin('user'),
+	authController.getCurrentUser
+);
+
+// TODO: add delete user admin route
 
 module.exports = router;
