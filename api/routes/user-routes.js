@@ -27,19 +27,22 @@ const router = Router();
 
 // get all users  @todo make admin-only-route
 router.get(
-	'/users',
+	'/',
 	authenticateJWT,
-	requireAdmin('admin'),
+	requireAdmin('user'),
 	authController.getAllUsers
 );
 
 // get specific user
-router.get('/users/:id', authController.getCurrentUser);
+router.get('/user/:id', authController.getCurrentUser);
 
 // login user
-router.post('/users/login', authController.loginUser);
+router.post('/login', authController.loginUser);
+
+// logout user
+router.get('/logout', authController.logoutUser);
 
 // create user
-router.post('/users/register', authController.registerUser);
+router.post('/register', authController.registerUser);
 
 module.exports = router;
