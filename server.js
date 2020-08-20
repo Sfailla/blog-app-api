@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const logger = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
-const apiRoutes = require('./api/routes/user-routes');
+const userApiRoutes = require('./api/routes/user-routes');
 const {
 	errorHandler,
 	notFoundHandler,
@@ -28,7 +28,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // uncomment this line whenever your ready for client code
 // app.use(express.static(path.join(__dirname, 'public')));
-app.use('/api/v1', apiRoutes);
+app.use('/api/v1/users', userApiRoutes);
 
 app.get('/', (req, res) =>
 	res.status(200).json({ message: 'hello world 🌎🚀🎃🎃🔐🗝' })
