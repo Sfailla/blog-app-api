@@ -1,5 +1,5 @@
 const { verifyAuthToken } = require('../../helpers/user-auth');
-const { buildErrorObject } = require('../utils/errors');
+const { UserServiceError } = require('../utils/errors');
 
 const authenticateJWT = (req, res, next) => {
 	const token = req.header('x-auth-token');
@@ -12,8 +12,9 @@ const authenticateJWT = (req, res, next) => {
 
 		next();
 	} else {
-		const error = buildErrorObject(409, 'must provide valid token');
-		next(error);
+		const errMsg = 'must provide valid token';
+		const err = new UserServiceError(409, errMsg);
+		next(err);
 	}
 };
 
