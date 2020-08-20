@@ -13,13 +13,8 @@ module.exports = class AuthController {
 				req.body.email,
 				req.body.password
 			);
-
 			if (err) throw this.userError(err.code, err.msg);
-
-			await res
-				.header('x-auth-token', token)
-				.status(201)
-				.json({ user });
+			await res.header('x-auth-token', token).status(201).json(user);
 		} catch (error) {
 			next(error);
 		}
@@ -32,29 +27,33 @@ module.exports = class AuthController {
 				req.body.email,
 				req.body.password
 			);
-
 			if (err) throw this.userError(err.code, err.msg);
-
-			await res
-				.header('x-auth-token', token)
-				.status(200)
-				.json({ user });
+			await res.header('x-auth-token', token).status(200).json(user);
 		} catch (error) {
 			next(error);
 		}
 	};
 
+	logoutUser = async (req, res, next) => {
+		await res.send('this is the logout route!');
+	};
+
 	getCurrentUser = async (req, res, next) => {
-		const userId = req.params.id;
-		const user = await this.auth.getUserById(userId);
+		try {
+			const userId = req.params.id;
+			const { user, err } = await this.db.getUserById(userId);
+			if (err) throw this.userError(err.code, err.msg);
+			await res.status(200).json(user);
+		} catch (error) {
+			next(error);
+		}
 	};
 
 	getAllUsers = async (req, res, next) => {
 		try {
 			const { users, err } = await this.db.getAllUsers();
 			if (err) throw this.userError(err.code, err.msg);
-
-			await res.status(200).json({ users });
+			await res.status(200).json(users);
 		} catch (error) {
 			next(error);
 		}
