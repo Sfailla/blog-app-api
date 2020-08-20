@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const colorTerminal = require('../terminalColors');
+const { ObjectId } = mongoose.Types;
 
 const makeMongooseConnection = async () => {
 	const mongooseOptions = {
@@ -23,6 +24,14 @@ const makeMongooseConnection = async () => {
 	}
 };
 
+const isValidObjId = userId => {
+	return (
+		ObjectId.isValid(userId) &&
+		new ObjectId(userId).toString() === userId
+	);
+};
+
 module.exports = {
+	isValidObjId,
 	makeMongooseConnection
 };
