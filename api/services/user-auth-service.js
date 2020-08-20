@@ -1,10 +1,11 @@
+const { buildErrorObject } = require('../middleware/utils/errors');
+const { isValidObjId } = require('../config/db/config');
 const {
 	generateAuthToken,
 	hashPasswordBcrypt,
-	comparePasswordBcrypt
+	comparePasswordBcrypt,
+	basicUserDetails
 } = require('../helpers/user-auth');
-
-const { buildErrorObject } = require('../middleware/utils/errors');
 
 class UserDatabaseService {
 	constructor(userModel) {
@@ -13,7 +14,7 @@ class UserDatabaseService {
 
 	createUser = async (username, email, password) => {
 		const hashedPassword = await hashPasswordBcrypt(password);
-		const user = await this.userModel.create({
+		let user = await this.userModel.create({
 			username,
 			email,
 			password: hashedPassword
@@ -21,13 +22,14 @@ class UserDatabaseService {
 		if (!user) {
 			return { err: buildErrorObject(400, 'error creating user') };
 		} else {
+			user = basicUserDetails(user);
 			const token = generateAuthToken(user);
 			return { user, token };
 		}
 	};
 
 	getUserByEmailAndPassword = async (email, password) => {
-		const { user } = await this.getUserByEmail(email);
+		let { user } = await this.getUserByEmail(email);
 		const isValidPassword = await comparePasswordBcrypt(
 			password,
 			user.password
@@ -36,6 +38,7 @@ class UserDatabaseService {
 			const errMsg = 'user password does not match our records';
 			return { err: buildErrorObject(400, errMsg) };
 		}
+		user = basicUserDetails(user);
 		const token = generateAuthToken(user);
 		return { user, token };
 	};
@@ -50,15 +53,19 @@ class UserDatabaseService {
 	};
 
 	getUserById = async userId => {
-		const user = await this.userModel
-			.isValidObjectId(userId)
-			.find({ _id: userId });
-
-		if (!user) {
-			const errMsg = 'user id does not match our records';
-			return { err: buildErrorObject(400, errMsg) };
+		if (userId && isValidObjId(userId)) {
+			let user = await this.userModel.findOne({ _id: userId });
+			if (!user) {
+				const errMsg = 'user does not match our records';
+				return { err: buildErrorObject(400, errMsg) };
+			}
+			user = basicUserDetails(user);
+			return { user };
+		} else {
+			return {
+				err: buildErrorObject(400, `invalid object id => ${userId}`)
+			};
 		}
-		return { user };
 	};
 
 	getAllUsers = async () => {
@@ -67,7 +74,8 @@ class UserDatabaseService {
 			const errMsg = 'there was an error locating users';
 			return { err: buildErrorObject(400, errMsg) };
 		}
-		return { users };
+		const copiedUsers = users.map(user => basicUserDetails(user));
+		return { users: copiedUsers };
 	};
 }
 
