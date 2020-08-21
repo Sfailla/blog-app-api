@@ -26,7 +26,7 @@ const verifyAuthToken = token => {
 
 const generateAuthToken = user => {
 	const credentials = {
-		user_id: user._id,
+		user_id: user.id,
 		user_role: user.role,
 		user_name: user.username,
 		access: 'auth-token',
