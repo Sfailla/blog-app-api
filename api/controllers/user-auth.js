@@ -47,9 +47,13 @@ module.exports = class AuthController {
 	getCurrentUser = async (req, res, next) => {
 		try {
 			const userId = req.params.id;
+			const token = req.token;
 			const { user, err } = await this.db.getUserById(userId);
 			if (err) throw this.userError(err.code, err.msg);
-			await res.status(200).json({ user });
+			await res
+				.header('x-auth-token', token)
+				.status(200)
+				.json({ user });
 		} catch (error) {
 			next(error);
 		}
@@ -57,9 +61,13 @@ module.exports = class AuthController {
 
 	getAllUsers = async (req, res, next) => {
 		try {
+			const token = req.token;
 			const { users, err } = await this.db.getAllUsers();
 			if (err) throw this.userError(err.code, err.msg);
-			await res.status(200).json({ users });
+			await res
+				.header('x-auth-token', token)
+				.status(200)
+				.json({ users });
 		} catch (error) {
 			next(error);
 		}
