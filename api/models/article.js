@@ -7,40 +7,61 @@ const requiredString = {
 	required: true
 };
 
-const ArticleSchema = new Schema({
-	author: {
-		type: ObjectId,
-		ref: 'User'
-	},
-	slug: {
-		...requiredString,
-		set: value => value.toLowerCase()
-	},
-	title: {
-		...requiredString
-	},
-	description: {
-		...requiredString
-	},
-	body: {
-		...requiredString
-	},
-	tagList: {
-		type: Array,
-		default: []
-	},
-	isFavorite: {
-		type: Boolean,
-		default: false
-	},
-	favoriteCount: {
-		type: Number,
-		default: 0
-	},
-	createdAt: { type: Date, default: Date.now },
-	updatedAt: { type: Date, default: Date.now }
-});
+const options = {
+	virtuals: true,
+	versionKey: false,
+	transform: (doc, ret) => {
+		delete ret._id;
+	}
+};
 
-const Article = model('Article', ArticleSchema);
+const ArticleSchema = new Schema(
+	{
+		author: {
+			type: ObjectId,
+			ref: 'User'
+		},
+		slug: {
+			...requiredString,
+			trim: true,
+			unique: true,
+			set: value => value.toLowerCase(),
+			default: function slugify() {
+				return this.title.split(' ').join('-');
+			}
+		},
+		title: {
+			...requiredString,
+			unique: true
+		},
+		description: {
+			...requiredString
+		},
+		body: {
+			...requiredString
+		},
+		comments: [
+			{
+				type: ObjectId,
+				ref: 'Comment'
+			}
+		],
+		tagList: {
+			type: Array,
+			default: []
+		},
+		isFavorite: {
+			type: Boolean,
+			default: false
+		},
+		favoriteCount: {
+			type: Number,
+			default: 0
+		},
+		createdAt: { type: Date, default: Date.now },
+		updatedAt: { type: Date, default: Date.now }
+	},
+	{ toJSON: options }
+);
 
-module.exports = Article;
+module.exports = model('Article', ArticleSchema);
