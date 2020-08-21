@@ -14,4 +14,10 @@ router.get('/', articleController.getAllArticles);
 
 router.post('/', authenticateJWT, articleController.createArticle);
 
+router.get(
+	'/my-articles',
+	authenticateJWT,
+	articleController.getAllArticlesByUser
+);
+
 module.exports = router;
