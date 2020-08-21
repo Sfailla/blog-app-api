@@ -3,7 +3,6 @@ const { UserServiceError } = require('../utils/errors');
 
 const authenticateJWT = (req, res, next) => {
 	const token = req.header('x-auth-token');
-	console.log(token);
 
 	if (token) {
 		const user = verifyAuthToken(token);

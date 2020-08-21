@@ -4,7 +4,7 @@ const {
 	generateAuthToken,
 	hashPasswordBcrypt,
 	comparePasswordBcrypt,
-	basicUserDetails
+	copyUserDetails
 } = require('../helpers/user-auth');
 
 class UserDatabaseService {
@@ -22,7 +22,7 @@ class UserDatabaseService {
 		if (!user) {
 			return { err: buildErrorObject(400, 'error creating user') };
 		} else {
-			user = basicUserDetails(user);
+			user = copyUserDetails(user);
 			const token = generateAuthToken(user);
 			return { user, token };
 		}
@@ -38,7 +38,7 @@ class UserDatabaseService {
 			const errMsg = 'user password does not match our records';
 			return { err: buildErrorObject(400, errMsg) };
 		}
-		user = basicUserDetails(user);
+		user = copyUserDetails(user);
 		const token = generateAuthToken(user);
 		return { user, token };
 	};
@@ -59,7 +59,7 @@ class UserDatabaseService {
 				const errMsg = 'user does not match our records';
 				return { err: buildErrorObject(400, errMsg) };
 			}
-			user = basicUserDetails(user);
+			user = copyUserDetails(user);
 			return { user };
 		} else {
 			return {
@@ -74,7 +74,7 @@ class UserDatabaseService {
 			const errMsg = 'there was an error locating users';
 			return { err: buildErrorObject(400, errMsg) };
 		}
-		const copiedUsers = users.map(user => basicUserDetails(user));
+		const copiedUsers = users.map(user => copyUserDetails(user));
 		return { users: copiedUsers };
 	};
 }
