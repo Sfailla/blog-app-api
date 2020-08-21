@@ -7,7 +7,11 @@ const bodyParser = require('body-parser');
 const logger = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
+
+const articleApiRoutes = require('./api/routes/article-routes');
 const userApiRoutes = require('./api/routes/user-routes');
+const { makeMongooseConnection } = require('./api/config/index');
+
 const {
 	errorHandler,
 	notFoundHandler,
@@ -15,6 +19,7 @@ const {
 } = require('./api/middleware/route/handlers');
 
 const app = express();
+makeMongooseConnection();
 
 app.use(
 	cors({
@@ -26,9 +31,11 @@ app.use(helmet());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
 // uncomment this line whenever your ready for client code
 // app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/v1/users', userApiRoutes);
+app.use('/api/v1/articles', articleApiRoutes);
 
 app.get('/', (req, res) =>
 	res.status(200).json({ message: 'hello world 🌎🚀🎃🎃🔐🗝' })
