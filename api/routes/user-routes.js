@@ -1,15 +1,12 @@
-const UserModel = require('../models/user/user');
+const UserModel = require('../models/user');
 const UserDatabaseService = require('../services/user-auth-service');
 const AuthController = require('../controllers/user-auth');
 const { Router } = require('express');
-const { makeMongooseConnection } = require('../config/index');
 const { UserServiceError } = require('../middleware/utils/errors');
 const {
 	authenticateJWT,
 	requireAdmin
 } = require('../middleware/index');
-
-makeMongooseConnection();
 
 const authService = new UserDatabaseService(UserModel);
 const authController = new AuthController(
