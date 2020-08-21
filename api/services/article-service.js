@@ -3,11 +3,9 @@ module.exports = class ArticleDatabaseService {
 		this.db = articleModel;
 	}
 
-	create = async (user_id, slug, title, description, body) => {
-		console.log(user_id);
+	create = async (user_id, title, description, body) => {
 		const article = await this.db.create({
 			author: user_id,
-			slug,
 			title,
 			description,
 			body
