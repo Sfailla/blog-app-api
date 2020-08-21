@@ -26,9 +26,9 @@ const verifyAuthToken = token => {
 
 const generateAuthToken = user => {
 	const credentials = {
-		user_id: user.id,
-		user_role: user.role,
-		user_name: user.username,
+		id: user.id,
+		role: user.role,
+		username: user.username,
 		access: 'auth-token',
 		exp: Math.floor(Date.now() / 1000) + 60 * process.env.JWT_EXPIRES
 	};

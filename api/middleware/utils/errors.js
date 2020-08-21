@@ -6,26 +6,9 @@ class UniqueConstraintError extends Error {
 		this.code = 'ERR_UNIQUE_CONSTRAINT';
 		this.name = 'unique-constraint-error';
 		this.messge = message;
-		this.stack = `${new Error().stack}`;
 
 		if (Error.captureStackTrace) {
 			Error.captureStackTrace(this, UniqueConstraintError);
-		}
-	}
-}
-
-class InvalidPropertyError extends Error {
-	constructor(status = 400, message) {
-		super(message);
-
-		this.status = status;
-		this.code = 'ERR_INVALID_PROPERTY';
-		this.name = 'invalid-property-error';
-		this.messge = message;
-		this.stack = `${new Error().stack}`;
-
-		if (Error.captureStackTrace) {
-			Error.captureStackTrace(this, InvalidPropertyError);
 		}
 	}
 }
@@ -38,7 +21,6 @@ class RequiredParameterError extends Error {
 		this.code = 'ERR_REQUIRED_PARAM';
 		this.name = 'required-param-error';
 		this.message = message;
-		this.stack = `${new Error().stack}`;
 
 		if (Error.captureStackTrace) {
 			Error.captureStackTrace(this, RequiredParameterError);
@@ -46,7 +28,7 @@ class RequiredParameterError extends Error {
 	}
 }
 
-class UserServiceError extends Error {
+class ValidationError extends Error {
 	constructor(status = 400, message) {
 		super(message);
 
@@ -54,10 +36,9 @@ class UserServiceError extends Error {
 		this.code = 'ERR_USER_SERVICE';
 		this.name = 'user-service-error';
 		this.message = message;
-		this.stack = `${this.stack}`;
 
 		if (Error.captureStackTrace) {
-			Error.captureStackTrace(this, UserServiceError);
+			Error.captureStackTrace(this, ValidationError);
 		}
 	}
 }
@@ -70,7 +51,6 @@ class InvalidInputError extends Error {
 		this.code = 'ERR_INVALID_INPUT';
 		this.name = 'invalid-input-error';
 		this.message = `${this.message}`;
-		this.stack = `${this.message}\n${new Error().stack}`;
 
 		if (Error.captureStackTrace) {
 			Error.captureStackTrace(this, InvalidInputError);
@@ -87,9 +67,8 @@ const buildErrorObject = (code, msg) => {
 
 module.exports = {
 	UniqueConstraintError,
-	InvalidPropertyError,
 	RequiredParameterError,
-	UserServiceError,
+	ValidationError,
 	InvalidInputError,
 	buildErrorObject
 };

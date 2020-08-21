@@ -1,8 +1,8 @@
 module.exports = class AuthController {
-	constructor(databaseService, userServiceError) {
+	constructor(databaseService, validationError) {
 		this.db = databaseService;
 		this.userError = (statusCode, message) => {
-			return new userServiceError(statusCode, message);
+			return new validationError(statusCode, message);
 		};
 	}
 

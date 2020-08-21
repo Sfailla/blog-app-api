@@ -1,17 +1,17 @@
 const checkUserPermissions = require('../utils/checkPermissions');
-const { UserServiceError } = require('../utils/errors');
+const { ValidationError } = require('../utils/errors');
 
 const requireAdmin = requiredRole => async (req, res, next) => {
 	try {
 		if (!requiredRole) {
 			const errMsg = 'must provide authorization role';
-			new UserServiceError(422, errMsg);
+			new ValidationError(422, errMsg);
 		}
 
-		const { user_id, user_role } = req.user;
+		const { id, role } = req.user;
 		const userData = {
-			id: user_id,
-			role: user_role,
+			id,
+			role,
 			requiredRole
 		};
 
