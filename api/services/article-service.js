@@ -12,4 +12,20 @@ module.exports = class ArticleDatabaseService {
 		});
 		return { article };
 	};
+
+	getAllArticles = async (limit = 10, offset = 0) => {
+		const query = {};
+		const options = {
+			sort: { updatedAt: 'desc' },
+			limit: Number(limit),
+			skip: offset
+		};
+		const articles = await this.db.find(query, null, options);
+
+		return { articles };
+	};
+
+	getArticleByUser = () => {};
+
+	getArticleBySlug = () => {};
 };

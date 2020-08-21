@@ -17,7 +17,14 @@ module.exports = class ArticleController {
 		await res.status(200).json({ article });
 	};
 
-	getArticles = async (req, res, next) => {
-		res.send('these will be blog posts');
+	getAllArticles = async (req, res, next) => {
+		console.log(req.query);
+		const { limit, offset } = req.query;
+		const { articles } = await this.service.getAllArticles(
+			limit,
+			offset
+		);
+
+		res.status(200).json({ articles });
 	};
 };
