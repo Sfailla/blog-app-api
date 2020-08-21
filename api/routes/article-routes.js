@@ -10,7 +10,7 @@ const articleController = new ArticleController(articleService);
 
 const router = Router();
 
-router.get('/', articleController.getArticles);
+router.get('/', articleController.getAllArticles);
 
 router.post('/', authenticateJWT, articleController.createArticle);
 
