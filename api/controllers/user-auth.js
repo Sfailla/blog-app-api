@@ -1,9 +1,6 @@
 module.exports = class AuthController {
-	constructor(databaseService, validationError) {
+	constructor(databaseService) {
 		this.db = databaseService;
-		this.userError = (statusCode, message) => {
-			return new validationError(statusCode, message);
-		};
 	}
 
 	registerUser = async (req, res, next) => {
@@ -13,7 +10,7 @@ module.exports = class AuthController {
 				req.body.email,
 				req.body.password
 			);
-			if (err) throw this.userError(err.code, err.msg);
+			if (err) throw err;
 			await res
 				.header('x-auth-token', token)
 				.status(201)
@@ -30,7 +27,7 @@ module.exports = class AuthController {
 				req.body.email,
 				req.body.password
 			);
-			if (err) throw this.userError(err.code, err.msg);
+			if (err) throw err;
 			await res
 				.header('x-auth-token', token)
 				.status(200)
@@ -49,7 +46,7 @@ module.exports = class AuthController {
 			const userId = req.params.id;
 			const token = req.token;
 			const { user, err } = await this.db.getUserById(userId);
-			if (err) throw this.userError(err.code, err.msg);
+			if (err) throw err;
 			await res
 				.header('x-auth-token', token)
 				.status(200)
@@ -63,7 +60,7 @@ module.exports = class AuthController {
 		try {
 			const token = req.token;
 			const { users, err } = await this.db.getAllUsers();
-			if (err) throw this.userError(err.code, err.msg);
+			if (err) throw err;
 			await res
 				.header('x-auth-token', token)
 				.status(200)

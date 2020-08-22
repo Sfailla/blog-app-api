@@ -1,4 +1,4 @@
-const { buildErrorObject } = require('../middleware/utils/errors');
+const { ValidationError } = require('../middleware/utils/errors');
 const { isValidObjId } = require('../config/db/config');
 const {
 	generateAuthToken,
@@ -20,7 +20,8 @@ class UserDatabaseService {
 			password: hashedPassword
 		});
 		if (!user) {
-			return { err: buildErrorObject(400, 'error creating user') };
+			const err = new ValidationError(400, 'error creating user');
+			return { err };
 		} else {
 			user = copyUserDetails(user);
 			const token = generateAuthToken(user);
@@ -29,14 +30,16 @@ class UserDatabaseService {
 	};
 
 	getUserByEmailAndPassword = async (email, password) => {
-		let { user } = await this.getUserByEmail(email);
+		let { user, err } = await this.getUserByEmail(email);
+		if (err) return { err };
 		const isValidPassword = await comparePasswordBcrypt(
 			password,
 			user.password
 		);
 		if (!isValidPassword) {
 			const errMsg = 'user password does not match our records';
-			return { err: buildErrorObject(400, errMsg) };
+			const err = new ValidationError(400, errMsg);
+			return { err };
 		}
 		user = copyUserDetails(user);
 		const token = generateAuthToken(user);
@@ -47,7 +50,8 @@ class UserDatabaseService {
 		const user = await this.userModel.findOne({ email });
 		if (!user) {
 			const errMsg = 'user email does not match our records';
-			return { err: buildErrorObject(400, errMsg) };
+			const err = new ValidationError(400, errMsg);
+			return { err };
 		}
 		return { user };
 	};
@@ -57,14 +61,15 @@ class UserDatabaseService {
 			let user = await this.userModel.findOne({ _id: userId });
 			if (!user) {
 				const errMsg = 'user does not match our records';
-				return { err: buildErrorObject(400, errMsg) };
+				const err = new ValidationError(400, errMsg);
+				return { err };
 			}
 			user = copyUserDetails(user);
 			return { user };
 		} else {
-			return {
-				err: buildErrorObject(400, `invalid object id => ${userId}`)
-			};
+			const errMsg = `invalid object id => ${userId}`;
+			const err = new ValidationError(400, errMsg);
+			return { err };
 		}
 	};
 
@@ -72,7 +77,8 @@ class UserDatabaseService {
 		const users = await this.userModel.find({});
 		if (!users) {
 			const errMsg = 'there was an error locating users';
-			return { err: buildErrorObject(400, errMsg) };
+			const err = new ValidationError(400, errMsg);
+			return { err };
 		}
 		const copiedUsers = users.map(user => copyUserDetails(user));
 		return { users: copiedUsers };
