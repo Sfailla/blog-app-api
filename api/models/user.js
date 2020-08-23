@@ -22,12 +22,14 @@ const UserSchema = new Schema(
 		username: {
 			...requiredString,
 			trim: true,
-			unique: true
+			unique: true,
+			index: true
 		},
 		email: {
 			...requiredString,
 			trim: true,
 			unique: true,
+			index: true,
 			set: value => value.toLowerCase(),
 			validate: {
 				validator: value => {
@@ -43,8 +45,14 @@ const UserSchema = new Schema(
 				validator: value => {
 					return !validator.isEmpty(value);
 				},
-				message: '{VALUE} is not a valid password'
+				message: 'must provide a password'
 			}
+		},
+		profile: {
+			firstname: { type: String },
+			lastname: { type: String },
+			bio: { type: String },
+			image: { type: String }
 		},
 		role: {
 			type: String,
@@ -53,13 +61,7 @@ const UserSchema = new Schema(
 		},
 		createdAt: {
 			type: Date,
-			default: Date.now,
-			validate: {
-				validator: value => {
-					return validator.isDate(value);
-				},
-				message: '{VALUE} must be type date'
-			}
+			default: Date.now
 		}
 	},
 	{ toJSON: options }
