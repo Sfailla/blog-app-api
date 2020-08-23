@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { slugify } = require('../helpers/article');
 const { Schema, Types, model } = mongoose;
 const { ObjectId } = Types;
 
@@ -25,9 +26,8 @@ const ArticleSchema = new Schema(
 			...requiredString,
 			trim: true,
 			unique: true,
-			set: value => value.toLowerCase(),
-			default: function slugify() {
-				return this.title.split(' ').join('-');
+			default: function() {
+				return slugify(this.title);
 			}
 		},
 		title: {

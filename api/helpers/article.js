@@ -8,7 +8,12 @@ const formatTags = (tags) => {
   return tags.split(',').map(tag => tag.toLowerCase());
 }
 
+const slugify = (slug) => {
+  return slug.toLowerCase().split(' ').join('-');
+}
+
 module.exports = {
   copyArticleObj,
-  formatTags
+  formatTags,
+  slugify
 };
