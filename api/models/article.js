@@ -46,10 +46,13 @@ const ArticleSchema = new Schema(
 				ref: 'Comment'
 			}
 		],
-		tagList: {
-			type: Array,
-			default: []
-		},
+		tagList: [
+			{
+				type: String,
+				set: value => value.toLowerCase(),
+				default: []
+			}
+		],
 		isFavorite: {
 			type: Boolean,
 			default: false
