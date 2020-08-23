@@ -4,6 +4,11 @@ const copyArticleObj = article => {
   }
 };
 
+const formatTags = (tags) => {
+  return tags.split(',').map(tag => tag.toLowerCase());
+}
+
 module.exports = {
-	copyArticleObj
+  copyArticleObj,
+  formatTags
 };
