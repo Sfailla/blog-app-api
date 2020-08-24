@@ -58,10 +58,10 @@ class InvalidInputError extends Error {
 	}
 }
 
-const buildErrorObject = (code, msg) => {
+const buildErrorObject = (status, message) => {
 	return {
-		code,
-		msg
+		status,
+		message
 	};
 };
 
