@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const colorTerminal = require('../terminalColors');
 const { ObjectId } = mongoose.Types;
+const { ValidationError } = require('../../middleware/utils/errors');
 
 const makeMongooseConnection = async () => {
 	const mongooseOptions = {
@@ -19,8 +20,8 @@ const makeMongooseConnection = async () => {
 		await mongoose.connect(url, mongooseOptions);
 		console.log(colorTerminal('magenta'), userMessage);
 	} catch (err) {
-		console.error(err);
-		process.exit(1);
+		console.error(err.toString());
+		process.exit(0);
 	}
 };
 
