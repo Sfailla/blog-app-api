@@ -13,14 +13,22 @@ const articleController = new ArticleController(articleService);
 
 const router = Router();
 
-router.get('/', articleController.getArticles);
-
 router.post('/', authenticateJWT, articleController.createArticle);
+
+router.post(
+	'/:slug/favorite',
+	authenticateJWT,
+	articleController.setFavoriteArticle
+);
+
+router.get('/', articleController.getArticles);
 
 router.get(
 	'/my-articles',
 	authenticateJWT,
 	articleController.getArticlesByUser
 );
+
+router.get('/:slug', articleController.getArticleBySlug);
 
 module.exports = router;

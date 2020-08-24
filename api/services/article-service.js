@@ -48,13 +48,10 @@ module.exports = class ArticleDatabaseService {
 			query['author'] = user._id.toString('hex');
 		}
 		// query for author and tags using $or
-		let queryOr;
-		if (author && tags) {
-			queryOr = { $or: [ query ] };
-		}
+		const queryOr = { $or: [ query ] };
 
 		const articles = await this.article
-			.find(author && tags ? queryOr : query, null, options)
+			.find(queryOr, null, options)
 			.populate('author', 'username name bio image');
 
 		if (!articles) {
@@ -62,9 +59,9 @@ module.exports = class ArticleDatabaseService {
 			const err = new ValidationError(400, errMsg);
 			return { err };
 		}
-		const copyArticles = articles.map(article =>
-			copyArticleObj(article)
-		);
+		const copyArticles = articles.map(article => {
+			return copyArticleObj(article);
+		});
 		return { articles: copyArticles };
 	};
 
@@ -96,6 +93,33 @@ module.exports = class ArticleDatabaseService {
 	getArticleBySlug = async slug => {
 		const query = { slug };
 		const article = await this.article.findOne(query);
+		return { article };
+	};
+
+	setFavoriteArticle = async (user, slug) => {
+		const articleQuery = { slug };
+		const articleOptions = {
+			$set: { isFavorite: true },
+			$inc: { favoriteCount: +1 }
+		};
+		const article = await this.article.findOneAndUpdate(
+			articleQuery,
+			articleOptions,
+			{ new: true }
+		);
+
+		// if (article.author.indexOf('')) {
+		// }
+		const userQuery = { _id: article.author };
+		const update = { $push: { favorites: article.author } };
+		const updatedUser = await this.user.findOneAndUpdate(
+			userQuery,
+			update,
+			{ new: true }
+		);
+
+		console.log(updatedUser);
+
 		return { article };
 	};
 };

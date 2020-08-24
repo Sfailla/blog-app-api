@@ -32,7 +32,7 @@ module.exports = class ArticleController {
 				favorite
 			);
 			if (err) throw err;
-			res.status(200).json({ articles });
+			await res.status(200).json({ articles });
 		} catch (error) {
 			next(error);
 		}
@@ -45,18 +45,26 @@ module.exports = class ArticleController {
 			const { articles, err } = await this.db.getArticlesByUser(
 				id,
 				limit,
-				offset
+				offset,
+				slug
 			);
 			if (err) throw err;
-			res.status(200).json({ articles });
+			await res.status(200).json({ articles });
 		} catch (error) {
 			next(err);
 		}
 	};
 
 	getArticleBySlug = async (req, res, next) => {
-		const { slug } = req.body;
+		const { slug } = req.params;
 		const { article } = await this.db.getArticleBySlug(slug);
-		res.status(200).json({ article });
+		await res.status(200).json({ article });
+	};
+
+	setFavoriteArticle = async (req, res, next) => {
+		const { slug } = req.params;
+		const user = req.user;
+		const { article } = await this.db.setFavoriteArticle(user, slug);
+		await res.status(200).json({ article });
 	};
 };
