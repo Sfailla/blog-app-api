@@ -6,7 +6,7 @@ const { ObjectId } = Types;
 
 const requiredString = {
 	type: String,
-	required: [ true, `must provide field` ]
+	required: [ true, 'must provide field' ]
 };
 const typeProps = { trim: true, unique: true, index: true };
 
