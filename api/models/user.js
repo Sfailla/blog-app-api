@@ -4,7 +4,10 @@ const validator = require('validator');
 const { Schema, Types, model } = mongoose;
 const { ObjectId } = Types;
 
-const requiredString = { type: String, required: true };
+const requiredString = {
+	type: String,
+	required: [ true, `must provide field` ]
+};
 const typeProps = { trim: true, unique: true, index: true };
 
 const options = {
@@ -29,7 +32,7 @@ const UserSchema = new Schema(
 			validate: {
 				validator: value => {
 					return (
-						validator.isEmail(value) && !validator.isEmpty(value)
+						!validator.isEmpty(value) && validator.isEmail(value)
 					);
 				},
 				message: '{VALUE} is not a valid email address'
