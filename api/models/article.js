@@ -26,19 +26,25 @@ const ArticleSchema = new Schema(
 			...requiredString,
 			trim: true,
 			unique: true,
+			index: true,
 			default: function() {
 				return slugify(this.title);
 			}
 		},
 		title: {
 			...requiredString,
-			unique: true
+			unique: true,
+			index: true
 		},
 		description: {
 			...requiredString
 		},
 		body: {
 			...requiredString
+		},
+		articleImg: {
+			type: String,
+			defualt: null
 		},
 		comments: [
 			{
