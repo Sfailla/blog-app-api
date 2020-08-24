@@ -12,6 +12,11 @@ const copyUserDetails = user => {
 	return { id, username, email, role, name, bio, image, favorites, following, createdAt };
 };
 
+const makeUserProfile = user => {
+	const {id, username, name, bio, image } = user;
+	return {id, username, name, bio, image};
+}
+
 const comparePasswordBcrypt = async (password, userPassword) => {
 	return await compare(password, userPassword);
 };
@@ -41,5 +46,6 @@ module.exports = {
 	generateAuthToken,
 	verifyAuthToken,
 	comparePasswordBcrypt,
-	copyUserDetails
+	copyUserDetails,
+	makeUserProfile
 };
