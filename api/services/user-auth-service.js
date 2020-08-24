@@ -19,6 +19,7 @@ class UserDatabaseService {
 			email,
 			password: hashedPassword
 		});
+
 		if (!user) {
 			const err = new ValidationError(400, 'error creating user');
 			return { err };
@@ -32,6 +33,7 @@ class UserDatabaseService {
 	getUserByEmailAndPassword = async (email, password) => {
 		let { user, err } = await this.getUserByEmail(email);
 		if (err) return { err };
+
 		const isValidPassword = await comparePasswordBcrypt(
 			password,
 			user.password
@@ -41,6 +43,7 @@ class UserDatabaseService {
 			const err = new ValidationError(400, errMsg);
 			return { err };
 		}
+
 		user = copyUserDetails(user);
 		const token = generateAuthToken(user);
 		return { user, token };
