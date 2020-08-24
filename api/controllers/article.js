@@ -22,14 +22,14 @@ module.exports = class ArticleController {
 	};
 
 	getArticles = async (req, res, next) => {
-		const { limit, offset, tags, author, favorited } = req.query;
+		const { limit, offset, tags, author, favorite } = req.query;
 		try {
 			const { articles, err } = await this.service.getAllArticles(
 				limit,
 				offset,
 				tags,
 				author,
-				favorited
+				favorite
 			);
 			if (err) throw err;
 			res.status(200).json({ articles });
