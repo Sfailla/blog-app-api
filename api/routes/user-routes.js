@@ -37,7 +37,7 @@ router.post('/register', authController.registerUser);
 router.get(
 	'/',
 	authenticateJWT,
-	requireAdmin('user'),
+	requireAdmin('admin'),
 	authController.getAllUsers
 );
 
@@ -45,7 +45,7 @@ router.get(
 router.get(
 	'/user/:id',
 	authenticateJWT,
-	requireAdmin('user'),
+	requireAdmin('admin'),
 	authController.getCurrentUser
 );
 
