@@ -4,7 +4,7 @@ const checkUserPermissions = async (user, next) => {
 	return new Promise((resolve, reject) => {
 		const { role, requiredRole } = user;
 
-		if (requiredRole && role === requiredRole) {
+		if (role === requiredRole) {
 			return resolve(next());
 		}
 
