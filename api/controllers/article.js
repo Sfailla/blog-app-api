@@ -4,7 +4,7 @@ module.exports = class ArticleController {
 	}
 
 	createArticle = async (req, res, next) => {
-		const { title, description, body, tagList } = req.body;
+		const { title, description, body, tags } = req.body;
 		const { id } = req.user;
 		try {
 			const { article, err } = await this.db.createArticle(
@@ -12,7 +12,7 @@ module.exports = class ArticleController {
 				title,
 				description,
 				body,
-				tagList
+				tags
 			);
 			if (err) throw err;
 			await res.status(200).json({ article });

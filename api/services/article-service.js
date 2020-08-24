@@ -8,13 +8,13 @@ module.exports = class ArticleDatabaseService {
 		this.user = userModel;
 	}
 
-	createArticle = async (id, title, description, body, tagList) => {
+	createArticle = async (id, title, description, body, tags) => {
 		let article = await this.article.create({
 			author: id,
 			title,
 			description,
 			body,
-			tagList
+			tags
 		});
 		if (!article) {
 			const errMsg = 'error creating article';
