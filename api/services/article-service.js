@@ -30,29 +30,32 @@ module.exports = class ArticleDatabaseService {
 		offset = 0,
 		tags,
 		author,
-		favorited
+		favorite
 	) => {
-		const query = {};
+		let query = {};
 		const options = {
 			sort: { updatedAt: 'desc' },
 			limit: Number(limit),
-			skip: offset
+			skip: Number(offset)
 		};
-
+		// query for tags only
 		if (tags) {
 			query['tagList'] = { $in: formatTags(tags) };
 		}
-
+		// query for author only
 		if (author) {
-			query['username'] = author;
-			const user = await this.user.findOne(query);
-			query['author'] = user._id;
+			const user = await this.user.findOne({ username: author });
+			query['author'] = user._id.toString('hex');
+		}
+		// query for author and tags using $or
+		let queryOr;
+		if (author && tags) {
+			queryOr = { $or: [ query ] };
 		}
 
-		console.log(query);
-
-		const articles = await this.db.find(query, null, options);
-		console.log(articles);
+		const articles = await this.db
+			.find(author && tags ? queryOr : query, null, options)
+			.populate('author', 'username name bio image');
 
 		if (!articles) {
 			const errMsg = 'error fetching all articles';
