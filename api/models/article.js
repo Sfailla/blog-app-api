@@ -3,10 +3,8 @@ const { slugify } = require('../helpers/article');
 const { Schema, Types, model } = mongoose;
 const { ObjectId } = Types;
 
-const requiredString = {
-	type: String,
-	required: true
-};
+const requiredString = { type: String, required: true };
+const typeProps = { trim: true, unique: true, index: true };
 
 const options = {
 	virtuals: true,
@@ -20,9 +18,7 @@ const ArticleSchema = new Schema(
 	{
 		slug: {
 			...requiredString,
-			trim: true,
-			unique: true,
-			index: true,
+			...typeProps,
 			default: function() {
 				return slugify(this.title);
 			}

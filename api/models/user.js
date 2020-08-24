@@ -28,7 +28,9 @@ const UserSchema = new Schema(
 			set: value => value.toLowerCase(),
 			validate: {
 				validator: value => {
-					return validator.isEmail(value);
+					return (
+						validator.isEmail(value) && !validator.isEmpty(value)
+					);
 				},
 				message: '{VALUE} is not a valid email address'
 			}
