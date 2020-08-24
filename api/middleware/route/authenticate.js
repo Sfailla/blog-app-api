@@ -1,16 +1,25 @@
 const { verifyAuthToken } = require('../../helpers/user-auth');
 const { ValidationError } = require('../utils/errors');
+const UserModel = require('../../models/user');
 
-const authenticateJWT = (req, res, next) => {
+const authenticateJWT = async (req, res, next) => {
 	const token = req.header('x-auth-token');
 
 	if (token) {
-		const user = verifyAuthToken(token);
+		const verifiedUser = verifyAuthToken(token);
 
-		req.user = user;
-		req.token = token;
+		if (verifiedUser) {
+			const user = await UserModel.findById(verifiedUser.id);
 
-		next();
+			req.user = user;
+			req.token = token;
+
+			next();
+		} else {
+			const errMsg = 'error fetching user for authentication';
+			const err = new ValidationError(400, errMsg);
+			next(err);
+		}
 	} else {
 		const errMsg = 'must provide valid token';
 		const err = new ValidationError(409, errMsg);

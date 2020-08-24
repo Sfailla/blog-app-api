@@ -8,10 +8,9 @@ const requireAdmin = requiredRole => async (req, res, next) => {
 			return new ValidationError(422, errMsg);
 		}
 
-		const { id, role } = req.user;
 		const userData = {
-			id,
-			role,
+			id: req.user._id,
+			role: req.user.role,
 			requiredRole
 		};
 
