@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const colorTerminal = require('../terminalColors');
 const { ObjectId } = mongoose.Types;
-const { ValidationError } = require('../../middleware/utils/errors');
 
 const makeMongooseConnection = async () => {
 	const mongooseOptions = {
