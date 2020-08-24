@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 
-const { Schema, model } = mongoose;
+const { Schema, Types, model } = mongoose;
+const { ObjectId } = Types;
 
 const requiredString = {
 	type: String,
@@ -48,21 +49,17 @@ const UserSchema = new Schema(
 				message: 'must provide a password'
 			}
 		},
-		profile: {
-			firstname: { type: String },
-			lastname: { type: String },
-			bio: { type: String },
-			image: { type: String }
-		},
+		name: { type: String, default: null },
+		bio: { type: String, default: null },
+		image: { type: String, default: null },
+		favorites: [ { type: ObjectId, ref: 'Article' } ],
+		following: [ { type: ObjectId, ref: 'User' } ],
 		role: {
 			type: String,
 			enum: [ 'user', 'moderator', 'admin' ],
 			default: 'user'
 		},
-		createdAt: {
-			type: Date,
-			default: Date.now
-		}
+		createdAt: { type: Date, default: Date.now }
 	},
 	{ toJSON: options }
 );
