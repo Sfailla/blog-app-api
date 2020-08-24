@@ -8,8 +8,8 @@ const { sign, verify } = require('jsonwebtoken');
  */
 
 const copyUserDetails = user => {
-	const { id, role, username, email, createdAt } = user;
-	return { id, role, username, email, createdAt };
+	const { id, username, email, role, name, bio, image, favorites, following, createdAt } = user;
+	return { id, username, email, role, name, bio, image, favorites, following, createdAt };
 };
 
 const comparePasswordBcrypt = async (password, userPassword) => {
