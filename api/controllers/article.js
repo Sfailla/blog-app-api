@@ -1,13 +1,13 @@
 module.exports = class ArticleController {
 	constructor(databaseService) {
-		this.service = databaseService;
+		this.db = databaseService;
 	}
 
 	createArticle = async (req, res, next) => {
 		const { title, description, body, tagList } = req.body;
 		const { id } = req.user;
 		try {
-			const { article, err } = await this.service.createArticle(
+			const { article, err } = await this.db.createArticle(
 				id,
 				title,
 				description,
@@ -24,7 +24,7 @@ module.exports = class ArticleController {
 	getArticles = async (req, res, next) => {
 		const { limit, offset, tags, author, favorite } = req.query;
 		try {
-			const { articles, err } = await this.service.getAllArticles(
+			const { articles, err } = await this.db.getAllArticles(
 				limit,
 				offset,
 				tags,
@@ -42,7 +42,7 @@ module.exports = class ArticleController {
 		const { limit, offset } = req.query;
 		const { id } = req.user;
 		try {
-			const { articles, err } = await this.service.getArticlesByUser(
+			const { articles, err } = await this.db.getArticlesByUser(
 				id,
 				limit,
 				offset
@@ -56,7 +56,7 @@ module.exports = class ArticleController {
 
 	getArticleBySlug = async (req, res, next) => {
 		const { slug } = req.body;
-		const { article } = await this.service.getArticleBySlug(slug);
+		const { article } = await this.db.getArticleBySlug(slug);
 		res.status(200).json({ article });
 	};
 };

@@ -4,12 +4,12 @@ const { ValidationError } = require('../middleware/utils/errors');
 
 module.exports = class ArticleDatabaseService {
 	constructor(articleModel, userModel) {
-		this.db = articleModel;
+		this.article = articleModel;
 		this.user = userModel;
 	}
 
 	createArticle = async (id, title, description, body, tagList) => {
-		let article = await this.db.create({
+		let article = await this.article.create({
 			author: id,
 			title,
 			description,
@@ -40,7 +40,7 @@ module.exports = class ArticleDatabaseService {
 		};
 		// query for tags only
 		if (tags) {
-			query['tagList'] = { $in: formatTags(tags) };
+			query['tags'] = { $in: formatTags(tags) };
 		}
 		// query for author only
 		if (author) {
@@ -53,7 +53,7 @@ module.exports = class ArticleDatabaseService {
 			queryOr = { $or: [ query ] };
 		}
 
-		const articles = await this.db
+		const articles = await this.article
 			.find(author && tags ? queryOr : query, null, options)
 			.populate('author', 'username name bio image');
 
@@ -76,7 +76,7 @@ module.exports = class ArticleDatabaseService {
 			skip: offset
 		};
 		if (isValidObjId(userId)) {
-			let articles = await this.db.find(query, null, options);
+			let articles = await this.article.find(query, null, options);
 			if (!articles) {
 				const errMsg = 'error fetching all user articles';
 				const err = new ValidationError(400, errMsg);
@@ -95,7 +95,7 @@ module.exports = class ArticleDatabaseService {
 
 	getArticleBySlug = async slug => {
 		const query = { slug };
-		const article = await this.db.findOne(query);
+		const article = await this.article.findOne(query);
 		return { article };
 	};
 };
