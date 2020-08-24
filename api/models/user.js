@@ -4,10 +4,8 @@ const validator = require('validator');
 const { Schema, Types, model } = mongoose;
 const { ObjectId } = Types;
 
-const requiredString = {
-	type: String,
-	required: true
-};
+const requiredString = { type: String, required: true };
+const typeProps = { trim: true, unique: true, index: true };
 
 const options = {
 	virtuals: true,
@@ -22,15 +20,11 @@ const UserSchema = new Schema(
 	{
 		username: {
 			...requiredString,
-			trim: true,
-			unique: true,
-			index: true
+			...typeProps
 		},
 		email: {
 			...requiredString,
-			trim: true,
-			unique: true,
-			index: true,
+			...typeProps,
 			set: value => value.toLowerCase(),
 			validate: {
 				validator: value => {

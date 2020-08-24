@@ -18,10 +18,6 @@ const options = {
 
 const ArticleSchema = new Schema(
 	{
-		author: {
-			type: ObjectId,
-			ref: 'User'
-		},
 		slug: {
 			...requiredString,
 			trim: true,
@@ -31,46 +27,19 @@ const ArticleSchema = new Schema(
 				return slugify(this.title);
 			}
 		},
-		title: {
-			...requiredString,
-			unique: true,
-			index: true
-		},
-		description: {
-			...requiredString
-		},
-		body: {
-			...requiredString
-		},
-		articleImg: {
-			type: String,
-			defualt: null
-		},
-		comments: [
-			{
-				type: ObjectId,
-				ref: 'Comment'
-			}
-		],
-		tagList: [
-			{
-				type: String,
-				set: value => value.toLowerCase(),
-				default: []
-			}
-		],
-		isFavorite: {
-			type: Boolean,
-			default: false
-		},
-		favoriteCount: {
-			type: Number,
-			default: 0
-		},
+		author: { type: ObjectId, ref: 'User' },
+		title: { ...requiredString, unique: true, index: true },
+		description: { ...requiredString },
+		body: { ...requiredString },
+		articleImg: { type: String, defualt: null },
+		comments: [ { type: ObjectId, ref: 'Comment' } ],
+		tagList: [ { type: String, lowercase: true, default: [] } ],
+		isFavorite: { type: Boolean, default: false },
+		favoriteCount: { type: Number, default: 0 },
 		createdAt: { type: Date, default: Date.now },
 		updatedAt: { type: Date, default: Date.now }
 	},
-	{ toJSON: options }
+	{ toJSON: options, versionKey: false }
 );
 
 module.exports = model('Article', ArticleSchema);
