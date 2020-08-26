@@ -66,7 +66,6 @@ module.exports = class ArticleDatabaseService {
 	};
 
 	getArticlesByUser = async (userId, limit = 5, offset = 0) => {
-		console.log('hit route user');
 		const query = { author: userId };
 		const options = {
 			sort: { updatedAt: 'desc' },
