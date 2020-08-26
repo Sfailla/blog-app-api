@@ -33,7 +33,6 @@ const ArticleSchema = new Schema(
 		articleImg: { type: String, defualt: null },
 		comments: [ { type: ObjectId, ref: 'Comment' } ],
 		tags: [ { type: String, lowercase: true, default: [] } ],
-		isFavorite: { type: Boolean, default: false },
 		favoriteCount: { type: Number, default: 0 },
 		createdAt: { type: Date, default: Date.now },
 		updatedAt: { type: Date, default: Date.now }
