@@ -20,7 +20,7 @@ const authenticateJWT = async (req, res, next) => {
 			next(err);
 		}
 	} else {
-		const errMsg = 'must provide valid token';
+		const errMsg = `expected valid token but recieved => ${token}`;
 		const err = new ValidationError(409, errMsg);
 		next(err);
 	}
