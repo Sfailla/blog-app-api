@@ -21,33 +21,19 @@ const options = {
 
 const UserSchema = new Schema(
 	{
-		username: {
-			...requiredString,
-			...typeProps
-		},
+		username: { ...requiredString, ...typeProps },
 		email: {
 			...requiredString,
 			...typeProps,
 			set: value => value.toLowerCase(),
 			validate: {
 				validator: value => {
-					return (
-						!validator.isEmpty(value) && validator.isEmail(value)
-					);
+					return validator.isEmail(value);
 				},
 				message: '{VALUE} is not a valid email address'
 			}
 		},
-		password: {
-			...requiredString,
-			trim: true,
-			validate: {
-				validator: value => {
-					return !validator.isEmpty(value);
-				},
-				message: 'must provide a password'
-			}
-		},
+		password: { ...requiredString, trim: true },
 		name: { type: String, default: null },
 		bio: { type: String, default: null },
 		image: { type: String, default: null },
