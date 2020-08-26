@@ -1,4 +1,7 @@
-const { verifyAuthToken } = require('../../helpers/user-auth');
+const {
+	verifyAuthToken,
+	copyUserDetails
+} = require('../../helpers/user-auth');
 const { ValidationError } = require('../utils/errors');
 const UserModel = require('../../models/user');
 
@@ -10,7 +13,7 @@ const authenticateJWT = async (req, res, next) => {
 
 		if (verifiedUser) {
 			const user = await UserModel.findById(verifiedUser.id);
-			req.user = user;
+			req.user = copyUserDetails(user);
 			req.token = token;
 
 			next();
