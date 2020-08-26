@@ -10,6 +10,14 @@ const {
 const authService = new UserDatabaseService(UserModel);
 const authController = new AuthController(authService);
 
+const {
+	loginUser,
+	logoutUser,
+	registerUser,
+	getAllUsers,
+	getCurrentUser
+} = authController;
+
 const router = Router();
 
 /**
@@ -19,13 +27,13 @@ const router = Router();
  */
 
 // login user
-router.post('/login', authController.loginUser);
+router.post('/login', loginUser);
 
 // logout user
-router.get('/logout', authController.logoutUser);
+router.get('/logout', logoutUser);
 
 // create user
-router.post('/register', authController.registerUser);
+router.post('/register', registerUser);
 
 /**
  * =======================
@@ -34,19 +42,14 @@ router.post('/register', authController.registerUser);
  */
 
 // get all users
-router.get(
-	'/',
-	authenticateJWT,
-	requireAdmin('admin'),
-	authController.getAllUsers
-);
+router.get('/', authenticateJWT, requireAdmin('admin'), getAllUsers);
 
 // get specific user
 router.get(
 	'/user/:id',
 	authenticateJWT,
 	requireAdmin('admin'),
-	authController.getCurrentUser
+	getCurrentUser
 );
 
 // TODO: add delete user admin route
