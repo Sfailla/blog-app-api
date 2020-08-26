@@ -109,30 +109,25 @@ module.exports = class ArticleDatabaseService {
 			);
 		}
 
-		if (initialArticle.isFavorite === false) {
-			const update = { $inc: { favoriteCount: +1 } };
+		if (user.favorites.indexOf(article.id) === -1) {
+			const updateArticle = { $inc: { favoriteCount: +1 } };
 			article = await this.article.findOneAndUpdate(
 				articleQuery,
-				update,
+				updateArticle,
 				{ new: true }
 			);
-		}
-		console.log(user.favorites.indexOf(article.id) === -1);
-		console.log(article);
-
-		if (user.favorites.indexOf(article.id) === -1) {
 			const userQuery = { _id: user.id };
 			const updateUser = {
 				$push: { favorites: article.id }
 			};
-			await this.user.findOneAndUpdate(userQuery, updateUser, {
-				new: true
-			});
-
+			const user = await this.user.findOneAndUpdate(
+				userQuery,
+				updateUser,
+				{ new: true }
+			);
 			return { article: copyArticleObj(article) };
 		}
-
-		return { article };
+		return { article: copyArticleObj(article) };
 	};
 
 	unsetFavoriteArticle = async (user, slug) => {
