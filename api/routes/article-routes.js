@@ -8,24 +8,27 @@ const { authenticateJWT } = require('../middleware/index');
 const articleService = new ArticleDbService(ArticleModel, UserModel);
 const articleController = new ArticleController(articleService);
 
+const {
+	unfavoriteArticle,
+	favoriteArticle,
+	getArticle,
+	getArticles,
+	createArticle,
+	getUserArticles
+} = articleController;
+
 const router = Router();
 
-router.post('/', authenticateJWT, articleController.createArticle);
+router.post('/', authenticateJWT, createArticle);
 
-router.post(
-	'/:article/favorite',
-	authenticateJWT,
-	articleController.favoriteArticle
-);
+router.post('/:article/favorite', authenticateJWT, favoriteArticle);
 
-router.get('/', articleController.getArticles);
+router.delete('/:article/favorite', unfavoriteArticle);
 
-router.get('/:article', articleController.getArticle);
+router.get('/', getArticles);
 
-router.get(
-	'/my-articles',
-	authenticateJWT,
-	articleController.getUserArticle
-);
+router.get('/:article', getArticle);
+
+router.get('/user/articles', authenticateJWT, getUserArticles);
 
 module.exports = router;
