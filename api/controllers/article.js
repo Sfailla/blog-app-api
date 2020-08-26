@@ -38,33 +38,45 @@ module.exports = class ArticleController {
 		}
 	};
 
-	getArticlesByUser = async (req, res, next) => {
-		const { limit, offset } = req.query;
+	getUserArticle = async (req, res, next) => {
 		const { id } = req.user;
+		const { limit, offset } = req.query;
 		try {
 			const { articles, err } = await this.db.getArticlesByUser(
 				id,
 				limit,
-				offset,
-				slug
+				offset
 			);
 			if (err) throw err;
 			await res.status(200).json({ articles });
 		} catch (error) {
-			next(err);
+			next(error);
 		}
 	};
 
-	getArticleBySlug = async (req, res, next) => {
-		const { slug } = req.params;
-		const { article } = await this.db.getArticleBySlug(slug);
-		await res.status(200).json({ article });
+	getArticle = async (req, res, next) => {
+		try {
+			const { article, err } = await this.db.getArticleBySlug(
+				req.params.article
+			);
+			if (err) throw err;
+			await res.status(200).json({ article });
+		} catch (error) {
+			next(error);
+		}
 	};
 
-	setFavoriteArticle = async (req, res, next) => {
-		const { slug } = req.params;
-		const user = req.user;
-		const { article } = await this.db.setFavoriteArticle(user, slug);
-		await res.status(200).json({ article });
+	favoriteArticle = async (req, res, next) => {
+		try {
+			const { article } = await this.db.setFavoriteArticle(
+				req.user,
+				req.params.article
+			);
+			await res.status(200).json({ article });
+		} catch (error) {
+			next(error);
+		}
 	};
+
+	unfavoriteArticle = async (req, res, next) => {};
 };
