@@ -17,9 +17,9 @@ const errorHandler = (error, req, res, next) => {
 	res.locals.code = code;
 	res.locals.name = name;
 	res.locals.message = message;
-	res.locals.error = isDevelopment ? error : {};
+	res.locals.error = isDevelopment ? error.toString() : {};
 
-	res.status(status || 500).json({
+	res.status(status || 500).send({
 		error: {
 			status,
 			code,

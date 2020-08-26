@@ -10,7 +10,6 @@ const authenticateJWT = async (req, res, next) => {
 
 		if (verifiedUser) {
 			const user = await UserModel.findById(verifiedUser.id);
-
 			req.user = user;
 			req.token = token;
 
