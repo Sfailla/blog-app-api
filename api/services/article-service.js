@@ -66,6 +66,7 @@ module.exports = class ArticleDatabaseService {
 	};
 
 	getArticlesByUser = async (userId, limit = 5, offset = 0) => {
+		console.log('hit route user');
 		const query = { author: userId };
 		const options = {
 			sort: { updatedAt: 'desc' },
@@ -100,7 +101,6 @@ module.exports = class ArticleDatabaseService {
 	setFavoriteArticle = async (user, slug) => {
 		const articleQuery = { slug };
 		const initialArticle = await this.article.findOne(articleQuery);
-
 		let article = copyArticleObj(initialArticle);
 
 		if (!article) {
@@ -109,24 +109,21 @@ module.exports = class ArticleDatabaseService {
 			);
 		}
 
-		// if (initialArticle.isFavorite === false) {
-		// 	const update = { $inc: { favoriteCount: +1 } };
-		// 	await this.article.findOneAndUpdate(articleQuery, update, {
-		// 		new: true
-		// 	});
-		// }
-
-		if (user.favorites.indexOf(article._id) === -1) {
-			const updateArticle = { $inc: { favoriteCount: +1 } };
-			await this.article.findOneAndUpdate(
+		if (initialArticle.isFavorite === false) {
+			const update = { $inc: { favoriteCount: +1 } };
+			article = await this.article.findOneAndUpdate(
 				articleQuery,
-				updateArticle,
+				update,
 				{ new: true }
 			);
+		}
+		console.log(user.favorites.indexOf(article.id) === -1);
+		console.log(article);
 
-			const userQuery = { _id: article.author };
+		if (user.favorites.indexOf(article.id) === -1) {
+			const userQuery = { _id: user.id };
 			const updateUser = {
-				$push: { favorites: article._id }
+				$push: { favorites: article.id }
 			};
 			await this.user.findOneAndUpdate(userQuery, updateUser, {
 				new: true

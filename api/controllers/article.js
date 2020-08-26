@@ -38,9 +38,10 @@ module.exports = class ArticleController {
 		}
 	};
 
-	getUserArticle = async (req, res, next) => {
+	getUserArticles = async (req, res, next) => {
 		const { id } = req.user;
 		const { limit, offset } = req.query;
+		console.log(id);
 		try {
 			const { articles, err } = await this.db.getArticlesByUser(
 				id,
@@ -78,5 +79,15 @@ module.exports = class ArticleController {
 		}
 	};
 
-	unfavoriteArticle = async (req, res, next) => {};
+	unfavoriteArticle = async (req, res, next) => {
+		try {
+			const { article } = await this.db.removeFavoriteArticle(
+				req.user,
+				req.params.article
+			);
+			await res.status(200).json({ article });
+		} catch (error) {
+			next(error);
+		}
+	};
 };
