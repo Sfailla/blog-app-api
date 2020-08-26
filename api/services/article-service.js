@@ -8,8 +8,13 @@ module.exports = class ArticleDatabaseService {
 		this.user = userModel;
 	}
 
+	articleError = errMsg => {
+		const err = new ValidationError(400, errMsg);
+		return { err };
+	};
+
 	createArticle = async (id, title, description, body, tags) => {
-		let article = await this.article.create({
+		const article = await this.article.create({
 			author: id,
 			title,
 			description,
@@ -17,12 +22,9 @@ module.exports = class ArticleDatabaseService {
 			tags
 		});
 		if (!article) {
-			const errMsg = 'error creating article';
-			const err = new ValidationError(400, errMsg);
-			return { err };
+			return this.articleError('error creating article');
 		}
-		article = copyArticleObj(article);
-		return { article };
+		return { article: copyArticleObj(article) };
 	};
 
 	getAllArticles = async (
@@ -48,16 +50,14 @@ module.exports = class ArticleDatabaseService {
 			query['author'] = user._id.toString('hex');
 		}
 		// query for author and tags using $or
-		const queryOr = { $or: [ query ] };
+		const query$Or = { $or: [ query ] };
 
 		const articles = await this.article
-			.find(queryOr, null, options)
+			.find(query$Or, null, options)
 			.populate('author', 'username name bio image');
 
 		if (!articles) {
-			const errMsg = 'error fetching all articles';
-			const err = new ValidationError(400, errMsg);
-			return { err };
+			return this.articleError('error fetching all articles');
 		}
 		const copyArticles = articles.map(article => {
 			return copyArticleObj(article);
@@ -73,11 +73,9 @@ module.exports = class ArticleDatabaseService {
 			skip: offset
 		};
 		if (isValidObjId(userId)) {
-			let articles = await this.article.find(query, null, options);
+			const articles = await this.article.find(query, null, options);
 			if (!articles) {
-				const errMsg = 'error fetching all user articles';
-				const err = new ValidationError(400, errMsg);
-				return { err };
+				return this.articleError('error fetching all user articles');
 			}
 			const copyArticles = articles.map(article =>
 				copyArticleObj(article)
@@ -93,32 +91,83 @@ module.exports = class ArticleDatabaseService {
 	getArticleBySlug = async slug => {
 		const query = { slug };
 		const article = await this.article.findOne(query);
-		return { article };
+		if (!article) {
+			return this.articleError('error fetching article by slug');
+		}
+		return { article: copyArticleObj(article) };
 	};
 
 	setFavoriteArticle = async (user, slug) => {
 		const articleQuery = { slug };
-		const articleOptions = {
-			$set: { isFavorite: true },
-			$inc: { favoriteCount: +1 }
-		};
-		const article = await this.article.findOneAndUpdate(
-			articleQuery,
-			articleOptions,
-			{ new: true }
-		);
+		const initialArticle = await this.article.findOne(articleQuery);
 
-		// if (article.author.indexOf('')) {
+		let article = copyArticleObj(initialArticle);
+
+		if (!article) {
+			return this.articleError(
+				'error fetching initial article for favorite'
+			);
+		}
+
+		// if (initialArticle.isFavorite === false) {
+		// 	const update = { $inc: { favoriteCount: +1 } };
+		// 	await this.article.findOneAndUpdate(articleQuery, update, {
+		// 		new: true
+		// 	});
 		// }
-		const userQuery = { _id: article.author };
-		const update = { $push: { favorites: article.author } };
-		const updatedUser = await this.user.findOneAndUpdate(
-			userQuery,
-			update,
-			{ new: true }
-		);
 
-		console.log(updatedUser);
+		if (user.favorites.indexOf(article._id) === -1) {
+			const updateArticle = { $inc: { favoriteCount: +1 } };
+			await this.article.findOneAndUpdate(
+				articleQuery,
+				updateArticle,
+				{ new: true }
+			);
+
+			const userQuery = { _id: article.author };
+			const updateUser = {
+				$push: { favorites: article._id }
+			};
+			await this.user.findOneAndUpdate(userQuery, updateUser, {
+				new: true
+			});
+
+			return { article: copyArticleObj(article) };
+		}
+
+		return { article };
+	};
+
+	unsetFavoriteArticle = async (user, slug) => {
+		const articleQuery = { slug };
+		const initialArticle = await this.article.findOne(articleQuery);
+
+		let article = copyArticleObj(initialArticle);
+
+		const articleOptionsDec = {
+			$set: { isFavorite: false },
+			$inc: { favoriteCount: -1 }
+		};
+
+		if (initialArticle.isFavorite === false) {
+			article = await this.article.findOneAndUpdate(
+				articleQuery,
+				articleOptionsInc,
+				{ new: true }
+			);
+		}
+
+		if (user.favorites.indexOf(article._id) === -1) {
+			const userQuery = { _id: article.author };
+			const update = {
+				$push: { favorites: article._id }
+			};
+			await this.user.findOneAndUpdate(userQuery, update, {
+				new: true
+			});
+
+			return { article };
+		}
 
 		return { article };
 	};
