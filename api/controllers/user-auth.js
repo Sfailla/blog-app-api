@@ -42,9 +42,9 @@ module.exports = class AuthController {
 	};
 
 	getCurrentUser = async (req, res, next) => {
+		const userId = req.params.id;
+		const token = req.token;
 		try {
-			const userId = req.params.id;
-			const token = req.token;
 			const { user, err } = await this.db.getUserById(userId);
 			if (err) throw err;
 			await res
@@ -57,8 +57,8 @@ module.exports = class AuthController {
 	};
 
 	getAllUsers = async (req, res, next) => {
+		const token = req.token;
 		try {
-			const token = req.token;
 			const { users, err } = await this.db.getAllUsers();
 			if (err) throw err;
 			await res
