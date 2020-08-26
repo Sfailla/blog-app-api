@@ -1,7 +1,7 @@
 const { randomBytes } = require('crypto');
 
 const copyArticleObj = article => {
-	const {	id, author, slug,	title, description,	body,	comments,	tags,	isFavorite,	favoriteCount,	updatedAt, createdAt } = article;
+	const {	id, author, slug,	title, description,	body,	comments,	tags,	isFavorite = false,	favoriteCount,	updatedAt, createdAt } = article;
   return { id,	author,	slug,	title,	description,	body,	comments,	tags,	isFavorite,	favoriteCount,	updatedAt,	createdAt
   }
 };
