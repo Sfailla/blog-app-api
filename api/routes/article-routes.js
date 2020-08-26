@@ -23,7 +23,11 @@ router.post('/', authenticateJWT, createArticle);
 
 router.post('/:article/favorite', authenticateJWT, favoriteArticle);
 
-router.delete('/:article/favorite', unfavoriteArticle);
+router.delete(
+	'/:article/favorite',
+	authenticateJWT,
+	unfavoriteArticle
+);
 
 router.get('/', getArticles);
 

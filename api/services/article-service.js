@@ -101,7 +101,7 @@ module.exports = class ArticleDatabaseService {
 	setFavoriteArticle = async (user, slug) => {
 		const articleQuery = { slug };
 		const initialArticle = await this.article.findOne(articleQuery);
-		let article = copyArticleObj(initialArticle);
+		const article = copyArticleObj(initialArticle);
 
 		if (!article) {
 			return this.articleError(
@@ -111,56 +111,52 @@ module.exports = class ArticleDatabaseService {
 
 		if (user.favorites.indexOf(article.id) === -1) {
 			const updateArticle = { $inc: { favoriteCount: +1 } };
-			article = await this.article.findOneAndUpdate(
+			const newArticle = await this.article.findOneAndUpdate(
 				articleQuery,
 				updateArticle,
 				{ new: true }
 			);
 			const userQuery = { _id: user.id };
 			const updateUser = {
-				$push: { favorites: article.id }
+				$push: { favorites: newArticle.id }
 			};
-			const user = await this.user.findOneAndUpdate(
-				userQuery,
-				updateUser,
-				{ new: true }
-			);
-			return { article: copyArticleObj(article) };
+			await this.user.findOneAndUpdate(userQuery, updateUser, {
+				new: true
+			});
+			return { article: copyArticleObj(newArticle) };
 		}
-		return { article: copyArticleObj(article) };
+		return { article };
 	};
 
-	unsetFavoriteArticle = async (user, slug) => {
+	removeFavoriteArticle = async (user, slug) => {
 		const articleQuery = { slug };
 		const initialArticle = await this.article.findOne(articleQuery);
+		const article = copyArticleObj(initialArticle);
 
-		let article = copyArticleObj(initialArticle);
-
-		const articleOptionsDec = {
-			$set: { isFavorite: false },
-			$inc: { favoriteCount: -1 }
-		};
-
-		if (initialArticle.isFavorite === false) {
-			article = await this.article.findOneAndUpdate(
-				articleQuery,
-				articleOptionsInc,
-				{ new: true }
+		if (!article) {
+			return this.articleError(
+				'error fetching initial article to unfavorite'
 			);
 		}
 
-		if (user.favorites.indexOf(article._id) === -1) {
-			const userQuery = { _id: article.author };
+		if (user.favorites.indexOf(article.id) > -1) {
+			const articleOptionsDec = {
+				$inc: { favoriteCount: -1 }
+			};
+			const newArticle = await this.article.findOneAndUpdate(
+				articleQuery,
+				articleOptionsDec,
+				{ new: true }
+			);
+			const userQuery = { _id: user.id };
 			const update = {
-				$push: { favorites: article._id }
+				$pull: { favorites: newArticle.id }
 			};
 			await this.user.findOneAndUpdate(userQuery, update, {
 				new: true
 			});
-
-			return { article };
+			return { article: copyArticleObj(newArticle) };
 		}
-
 		return { article };
 	};
 };
