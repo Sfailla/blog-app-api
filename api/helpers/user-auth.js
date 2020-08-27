@@ -26,7 +26,7 @@ const hashPasswordBcrypt = async (password, salt = 10) => {
 };
 
 const verifyAuthToken = token => {
-	return verify(token, process.env.JWT_SECRET);
+	return verify(token, process.env.JWT_SECRET) || new Error('problem')
 };
 
 const generateAuthToken = user => {
