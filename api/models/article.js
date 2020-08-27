@@ -2,13 +2,13 @@ const mongoose = require('mongoose');
 const { slugify } = require('../helpers/article');
 const { Schema, Types, model } = mongoose;
 const { ObjectId } = Types;
+const User = require('./user');
 
+const typeProps = { trim: true, unique: true, index: true };
 const requiredString = {
 	type: String,
 	required: [ true, 'must provide field' ]
 };
-const typeProps = { trim: true, unique: true, index: true };
-
 const options = {
 	virtuals: true,
 	versionKey: false,
@@ -39,5 +39,13 @@ const ArticleSchema = new Schema(
 	},
 	{ toJSON: options }
 );
+
+ArticleSchema.methods.updateCount = async function() {
+	const count = await User.countDocuments({
+		favorites: { $in: [ this._id ] }
+	});
+	this.favoriteCount = count;
+	return this.save();
+};
 
 module.exports = model('Article', ArticleSchema);

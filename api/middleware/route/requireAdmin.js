@@ -5,7 +5,7 @@ const requireAdmin = requiredRole => async (req, res, next) => {
 	try {
 		if (!requiredRole) {
 			const errMsg = 'must provide authorization role';
-			return new ValidationError(422, errMsg);
+			throw new ValidationError(422, errMsg);
 		}
 
 		const userData = {
@@ -14,9 +14,9 @@ const requireAdmin = requiredRole => async (req, res, next) => {
 			requiredRole
 		};
 
-		await checkUserPermissions(userData, next);
+		await checkUserPermissions(userData, ValidationError, next);
 	} catch (error) {
-		next(error);
+		return next(error);
 	}
 };
 
