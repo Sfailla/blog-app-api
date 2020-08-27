@@ -7,9 +7,6 @@ const bodyParser = require('body-parser');
 const logger = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
-
-const articleApiRoutes = require('./api/routes/article-routes');
-const userApiRoutes = require('./api/routes/user-routes');
 const { makeMongooseConnection } = require('./api/config/index');
 
 const {
@@ -18,8 +15,12 @@ const {
 	handleListen
 } = require('./api/middleware/route/handlers');
 
-const app = express();
 makeMongooseConnection();
+
+const app = express();
+
+const articleApiRoutes = require('./api/routes/article-routes');
+const userApiRoutes = require('./api/routes/user-routes');
 
 app.use(
 	cors({
