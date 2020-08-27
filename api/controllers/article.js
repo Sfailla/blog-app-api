@@ -1,13 +1,13 @@
 module.exports = class ArticleController {
 	constructor(databaseService) {
-		this.db = databaseService;
+		this.service = databaseService;
 	}
 
 	createArticle = async (req, res, next) => {
 		const { title, description, body, tags } = req.body;
 		const { id } = req.user;
 		try {
-			const { article, err } = await this.db.createArticle(
+			const { article, err } = await this.service.createArticle(
 				id,
 				title,
 				description,
@@ -24,7 +24,7 @@ module.exports = class ArticleController {
 	getArticles = async (req, res, next) => {
 		const { limit, offset, tags, author, favorite } = req.query;
 		try {
-			const { articles, err } = await this.db.getAllArticles(
+			const { articles, err } = await this.service.getAllArticles(
 				limit,
 				offset,
 				tags,
@@ -42,7 +42,7 @@ module.exports = class ArticleController {
 		const { limit, offset } = req.query;
 		console.log(id);
 		try {
-			const { articles, err } = await this.db.getArticlesByUser(
+			const { articles, err } = await this.service.getArticlesByUser(
 				req.user,
 				limit,
 				offset
@@ -56,7 +56,7 @@ module.exports = class ArticleController {
 
 	getArticle = async (req, res, next) => {
 		try {
-			const { article, err } = await this.db.getArticleBySlug(
+			const { article, err } = await this.service.getArticleBySlug(
 				req.params.article
 			);
 			if (err) throw err;
@@ -68,7 +68,7 @@ module.exports = class ArticleController {
 
 	favoriteArticle = async (req, res, next) => {
 		try {
-			const { article } = await this.db.setFavoriteArticle(
+			const { article } = await this.service.setFavoriteArticle(
 				req.user,
 				req.params.article
 			);
@@ -80,7 +80,7 @@ module.exports = class ArticleController {
 
 	unfavoriteArticle = async (req, res, next) => {
 		try {
-			const { article } = await this.db.removeFavoriteArticle(
+			const { article } = await this.service.removeFavoriteArticle(
 				req.user,
 				req.params.article
 			);
