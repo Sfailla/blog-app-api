@@ -8,14 +8,24 @@ const { sign, verify } = require('jsonwebtoken');
  */
 
 const copyUserDetails = user => {
-	const { id, username, email, role, name, bio, image, favorites, following, createdAt } = user;
-	return { id, username, email, role, name, bio, image, favorites, following, createdAt };
+	return {
+		id: user._id,
+		username: user.username,
+		email: user.email,
+		role: user.role,
+		name: user.name,
+		bio: user.bio,
+		image: user.image,
+		favorites: user.favorites,
+		following: user.following,
+		createdAt: user.createdAt
+	};
 };
 
 const makeUserProfile = user => {
-	const {id, username, name, bio, image } = user;
-	return {id, username, name, bio, image};
-}
+	const { id, username, name, bio, image, following } = user;
+	return { id, username, name, bio, image, following };
+};
 
 const comparePasswordBcrypt = async (password, userPassword) => {
 	return await compare(password, userPassword);
