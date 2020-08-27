@@ -14,7 +14,7 @@ const requireAdmin = requiredRole => async (req, res, next) => {
 			requiredRole
 		};
 
-		await checkUserPermissions(userData, next);
+		await checkUserPermissions(userData, ValidationError, next);
 	} catch (error) {
 		return next(error);
 	}
