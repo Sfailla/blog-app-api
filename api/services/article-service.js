@@ -64,7 +64,8 @@ module.exports = class ArticleDatabaseService {
 		return { articles: copyArticles };
 	};
 	// get all articles by logged in user
-	getArticlesByUser = async (userId, limit = 5, offset = 0) => {
+	getArticlesByUser = async (userObj, limit = 5, offset = 0) => {
+		const userId = userObj.id;
 		const query = { author: userId };
 		const options = {
 			sort: { updatedAt: 'desc' },
@@ -77,7 +78,7 @@ module.exports = class ArticleDatabaseService {
 				return this.articleError('error fetching all user articles');
 			}
 			const copyArticles = articles.map(article =>
-				copyArticleObj(article)
+				copyArticleObj(article, userObj)
 			);
 			return { articles: copyArticles };
 		} else {
@@ -106,7 +107,7 @@ module.exports = class ArticleDatabaseService {
 		if (!user || !article) {
 			return this.articleError('error setting favorite article');
 		}
-		return { article: copyArticleObj(article) };
+		return { article: copyArticleObj(article, user) };
 	};
 	// remove favorite article
 	removeFavoriteArticle = async (userObj, slug) => {
@@ -121,6 +122,6 @@ module.exports = class ArticleDatabaseService {
 		if (!user || !article) {
 			return this.articleError('error setting unfavorite article');
 		}
-		return { article: copyArticleObj(article) };
+		return { article: copyArticleObj(article, user) };
 	};
 };
