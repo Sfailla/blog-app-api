@@ -56,7 +56,7 @@ UserSchema.methods.favorite = function(articleId) {
 
 UserSchema.methods.unfavorite = function(articleId) {
 	if (this.favorites.includes(articleId)) {
-		this.remove(articleId);
+		this.favorites.remove(articleId);
 	}
 	return this.save();
 };
