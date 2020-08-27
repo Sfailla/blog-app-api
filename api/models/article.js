@@ -37,7 +37,7 @@ const ArticleSchema = new Schema(
 		createdAt: { type: Date, default: Date.now },
 		updatedAt: { type: Date, default: Date.now }
 	},
-	{ toJSON: options, versionKey: false }
+	{ toJSON: options }
 );
 
 module.exports = model('Article', ArticleSchema);
