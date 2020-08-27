@@ -7,11 +7,11 @@ module.exports = class ArticleDatabaseService {
 		this.article = articleModel;
 		this.user = userModel;
 	}
-
+	// article error method to keep class DRY
 	articleError = errMsg => {
 		return { err: new ValidationError(400, errMsg) };
 	};
-
+	// create article
 	createArticle = async (id, title, description, body, tags) => {
 		const article = await this.article.create({
 			author: id,
@@ -25,7 +25,7 @@ module.exports = class ArticleDatabaseService {
 		}
 		return { article: copyArticleObj(article) };
 	};
-
+	// get all articles with filters
 	getAllArticles = async (
 		limit = 10,
 		offset = 0,
@@ -63,7 +63,7 @@ module.exports = class ArticleDatabaseService {
 		});
 		return { articles: copyArticles };
 	};
-
+	// get all articles by logged in user
 	getArticlesByUser = async (userId, limit = 5, offset = 0) => {
 		const query = { author: userId };
 		const options = {
@@ -85,7 +85,7 @@ module.exports = class ArticleDatabaseService {
 			return { err: new ValidationError(400, errMsg) };
 		}
 	};
-
+	// get articles by slug (title + unique id)
 	getArticleBySlug = async slug => {
 		const query = { slug };
 		const article = await this.article.findOne(query);
@@ -94,7 +94,7 @@ module.exports = class ArticleDatabaseService {
 		}
 		return { article: copyArticleObj(article) };
 	};
-
+	// set favorite articles
 	setFavoriteArticle = async (userObj, slug) => {
 		const articleSchema = await this.article.findOne({ slug });
 		const userSchema = await this.user.findOne({ _id: userObj.id });
@@ -108,7 +108,7 @@ module.exports = class ArticleDatabaseService {
 		}
 		return { article: copyArticleObj(article) };
 	};
-
+	// remove favorite article
 	removeFavoriteArticle = async (userObj, slug) => {
 		const articleSchema = await this.article.findOne({ slug });
 		const userSchema = await this.user.findById(userObj.id);
