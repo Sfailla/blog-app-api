@@ -61,4 +61,10 @@ UserSchema.methods.unfavorite = function(articleId) {
 	return this.save();
 };
 
+UserSchema.methods.isFavorite = function(articleId) {
+	return this.favorites.some(favoriteId => {
+		return favoriteId.toString() === articleId.toString();
+	});
+};
+
 module.exports = model('User', UserSchema);
