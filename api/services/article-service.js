@@ -9,8 +9,7 @@ module.exports = class ArticleDatabaseService {
 	}
 
 	articleError = errMsg => {
-		const err = new ValidationError(400, errMsg);
-		return { err };
+		return { err: new ValidationError(400, errMsg) };
 	};
 
 	createArticle = async (id, title, description, body, tags) => {
@@ -83,8 +82,7 @@ module.exports = class ArticleDatabaseService {
 			return { articles: copyArticles };
 		} else {
 			const errMsg = `invalid object id => ${userId}`;
-			const err = new ValidationError(400, errMsg);
-			return { err };
+			return { err: new ValidationError(400, errMsg) };
 		}
 	};
 
@@ -92,70 +90,37 @@ module.exports = class ArticleDatabaseService {
 		const query = { slug };
 		const article = await this.article.findOne(query);
 		if (!article) {
-			return this.articleError('error fetching article by slug');
+			return this.articleError('error fetching article slug');
 		}
 		return { article: copyArticleObj(article) };
 	};
 
-	setFavoriteArticle = async (user, slug) => {
-		const articleQuery = { slug };
-		const initialArticle = await this.article.findOne(articleQuery);
-		const article = copyArticleObj(initialArticle);
-
-		if (!article) {
-			return this.articleError(
-				'error fetching initial article for favorite'
-			);
+	setFavoriteArticle = async (userObj, slug) => {
+		const articleSchema = await this.article.findOne({ slug });
+		const userSchema = await this.user.findOne({ _id: userObj.id });
+		if (!articleSchema || !userSchema) {
+			return this.articleError('error initializing favorite article');
 		}
-
-		if (user.favorites.indexOf(article.id) === -1) {
-			const updateArticle = { $inc: { favoriteCount: +1 } };
-			const newArticle = await this.article.findOneAndUpdate(
-				articleQuery,
-				updateArticle,
-				{ new: true }
-			);
-			const userQuery = { _id: user.id };
-			const updateUser = {
-				$push: { favorites: newArticle.id }
-			};
-			await this.user.findOneAndUpdate(userQuery, updateUser, {
-				new: true
-			});
-			return { article: copyArticleObj(newArticle) };
+		const user = await userSchema.favorite(articleSchema._id);
+		const article = await articleSchema.updateCount('inc');
+		if (!user || !article) {
+			return this.articleError('error setting favorite article');
 		}
-		return { article };
+		return { article: copyArticleObj(article) };
 	};
 
-	removeFavoriteArticle = async (user, slug) => {
-		const articleQuery = { slug };
-		const initialArticle = await this.article.findOne(articleQuery);
-		const article = copyArticleObj(initialArticle);
-
-		if (!article) {
-			return this.articleError(
-				'error fetching initial article to unfavorite'
-			);
+	removeFavoriteArticle = async (userObj, slug) => {
+		const articleSchema = await this.article.findOne({ slug });
+		const userSchema = await this.user.findById(userObj.id);
+		if (!articleSchema || !userSchema) {
+			return this.articleError('err initializing unfavorite article');
 		}
 
-		if (user.favorites.indexOf(article.id) > -1) {
-			const articleOptionsDec = {
-				$inc: { favoriteCount: -1 }
-			};
-			const newArticle = await this.article.findOneAndUpdate(
-				articleQuery,
-				articleOptionsDec,
-				{ new: true }
-			);
-			const userQuery = { _id: user.id };
-			const update = {
-				$pull: { favorites: newArticle.id }
-			};
-			await this.user.findOneAndUpdate(userQuery, update, {
-				new: true
-			});
-			return { article: copyArticleObj(newArticle) };
+		const user = await userSchema.unfavorite(articleSchema._id);
+		const article = await articleSchema.updateCount();
+		if (!user || !article) {
+			return this.articleError('error setting unfavorite article');
 		}
-		return { article };
+		return { article: copyArticleObj(article) };
 	};
 };
