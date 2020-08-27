@@ -40,17 +40,11 @@ const ArticleSchema = new Schema(
 	{ toJSON: options, versionKey: false }
 );
 
-ArticleSchema.methods.updateCount = function(count) {
-	if (User.favorites.includes(this._id)) {
-		if (count === 'dec' || count === 'decrement') {
-			this.favoriteCount -= 1;
-		}
-	}
-	if (!User.favorites.includes(this._id)) {
-		if (count === 'increment' || count === 'inc') {
-			this.favoriteCount += 1;
-		}
-	}
+ArticleSchema.methods.updateCount = async function() {
+	const count = await User.countDocuments({
+		favorites: { $in: [ this._id ] }
+	});
+	this.favoriteCount = count;
 	return this.save();
 };
 
