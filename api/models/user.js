@@ -1,15 +1,13 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-
 const { Schema, Types, model } = mongoose;
 const { ObjectId } = Types;
 
+const typeProps = { trim: true, unique: true, index: true };
 const requiredString = {
 	type: String,
 	required: [ true, 'must provide field' ]
 };
-const typeProps = { trim: true, unique: true, index: true };
-
 const options = {
 	virtuals: true,
 	versionKey: false,
@@ -48,5 +46,19 @@ const UserSchema = new Schema(
 	},
 	{ toJSON: options }
 );
+
+UserSchema.methods.favorite = function(articleId) {
+	if (this.favorites.indexOf(articleId) === -1) {
+		this.favorites.push(articleId);
+	}
+	return this.save();
+};
+
+UserSchema.methods.unfavorite = function(articleId) {
+	if (this.favorites.includes(articleId)) {
+		this.remove(articleId);
+	}
+	return this.save();
+};
 
 module.exports = model('User', UserSchema);

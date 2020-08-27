@@ -2,13 +2,13 @@ const mongoose = require('mongoose');
 const { slugify } = require('../helpers/article');
 const { Schema, Types, model } = mongoose;
 const { ObjectId } = Types;
+const User = require('./user');
 
+const typeProps = { trim: true, unique: true, index: true };
 const requiredString = {
 	type: String,
 	required: [ true, 'must provide field' ]
 };
-const typeProps = { trim: true, unique: true, index: true };
-
 const options = {
 	virtuals: true,
 	versionKey: false,
@@ -39,5 +39,19 @@ const ArticleSchema = new Schema(
 	},
 	{ toJSON: options, versionKey: false }
 );
+
+ArticleSchema.methods.updateCount = function(count) {
+	if (User.favorites.includes(this._id)) {
+		if (count === 'dec' || count === 'decrement') {
+			this.favoriteCount -= 1;
+		}
+	}
+	if (!User.favorites.includes(this._id)) {
+		if (count === 'increment' || count === 'inc') {
+			this.favoriteCount += 1;
+		}
+	}
+	return this.save();
+};
 
 module.exports = model('Article', ArticleSchema);
