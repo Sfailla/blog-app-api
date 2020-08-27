@@ -39,12 +39,11 @@ module.exports = class ArticleController {
 	};
 
 	getUserArticles = async (req, res, next) => {
-		const { id } = req.user;
 		const { limit, offset } = req.query;
 		console.log(id);
 		try {
 			const { articles, err } = await this.db.getArticlesByUser(
-				id,
+				req.user,
 				limit,
 				offset
 			);
