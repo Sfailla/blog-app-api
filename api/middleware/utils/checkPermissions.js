@@ -1,6 +1,4 @@
-const { ValidationError } = require('./errors');
-
-const checkUserPermissions = async (user, next) => {
+const checkUserPermissions = async (user, validationError, next) => {
 	return new Promise((resolve, reject) => {
 		const { role, requiredRole } = user;
 
@@ -8,7 +6,7 @@ const checkUserPermissions = async (user, next) => {
 			return resolve(next());
 		}
 		const errMsg = 'admin level authorization is required';
-		return reject(new ValidationError(401, errMsg));
+		return reject(new validationError(401, errMsg));
 	});
 };
 
