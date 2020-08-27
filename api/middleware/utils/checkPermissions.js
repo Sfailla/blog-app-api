@@ -7,10 +7,8 @@ const checkUserPermissions = async (user, next) => {
 		if (role === requiredRole) {
 			return resolve(next());
 		}
-
 		const errMsg = 'admin level authorization is required';
-		const err = new ValidationError(401, errMsg);
-		return reject(err);
+		return reject(new ValidationError(401, errMsg));
 	});
 };
 
