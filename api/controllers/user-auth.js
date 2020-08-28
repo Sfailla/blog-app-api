@@ -1,11 +1,11 @@
 module.exports = class AuthController {
 	constructor(databaseService) {
-		this.db = databaseService;
+		this.service = databaseService;
 	}
 
 	registerUser = async (req, res, next) => {
 		try {
-			const { user, token, err } = await this.db.createUser({
+			const { user, token, err } = await this.service.createUser({
 				username: req.body.username,
 				email: req.body.email,
 				password: req.body.password
@@ -22,7 +22,7 @@ module.exports = class AuthController {
 
 	loginUser = async (req, res, next) => {
 		try {
-			const { getUserByEmailAndPassword } = this.db;
+			const { getUserByEmailAndPassword } = this.service;
 			const { user, token, err } = await getUserByEmailAndPassword(
 				req.body.email,
 				req.body.password
@@ -43,7 +43,9 @@ module.exports = class AuthController {
 
 	getCurrentUser = async (req, res, next) => {
 		try {
-			const { user, err } = await this.db.getUserById(req.params.id);
+			const { user, err } = await this.service.getUserById(
+				req.params.id
+			);
 			if (err) throw err;
 			return await res
 				.header('x-auth-token', req.token)
@@ -56,7 +58,7 @@ module.exports = class AuthController {
 
 	getAllUsers = async (req, res, next) => {
 		try {
-			const { users, err } = await this.db.getAllUsers();
+			const { users, err } = await this.service.getAllUsers();
 			if (err) throw err;
 			return await res
 				.header('x-auth-token', req.token)
