@@ -16,48 +16,44 @@ module.exports = class ArticleDatabaseService {
 		return { err: new ValidationError(400, errMsg) };
 	};
 	// create article
-	createArticle = async (id, title, description, body, tags) => {
-		const article = await this.article.create({
-			author: id,
-			title,
-			description,
-			body,
-			tags
-		});
+	createArticle = async articleFields => {
+		const article = await this.article.create({ ...articleFields });
 		if (!article) {
 			return this.articleError('error creating article');
 		}
 		return { article: copyArticleObj(article) };
 	};
 	// get all articles with filters
-	getAllArticles = async (limit = 10, offset = 0, sortBy = 'desc', tags, author, favorites) => {
+	getAllArticles = async filters => {
+		let user;
 		let query = {};
 		const options = {
-			sort: { updatedAt: sortBy },
-			limit: Number(limit),
-			skip: Number(offset)
+			sort: { updatedAt: filters.sortBy },
+			limit: Number(filters.limit),
+			skip: Number(filters.offset)
 		};
 		// query by tags
-		if (tags) {
-			query['tags'] = { $in: formatTags(tags) };
+		if (filters.tags) {
+			query['tags'] = { $in: formatTags(filters.tags) };
 		}
 		// query by author
-		if (author) {
-			const user = await this.user.findOne({ username: author });
-			if (!user) return this.articleError('sorry that author doesn\'t exist');
+		if (filters.author) {
+			user = await this.user.findOne({ username: filters.author });
+			if (!user)
+				return this.articleError("sorry that author doesn't exist");
 			query['author'] = user._id.toString('hex');
 		}
 		// query by users favorite articles
-		if (favorites) {
-			const user = await this.user.findOne({ username: favorites });
-			if (!user) return this.articleError('sorry that name doesn\'t exist');
+		if (filters.favorites) {
+			user = await this.user.findOne({ username: filters.favorites });
+			if (!user)
+				return this.articleError("sorry that name doesn't exist");
 			query['_id'] = {
 				$in: formatFavorites(user.favorites)
 			};
 		}
 		// query for individual filter or all filters
 		const query$Or = { $or: [ query ] };
-
 		const articles = await this.article
 			.find(query$Or, null, options)
 			.populate('author', 'username name bio image');
@@ -66,7 +62,7 @@ module.exports = class ArticleDatabaseService {
 			return this.articleError('error fetching all articles');
 		}
 		const copyArticles = articles.map(article => {
-			return copyArticleObj(article);
+			return copyArticleObj(article, user);
 		});
 		return { articles: copyArticles };
 	};
@@ -77,20 +73,22 @@ module.exports = class ArticleDatabaseService {
 		const options = {
 			sort: { updatedAt: 'desc' },
 			limit: Number(limit),
-			skip: offset
+			skip: Number(offset)
 		};
-		if (isValidObjId(userId)) {
-			const articles = await this.article.find(query, null, options);
+
+		if (isValidObjId(userId.toString('hex'))) {
+			const articles = await this.article
+				.find(query, null, options)
+				.populate('author', 'username name bio image');
 			if (!articles) {
-				return this.articleError('error fetching all user articles');
+				return this.articleError('error fetching user articles');
 			}
 			const copyArticles = articles.map(article =>
-				copyArticleObj(article, userObj)
+				copyArticleObj(article)
 			);
 			return { articles: copyArticles };
 		} else {
-			const errMsg = `invalid object id => ${userId}`;
-			return { err: new ValidationError(400, errMsg) };
+			return this.articleError(`invalid object id => ${userId}`);
 		}
 	};
 	// get articles by slug (title + unique id)
