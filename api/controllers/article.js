@@ -64,10 +64,11 @@ module.exports = class ArticleController {
 
 	favoriteArticle = async (req, res, next) => {
 		try {
-			const { article } = await this.service.setFavoriteArticle(
+			const { article, err } = await this.service.setFavoriteArticle(
 				req.user,
 				req.params.article
 			);
+			if (err) throw err;
 			await res.status(200).json({ article });
 		} catch (error) {
 			next(error);
@@ -76,10 +77,14 @@ module.exports = class ArticleController {
 
 	unfavoriteArticle = async (req, res, next) => {
 		try {
-			const { article } = await this.service.removeFavoriteArticle(
+			const {
+				article,
+				err
+			} = await this.service.removeFavoriteArticle(
 				req.user,
 				req.params.article
 			);
+			if (err) throw err;
 			await res.status(200).json({ article });
 		} catch (error) {
 			next(error);
