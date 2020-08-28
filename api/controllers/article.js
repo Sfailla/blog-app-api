@@ -13,9 +13,9 @@ module.exports = class ArticleController {
 				tags: req.body.tags
 			});
 			if (err) throw err;
-			await res.status(200).json({ article });
+			return await res.status(200).json({ article });
 		} catch (error) {
-			next(error);
+			return next(error);
 		}
 	};
 
@@ -30,9 +30,9 @@ module.exports = class ArticleController {
 				favorites: req.query.favorites
 			});
 			if (err) throw err;
-			await res.status(200).json({ articles });
+			return await res.status(200).json({ articles });
 		} catch (error) {
-			next(error);
+			return next(error);
 		}
 	};
 
@@ -44,9 +44,9 @@ module.exports = class ArticleController {
 				req.query.offset
 			);
 			if (err) throw err;
-			await res.status(200).json({ articles });
+			return await res.status(200).json({ articles });
 		} catch (error) {
-			next(error);
+			return next(error);
 		}
 	};
 
@@ -56,9 +56,9 @@ module.exports = class ArticleController {
 				req.params.article
 			);
 			if (err) throw err;
-			await res.status(200).json({ article });
+			return await res.status(200).json({ article });
 		} catch (error) {
-			next(error);
+			return next(error);
 		}
 	};
 
@@ -69,9 +69,9 @@ module.exports = class ArticleController {
 				req.params.article
 			);
 			if (err) throw err;
-			await res.status(200).json({ article });
+			return await res.status(200).json({ article });
 		} catch (error) {
-			next(error);
+			return next(error);
 		}
 	};
 
@@ -85,9 +85,9 @@ module.exports = class ArticleController {
 				req.params.article
 			);
 			if (err) throw err;
-			await res.status(200).json({ article });
+			return await res.status(200).json({ article });
 		} catch (error) {
-			next(error);
+			return next(error);
 		}
 	};
 };
