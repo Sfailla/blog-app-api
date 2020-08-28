@@ -27,6 +27,10 @@ const formatTags = tags => {
 	return tags.split(',').map(tag => tag.toLowerCase());
 };
 
+const formatFavorites = favorites => {
+	return favorites.map(favorite => favorite.toString('hex'));
+};
+
 const slugify = slug => {
 	return `${slug.toLowerCase().split(' ').join('-')}-${randomBytes(
 		4
@@ -34,7 +38,8 @@ const slugify = slug => {
 };
 
 module.exports = {
+	slugify,
 	copyArticleObj,
 	formatTags,
-	slugify
+	formatFavorites
 };
