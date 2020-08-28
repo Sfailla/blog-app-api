@@ -5,11 +5,11 @@ module.exports = class AuthController {
 
 	registerUser = async (req, res, next) => {
 		try {
-			const { user, token, err } = await this.db.createUser(
-				req.body.username,
-				req.body.email,
-				req.body.password
-			);
+			const { user, token, err } = await this.db.createUser({
+				username: req.body.username,
+				email: req.body.email,
+				password: req.body.password
+			});
 			if (err) throw err;
 			await res
 				.header('x-auth-token', token)
@@ -42,13 +42,11 @@ module.exports = class AuthController {
 	};
 
 	getCurrentUser = async (req, res, next) => {
-		const userId = req.params.id;
-		const token = req.token;
 		try {
-			const { user, err } = await this.db.getUserById(userId);
+			const { user, err } = await this.db.getUserById(req.params.id);
 			if (err) throw err;
 			await res
-				.header('x-auth-token', token)
+				.header('x-auth-token', req.token)
 				.status(200)
 				.json({ user });
 		} catch (error) {
@@ -57,12 +55,11 @@ module.exports = class AuthController {
 	};
 
 	getAllUsers = async (req, res, next) => {
-		const token = req.token;
 		try {
 			const { users, err } = await this.db.getAllUsers();
 			if (err) throw err;
 			await res
-				.header('x-auth-token', token)
+				.header('x-auth-token', req.token)
 				.status(200)
 				.json({ users });
 		} catch (error) {
