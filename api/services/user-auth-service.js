@@ -12,11 +12,12 @@ class UserDatabaseService {
 		this.userModel = userModel;
 	}
 
-	createUser = async (username, email, password) => {
-		const hashedPassword = await hashPasswordBcrypt(password);
+	createUser = async userFields => {
+		const hashedPassword = await hashPasswordBcrypt(
+			userFields.password
+		);
 		let user = await this.userModel.create({
-			username,
-			email,
+			...userFields,
 			password: hashedPassword
 		});
 
@@ -60,7 +61,7 @@ class UserDatabaseService {
 	};
 
 	getUserById = async userId => {
-		if (userId && isValidObjId(userId)) {
+		if (userId && isValidObjId(userId.toString('hex'))) {
 			let user = await this.userModel.findOne({ _id: userId });
 			if (!user) {
 				const errMsg = 'user does not match our records';
