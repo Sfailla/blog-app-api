@@ -48,7 +48,7 @@ const UserSchema = new Schema(
 );
 
 UserSchema.methods.favorite = function(articleId) {
-	if (this.favorites.indexOf(articleId) === -1) {
+	if (!this.favorites.includes(articleId)) {
 		this.favorites.push(articleId);
 	}
 	return this.save();
