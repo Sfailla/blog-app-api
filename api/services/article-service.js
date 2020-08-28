@@ -1,6 +1,10 @@
-const { copyArticleObj, formatTags } = require('../helpers/article');
 const { isValidObjId } = require('../config/index');
 const { ValidationError } = require('../middleware/utils/errors');
+const {
+	copyArticleObj,
+	formatTags,
+	formatFavorites
+} = require('../helpers/article');
 
 module.exports = class ArticleDatabaseService {
 	constructor(articleModel, userModel) {
@@ -26,29 +30,32 @@ module.exports = class ArticleDatabaseService {
 		return { article: copyArticleObj(article) };
 	};
 	// get all articles with filters
-	getAllArticles = async (
-		limit = 10,
-		offset = 0,
-		tags,
-		author,
-		favorite
-	) => {
+	getAllArticles = async (limit = 10, offset = 0, sortBy = 'desc', tags, author, favorites) => {
 		let query = {};
 		const options = {
-			sort: { updatedAt: 'desc' },
+			sort: { updatedAt: sortBy },
 			limit: Number(limit),
 			skip: Number(offset)
 		};
-		// query for tags only
+		// query by tags
 		if (tags) {
 			query['tags'] = { $in: formatTags(tags) };
 		}
-		// query for author only
+		// query by author
 		if (author) {
 			const user = await this.user.findOne({ username: author });
+			if (!user) return this.articleError('sorry that author doesn\'t exist');
 			query['author'] = user._id.toString('hex');
 		}
-		// query for author and tags using $or
+		// query by users favorite articles
+		if (favorites) {
+			const user = await this.user.findOne({ username: favorites });
+			if (!user) return this.articleError('sorry that name doesn\'t exist');
+			query['_id'] = {
+				$in: formatFavorites(user.favorites)
+			};
+		}
+		// query for individual filter or all filters
 		const query$Or = { $or: [ query ] };
 
 		const articles = await this.article
