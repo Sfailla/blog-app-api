@@ -94,7 +94,9 @@ module.exports = class ArticleDatabaseService {
 	// get articles by slug (title + unique id)
 	getArticleBySlug = async slug => {
 		const query = { slug };
-		const article = await this.article.findOne(query);
+		const article = await this.article
+			.findOne(query)
+			.populate('author', 'username name bio image');
 		if (!article) {
 			return this.articleError('error fetching article slug');
 		}
