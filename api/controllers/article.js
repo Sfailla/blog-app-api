@@ -4,16 +4,14 @@ module.exports = class ArticleController {
 	}
 
 	createArticle = async (req, res, next) => {
-		const { title, description, body, tags } = req.body;
-		const { id } = req.user;
 		try {
-			const { article, err } = await this.service.createArticle(
-				id,
-				title,
-				description,
-				body,
-				tags
-			);
+			const { article, err } = await this.service.createArticle({
+				author: req.user.id,
+				title: req.body.title,
+				description: req.body.description,
+				body: req.body.body,
+				tags: req.body.tags
+			});
 			if (err) throw err;
 			await res.status(200).json({ article });
 		} catch (error) {
@@ -22,16 +20,15 @@ module.exports = class ArticleController {
 	};
 
 	getArticles = async (req, res, next) => {
-		const { limit, offset, sortBy, tags, author, favorites } = req.query;
 		try {
-			const { articles, err } = await this.service.getAllArticles(
-				limit,
-				offset,
-				sortBy,
-				tags,
-				author,
-				favorites
-			);
+			const { articles, err } = await this.service.getAllArticles({
+				limit: req.query.limit || 10,
+				offset: req.query.offset || 0,
+				sortBy: req.query.sortBy || 'desc',
+				tags: req.query.tags,
+				author: req.query.author,
+				favorites: req.query.favorites
+			});
 			if (err) throw err;
 			await res.status(200).json({ articles });
 		} catch (error) {
@@ -40,13 +37,11 @@ module.exports = class ArticleController {
 	};
 
 	getUserArticles = async (req, res, next) => {
-		const { limit, offset } = req.query;
-		console.log(id);
 		try {
 			const { articles, err } = await this.service.getArticlesByUser(
 				req.user,
-				limit,
-				offset
+				req.query.limit,
+				req.query.offset
 			);
 			if (err) throw err;
 			await res.status(200).json({ articles });
