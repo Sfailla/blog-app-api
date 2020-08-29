@@ -90,4 +90,21 @@ module.exports = class ArticleController {
 			return next(error);
 		}
 	};
+
+	updateArticle = async (req, res, next) => {
+		try {
+			const {
+				article,
+				err
+			} = await this.service.findAndUpdateArticle(
+				req.user,
+				req.params.article,
+				req.body
+			);
+			if (err) throw err;
+			return await res.status(200).json({ article });
+		} catch (error) {
+			return next(error);
+		}
+	};
 };

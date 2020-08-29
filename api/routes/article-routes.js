@@ -14,7 +14,8 @@ const {
 	getArticle,
 	getArticles,
 	createArticle,
-	getUserArticles
+	getUserArticles,
+	updateArticle
 } = articleController;
 
 const router = Router();
@@ -34,5 +35,7 @@ router.get('/', getArticles);
 router.get('/:article', getArticle);
 
 router.get('/user/articles', authenticateJWT, getUserArticles);
+
+router.put('/:article', authenticateJWT, updateArticle);
 
 module.exports = router;

@@ -3,7 +3,8 @@ const { ValidationError } = require('../middleware/utils/errors');
 const {
 	copyArticleObj,
 	formatTags,
-	formatFavorites
+	formatFavorites,
+	slugify
 } = require('../helpers/article');
 
 module.exports = class ArticleDatabaseService {
@@ -56,7 +57,11 @@ module.exports = class ArticleDatabaseService {
 		const query$Or = { $or: [ query ] };
 		const articles = await this.article
 			.find(query$Or, null, options)
-			.populate('author', 'username name bio image');
+			.populate({
+				path: 'author',
+				model: 'User',
+				select: [ 'username', 'name', 'bio', 'image' ]
+			});
 
 		if (!articles) {
 			return this.articleError('error fetching all articles');
@@ -79,7 +84,11 @@ module.exports = class ArticleDatabaseService {
 		if (isValidObjId(userId.toString('hex'))) {
 			const articles = await this.article
 				.find(query, null, options)
-				.populate('author', 'username name bio image');
+				.populate({
+					path: 'author',
+					model: 'User',
+					select: [ 'username', 'name', 'bio', 'image' ]
+				});
 			if (!articles) {
 				return this.articleError('error fetching user articles');
 			}
@@ -95,8 +104,12 @@ module.exports = class ArticleDatabaseService {
 	getArticleBySlug = async slug => {
 		const query = { slug };
 		const article = await this.article
-			.findOne(query)
-			.populate('author', 'username name bio image');
+			.findOne({ ...query })
+			.populate({
+				path: 'author',
+				model: 'User',
+				select: [ 'username', 'name', 'bio', 'image' ]
+			});
 		if (!article) {
 			return this.articleError('error fetching article slug');
 		}
@@ -130,5 +143,23 @@ module.exports = class ArticleDatabaseService {
 			return this.articleError('error setting unfavorite article');
 		}
 		return { article: copyArticleObj(article, user) };
+	};
+
+	findAndUpdateArticle = async (userObj, slug, updates) => {
+		let article = await this.article
+			.findOneAndUpdate(
+				{ author: userObj.id, slug },
+				{ ...updates, slug: slugify(updates.title) },
+				{ new: true }
+			)
+			.populate({
+				path: 'author',
+				model: 'User',
+				select: [ 'username', 'name', 'bio', 'image' ]
+			});
+		if (!article) {
+			return this.articleError('error updating article');
+		}
+		return { article: copyArticleObj(article) };
 	};
 };
