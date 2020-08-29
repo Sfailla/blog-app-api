@@ -51,7 +51,7 @@ const makeDbConnection = async () => {
 const isValidObjId = userId => {
 	return (
 		ObjectId.isValid(userId) &&
-		new ObjectId(userId).toString() === userId
+		new ObjectId(userId).toString('hex') === userId.toString('hex')
 	);
 };
 
