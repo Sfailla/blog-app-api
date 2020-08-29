@@ -1,6 +1,6 @@
 const {
 	verifyAuthToken,
-	copyUserDetails
+	copyUserObj
 } = require('../../helpers/user-auth');
 const { ValidationError } = require('../utils/errors');
 const UserModel = require('../../models/user');
@@ -16,7 +16,7 @@ const authenticateJWT = async (req, res, next) => {
 			throw new ValidationError(400, errMsg);
 		}
 
-		req.user = copyUserDetails(user);
+		req.user = copyUserObj(user);
 		req.token = token;
 
 		return next();
