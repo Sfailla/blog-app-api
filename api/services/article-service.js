@@ -1,4 +1,4 @@
-const { isValidObjId } = require('../config/index');
+const { isValidObjId } = require('../../config/index');
 const { ValidationError } = require('../middleware/utils/errors');
 const {
 	copyArticleObj,

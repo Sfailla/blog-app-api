@@ -1,5 +1,5 @@
 const { ValidationError } = require('../middleware/utils/errors');
-const { isValidObjId } = require('../config/db/config');
+const { isValidObjId } = require('../database/db/config');
 const {
 	generateAuthToken,
 	hashPasswordBcrypt,

@@ -1,4 +1,4 @@
-const colorTerminal = require('../../config/terminalColors');
+const colorTerminal = require('../../../config/terminalColors');
 
 // catch 404 and forward to error handler
 const notFoundHandler = (req, res, next) => {
