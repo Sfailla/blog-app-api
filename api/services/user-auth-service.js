@@ -4,7 +4,8 @@ const {
 	generateAuthToken,
 	hashPasswordBcrypt,
 	comparePasswordBcrypt,
-	copyUserDetails
+	copyUserObj,
+	makeAuthUser
 } = require('../helpers/user-auth');
 
 class UserDatabaseService {
@@ -25,7 +26,7 @@ class UserDatabaseService {
 			const err = new ValidationError(400, 'error creating user');
 			return { err };
 		} else {
-			user = copyUserDetails(user);
+			user = copyUserObj(user);
 			const token = generateAuthToken(user);
 			return { user, token };
 		}
@@ -45,7 +46,7 @@ class UserDatabaseService {
 			return { err };
 		}
 
-		user = copyUserDetails(user);
+		user = copyUserObj(user);
 		const token = generateAuthToken(user);
 		return { user, token };
 	};
@@ -68,7 +69,7 @@ class UserDatabaseService {
 				const err = new ValidationError(400, errMsg);
 				return { err };
 			}
-			user = copyUserDetails(user);
+			user = copyUserObj(user);
 			return { user };
 		} else {
 			const errMsg = `invalid object id => ${userId}`;
@@ -84,7 +85,7 @@ class UserDatabaseService {
 			const err = new ValidationError(400, errMsg);
 			return { err };
 		}
-		const copiedUsers = users.map(user => copyUserDetails(user));
+		const copiedUsers = users.map(user => copyUserObj(user));
 		return { users: copiedUsers };
 	};
 }
