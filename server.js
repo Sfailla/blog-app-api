@@ -16,6 +16,7 @@ const {
 
 const articleApiRoutes = require('./api/routes/article-routes');
 const userApiRoutes = require('./api/routes/user-routes');
+const profileApiRoutes = require('./api/routes/profile-routes');
 
 const app = express();
 
@@ -32,6 +33,7 @@ makeDbConnection();
 // app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/v1/users', userApiRoutes);
 app.use('/api/v1/articles', articleApiRoutes);
+app.use('/api/v1/profiles', profileApiRoutes);
 
 // Error and 404 handler middleware
 app.use(notFoundHandler);
