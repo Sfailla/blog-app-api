@@ -62,7 +62,6 @@ UserSchema.methods.unfavorite = async function(articleId) {
 };
 
 UserSchema.methods.isFavorite = function(articleId) {
-	if (!this.favorites.length) return false;
 	return this.favorites.some(favoriteId => {
 		return favoriteId.toString() === articleId.toString();
 	});
@@ -83,8 +82,9 @@ UserSchema.methods.unfollow = async function(userId) {
 };
 
 UserSchema.methods.isFollowing = function(userId) {
-	if (!this.following.length) return false;
 	return this.following.some(followId => {
+		console.log('follow %s', followId);
+		console.log('passedIn %s', userId);
 		return followId.toString() === userId.toString();
 	});
 };
