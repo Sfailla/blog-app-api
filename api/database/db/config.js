@@ -43,7 +43,6 @@ const makeDbConnection = async () => {
 		const connect = await mongoose.connect(url, mongooseOptions);
 		return connect;
 	} catch (err) {
-		console.error(err.toString());
 		return new ValidationError(500, err.toString());
 	}
 };
