@@ -23,18 +23,18 @@ const copyUserObj = user => {
 };
 
 const makeAuthUser = user => {
-	const { username, email, name, bio, image } = user;
-	return { username, email, name, bio, image };
+	const { id, username, email, name, bio, image } = user;
+	return { id, username, email, name, bio, image };
 };
 
-const makeUserProfile = async user => {
+const makeUserProfile = async (user, follower) => {
 	return {
 		id: user.id,
 		username: user.username,
 		name: user.name,
 		bio: user.bio,
 		image: user.image,
-		isFollowing: user ? user.isFollowing(user._id) : false
+		isFollowing: user ? user.isFollowing(follower._id) : false
 	};
 };
 
