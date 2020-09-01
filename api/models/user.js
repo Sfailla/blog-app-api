@@ -47,23 +47,45 @@ const UserSchema = new Schema(
 	{ toJSON: options }
 );
 
-UserSchema.methods.favorite = function(articleId) {
+UserSchema.methods.favorite = async function(articleId) {
 	if (!this.favorites.includes(articleId)) {
 		this.favorites.push(articleId);
 	}
-	return this.save();
+	return await this.save();
 };
 
-UserSchema.methods.unfavorite = function(articleId) {
+UserSchema.methods.unfavorite = async function(articleId) {
 	if (this.favorites.includes(articleId)) {
-		this.favorites.remove(articleId);
+		await this.favorites.remove(articleId);
 	}
-	return this.save();
+	return await this.save();
 };
 
 UserSchema.methods.isFavorite = function(articleId) {
+	if (!this.favorites.length) return false;
 	return this.favorites.some(favoriteId => {
 		return favoriteId.toString() === articleId.toString();
+	});
+};
+
+UserSchema.methods.follow = async function(userId) {
+	if (!this.following.includes(userId)) {
+		await this.following.push(userId);
+	}
+	return await this.save();
+};
+
+UserSchema.methods.unfollow = async function(userId) {
+	if (this.following.includes(userId)) {
+		await this.following.remove(userId);
+	}
+	return await this.save();
+};
+
+UserSchema.methods.isFollowing = function(userId) {
+	if (!this.following.length) return false;
+	return this.following.some(followId => {
+		return followId.toString() === userId.toString();
 	});
 };
 
