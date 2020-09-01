@@ -72,11 +72,16 @@ module.exports = class ArticleDatabaseService {
 		return { articles: copyArticles };
 	};
 	// get all articles by logged in user
-	getArticlesByUser = async (userObj, limit = 5, offset = 0) => {
+	getArticlesByUser = async (
+		userObj,
+		sortBy = 'desc',
+		limit = 5,
+		offset = 0
+	) => {
 		const userId = userObj.id;
 		const query = { author: userId };
 		const options = {
-			sort: { updatedAt: 'desc' },
+			sort: { updatedAt: sortBy },
 			limit: Number(limit),
 			skip: Number(offset)
 		};
