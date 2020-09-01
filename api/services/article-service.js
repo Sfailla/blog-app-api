@@ -73,12 +73,12 @@ module.exports = class ArticleDatabaseService {
 	};
 	// get all articles by logged in user
 	getArticlesByUser = async (
-		userObj,
+		authUser,
 		sortBy = 'desc',
 		limit = 5,
 		offset = 0
 	) => {
-		const userId = userObj.id;
+		const userId = authUser.id;
 		const query = { author: userId };
 		const options = {
 			sort: { updatedAt: sortBy },
@@ -121,9 +121,9 @@ module.exports = class ArticleDatabaseService {
 		return { article: copyArticleObj(article) };
 	};
 	// set favorite articles
-	setFavoriteArticle = async (userObj, slug) => {
+	setFavoriteArticle = async (authUser, slug) => {
 		const articleSchema = await this.article.findOne({ slug });
-		const userSchema = await this.user.findOne({ _id: userObj.id });
+		const userSchema = await this.user.findOne({ _id: authUser.id });
 		if (!articleSchema || !userSchema) {
 			return this.articleError('error initializing favorite article');
 		}
@@ -135,9 +135,9 @@ module.exports = class ArticleDatabaseService {
 		return { article: copyArticleObj(article, user) };
 	};
 	// remove favorite article
-	removeFavoriteArticle = async (userObj, slug) => {
+	removeFavoriteArticle = async (authUser, slug) => {
 		const articleSchema = await this.article.findOne({ slug });
-		const userSchema = await this.user.findById(userObj.id);
+		const userSchema = await this.user.findById(authUser.id);
 		if (!articleSchema || !userSchema) {
 			return this.articleError('err initializing unfavorite article');
 		}
@@ -150,11 +150,15 @@ module.exports = class ArticleDatabaseService {
 		return { article: copyArticleObj(article, user) };
 	};
 
-	findAndUpdateArticle = async (userObj, slug, updates) => {
+	findAndUpdateArticle = async (authUser, slug, updates) => {
 		let article = await this.article
 			.findOneAndUpdate(
-				{ author: userObj.id, slug },
-				{ ...updates, slug: slugify(updates.title) },
+				{ author: authUser.id, slug },
+				{
+					...updates,
+					slug: slugify(updates.title),
+					updatedAt: Date.now()
+				},
 				{ new: true }
 			)
 			.populate({
