@@ -27,9 +27,15 @@ const makeAuthUser = user => {
 	return { username, email, name, bio, image };
 };
 
-const makeUserProfile = user => {
-	const { username, name, bio, image, following } = user;
-	return { username, name, bio, image, following };
+const makeUserProfile = async user => {
+	return {
+		id: user.id,
+		username: user.username,
+		name: user.name,
+		bio: user.bio,
+		image: user.image,
+		isFollowing: user ? user.isFollowing(user._id) : false
+	};
 };
 
 const comparePasswordBcrypt = async (password, userPassword) => {
