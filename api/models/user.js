@@ -74,17 +74,15 @@ UserSchema.methods.follow = async function(userId) {
 	return await this.save();
 };
 
-UserSchema.methods.unfollow = async function(userId) {
-	if (this.following.includes(userId)) {
-		await this.following.remove(userId);
+UserSchema.methods.unfollow = async function(followId) {
+	if (this.following.includes(followId)) {
+		await this.following.remove(followId);
 	}
 	return await this.save();
 };
 
 UserSchema.methods.isFollowing = function(userId) {
 	return this.following.some(followId => {
-		console.log('follow %s', followId);
-		console.log('passedIn %s', userId);
 		return followId.toString() === userId.toString();
 	});
 };
