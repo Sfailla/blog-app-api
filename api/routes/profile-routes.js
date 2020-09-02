@@ -17,4 +17,10 @@ router.post(
 	profileController.followUser
 );
 
+router.delete(
+	'/:username/unfollow',
+	authenticateJWT,
+	profileController.unfollowUser
+);
+
 module.exports = router;

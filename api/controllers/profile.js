@@ -8,7 +8,6 @@ module.exports = class ProfileController {
 			const { profile, err } = await this.service.fetchUserProfile(
 				req.params.username
 			);
-			console.log(profile);
 			if (err) throw err;
 			return await res.status(200).json({ profile });
 		} catch (error) {
@@ -17,10 +16,37 @@ module.exports = class ProfileController {
 	};
 
 	followUser = async (req, res, next) => {
-		const { profile } = await this.service.fetchFollowService(
-			req.user
-		);
-		console.log(profile);
-		return await res.status(200).json({ profile });
+		try {
+			const username = req.params.username;
+			const { profile, err } = await this.service.fetchFollowService(
+				req.user,
+				username
+			);
+			if (err) throw err;
+			return await res.status(200).json({
+				message: `now following ${username} 😎`,
+				data: profile
+			});
+		} catch (error) {
+			return next(error);
+		}
+	};
+
+	unfollowUser = async (req, res, next) => {
+		try {
+			const username = req.params.username;
+			const {
+				profile,
+				err
+			} = await this.service.fetchUnfollowService(req.user, username);
+			if (err) throw err;
+			console.log('profile %s', profile);
+			return await res.status(200).json({
+				message: `unfollowed ${username} 👨‍💻`,
+				data: profile
+			});
+		} catch (error) {
+			return next(error);
+		}
 	};
 };
