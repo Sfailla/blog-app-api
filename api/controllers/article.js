@@ -69,7 +69,10 @@ module.exports = class ArticleController {
 				req.params.article
 			);
 			if (err) throw err;
-			return await res.status(200).json({ article });
+			return await res.status(200).json({
+				message: `${article.title}: 📑 marked as favorite!`,
+				data: article
+			});
 		} catch (error) {
 			return next(error);
 		}
@@ -85,7 +88,10 @@ module.exports = class ArticleController {
 				req.params.article
 			);
 			if (err) throw err;
-			return await res.status(200).json({ article });
+			return await res.status(200).json({
+				message: `${article.title}: 📑 removed from favorite!`,
+				data: articles
+			});
 		} catch (error) {
 			return next(error);
 		}
