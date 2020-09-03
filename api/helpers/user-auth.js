@@ -34,7 +34,9 @@ const makeUserProfile = async (user, follower) => {
 		name: user.name,
 		bio: user.bio,
 		image: user.image,
-		isFollowing: user ? await user.isFollowing(follower._id) : false
+		isFollowing: follower
+			? await user.isFollowing(follower._id)
+			: false
 	};
 };
 

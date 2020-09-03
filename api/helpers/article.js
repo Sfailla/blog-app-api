@@ -6,7 +6,7 @@ const { randomBytes } = require('crypto');
  * ===============================
  */
 
-const copyArticleObj = async (article, authUser = null) => {
+const copyArticleObj = async (article, authUser) => {
 	return {
 		id: article._id,
 		author: article.author,
