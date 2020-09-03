@@ -4,7 +4,7 @@ const {
 	copyArticleObj,
 	formatTags,
 	formatFavorites,
-	slugify
+	formatSlug
 } = require('../helpers/article');
 
 module.exports = class ArticleDatabaseService {
@@ -156,7 +156,7 @@ module.exports = class ArticleDatabaseService {
 				{ author: authUser.id, slug },
 				{
 					...updates,
-					slug: slugify(updates.title),
+					slug: formatSlug(updates.title),
 					updatedAt: Date.now()
 				},
 				{ new: true }

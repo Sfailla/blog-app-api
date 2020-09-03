@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { slugify } = require('../helpers/article');
+const { formatSlug } = require('../helpers/article');
 const { Schema, Types, model } = mongoose;
 const { ObjectId } = Types;
 const User = require('./user');
@@ -23,7 +23,7 @@ const ArticleSchema = new Schema(
 			...requiredString,
 			...typeProps,
 			default: function() {
-				return slugify(this.title);
+				return formatSlug(this.title);
 			}
 		},
 		author: { type: ObjectId, ref: 'User' },

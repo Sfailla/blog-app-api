@@ -6,7 +6,7 @@ const { randomBytes } = require('crypto');
  * ===============================
  */
 
-const copyArticleObj = (article, authUser = null) => {
+const copyArticleObj = async (article, authUser = null) => {
 	return {
 		id: article._id,
 		author: article.author,
@@ -16,7 +16,9 @@ const copyArticleObj = (article, authUser = null) => {
 		body: article.body,
 		comments: article.comments,
 		tags: article.tags,
-		isFavorite: authUser ? authUser.isFavorite(article._id) : null,
+		isFavorite: authUser
+			? await authUser.isFavorite(article._id)
+			: null,
 		favoriteCount: article.favoriteCount,
 		updatedAt: article.updatedAt,
 		createdAt: article.createdAt
@@ -31,15 +33,15 @@ const formatFavorites = favorites => {
 	return favorites.map(favorite => favorite.toString('hex'));
 };
 
-const slugify = slug => {
+const formatSlug = slug => {
 	return `${slug.toLowerCase().split(' ').join('-')}-${randomBytes(
 		4
 	).toString('hex')}`;
 };
 
 module.exports = {
-	slugify,
 	copyArticleObj,
+	formatSlug,
 	formatTags,
 	formatFavorites
 };
