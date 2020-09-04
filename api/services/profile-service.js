@@ -9,7 +9,8 @@ module.exports = class ProfileDatabaseService {
 	fetchUserProfile = async username => {
 		const profile = await this.profile.findOne({ username });
 		if (!profile) {
-			const err = new ValidationError(400, 'error fetching profile');
+			const errMsg = 'error fetching user profile';
+			const err = new ValidationError(400, errMsg);
 			return { err };
 		}
 		return { profile: await makeUserProfile(profile) };
@@ -22,10 +23,8 @@ module.exports = class ProfileDatabaseService {
 		const user = await this.profile.findOne({ _id: authUser.id });
 		const updatedUser = await user.follow(follower._id);
 		if (!follower || !user || !updatedUser) {
-			const err = new ValidationError(
-				400,
-				'error initializing fetch to follow user'
-			);
+			const errMsg = 'error initializing fetch to follow user';
+			const err = new ValidationError(400, errMsg);
 			return { err };
 		}
 		return {
@@ -40,13 +39,10 @@ module.exports = class ProfileDatabaseService {
 		const user = await this.profile.findOne({ _id: authUser.id });
 		const updatedUser = await user.unfollow(follower._id);
 		if (!follower || !user || !updatedUser) {
-			const err = new ValidationError(
-				400,
-				'error initializing fetch to follow user'
-			);
+			const errMsg = 'error initializing fetch to follow user';
+			const err = new ValidationError(400, errMsg);
 			return { err };
 		}
-
 		return {
 			profile: await makeUserProfile(follower, updatedUser)
 		};
