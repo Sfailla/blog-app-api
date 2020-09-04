@@ -103,10 +103,11 @@ module.exports = class ArticleDatabaseService {
 			if (!articles || !user) {
 				return this.articleError('error initializing get articles');
 			}
-			const articlesCount = this.article.countDocuments();
+			const articlesCount = await this.article.countDocuments();
 			const copyArticles = articles.map(article =>
 				copyArticleObj(article, user)
 			);
+			console.log(await Promise.all(copyArticles));
 			return {
 				articles: await Promise.all(copyArticles),
 				articlesCount
@@ -159,7 +160,7 @@ module.exports = class ArticleDatabaseService {
 		}
 		return { article: await copyArticleObj(article, user) };
 	};
-
+	// update user article
 	findAndUpdateArticle = async (authUser, slug, updates) => {
 		let article = await this.article
 			.findOneAndUpdate(
@@ -181,14 +182,12 @@ module.exports = class ArticleDatabaseService {
 		}
 		return { article: await copyArticleObj(article) };
 	};
-
+	// remove user article
 	findAndDeleteArticle = async (authUser, slug) => {
 		const article = await this.article.findOneAndDelete({
 			author: authUser.id,
 			slug
 		});
-
-		console.log(article);
 		return { article };
 	};
 };

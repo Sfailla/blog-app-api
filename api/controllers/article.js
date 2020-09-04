@@ -14,7 +14,7 @@ module.exports = class ArticleController {
 			});
 			if (err) throw err;
 			return await res.status(200).json({
-				message: 'successfully created article',
+				message: 'successfully created article 📄🚀',
 				article
 			});
 		} catch (error) {
@@ -81,7 +81,7 @@ module.exports = class ArticleController {
 			);
 			if (err) throw err;
 			return await res.status(200).json({
-				message: `${article.title}: marked as favorite!`,
+				message: `${article.title}: marked as favorite! ✨`,
 				data: article
 			});
 		} catch (error) {
@@ -100,7 +100,7 @@ module.exports = class ArticleController {
 			);
 			if (err) throw err;
 			return await res.status(200).json({
-				message: `${article.title}: removed from favorite!`,
+				message: `${article.title}: removed from favorite! 🔥😱`,
 				data: articles
 			});
 		} catch (error) {
@@ -120,7 +120,7 @@ module.exports = class ArticleController {
 			);
 			if (err) throw err;
 			return await res.status(200).json({
-				message: `successfully updated article: ${article.title}`,
+				message: `successfully updated article: ${article.title} ✨🎉`,
 				article
 			});
 		} catch (error) {
@@ -134,7 +134,7 @@ module.exports = class ArticleController {
 			req.params.article
 		);
 		return await res.status(200).json({
-			message: `successfully removed article: ${article.title}`,
+			message: `successfully removed article: ${article.title} 🔥😱`,
 			article
 		});
 	};
