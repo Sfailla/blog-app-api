@@ -14,9 +14,7 @@ class UserDatabaseService {
 	}
 
 	createUser = async userFields => {
-		const hashedPassword = await hashPasswordBcrypt(
-			userFields.password
-		);
+		const hashedPassword = await hashPasswordBcrypt(userFields.password);
 		let user = await this.userModel.create({
 			...userFields,
 			password: hashedPassword
@@ -36,10 +34,7 @@ class UserDatabaseService {
 		let { user, err } = await this.getUserByEmail(email);
 		if (err) return { err };
 
-		const isValidPassword = await comparePasswordBcrypt(
-			password,
-			user.password
-		);
+		const isValidPassword = await comparePasswordBcrypt(password, user.password);
 		if (!isValidPassword) {
 			const errMsg = 'user password does not match our records';
 			const err = new ValidationError(400, errMsg);

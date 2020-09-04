@@ -18,10 +18,7 @@ module.exports = class ProfileController {
 	followUser = async (req, res, next) => {
 		try {
 			const username = req.params.username;
-			const { profile, err } = await this.service.followService(
-				req.user,
-				username
-			);
+			const { profile, err } = await this.service.followService(req.user, username);
 			if (err) throw err;
 			return await res.status(200).json({
 				message: `now following author: ${username} 😎`,

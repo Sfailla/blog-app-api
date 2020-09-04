@@ -11,13 +11,10 @@ module.exports = class AuthController {
 				password: req.body.password
 			});
 			if (err) throw err;
-			return await res
-				.header('x-auth-token', token)
-				.status(201)
-				.json({
-					message: `successfully created user: ${user.username} 🤴🏻🚀`,
-					user
-				});
+			return await res.header('x-auth-token', token).status(201).json({
+				message: `successfully created user: ${user.username} 🤴🏻🚀`,
+				user
+			});
 		} catch (error) {
 			return next(error);
 		}
@@ -31,10 +28,7 @@ module.exports = class AuthController {
 				req.body.password
 			);
 			if (err) throw err;
-			return await res
-				.header('x-auth-token', token)
-				.status(200)
-				.json({ user });
+			return await res.header('x-auth-token', token).status(200).json({ user });
 		} catch (error) {
 			return next(error);
 		}
@@ -46,14 +40,9 @@ module.exports = class AuthController {
 
 	getCurrentUser = async (req, res, next) => {
 		try {
-			const { user, err } = await this.service.getUserById(
-				req.params.id
-			);
+			const { user, err } = await this.service.getUserById(req.params.id);
 			if (err) throw err;
-			return await res
-				.header('x-auth-token', req.token)
-				.status(200)
-				.json({ user });
+			return await res.header('x-auth-token', req.token).status(200).json({ user });
 		} catch (error) {
 			return next(error);
 		}
@@ -63,10 +52,7 @@ module.exports = class AuthController {
 		try {
 			const { users, err } = await this.service.getAllUsers();
 			if (err) throw err;
-			return await res
-				.header('x-auth-token', req.token)
-				.status(200)
-				.json({ users });
+			return await res.header('x-auth-token', req.token).status(200).json({ users });
 		} catch (error) {
 			return next(error);
 		}

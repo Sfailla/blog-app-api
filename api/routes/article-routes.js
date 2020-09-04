@@ -21,24 +21,20 @@ const {
 
 const router = Router();
 
-router.post('/', authenticateJWT, createArticle);
-
-router.post('/:article/favorite', authenticateJWT, favoriteArticle);
-
-router.delete(
-	'/:article/favorite',
-	authenticateJWT,
-	unfavoriteArticle
-);
-
-router.delete('/:article', authenticateJWT, deleteArticle);
-
 router.get('/', getArticles);
 
 router.get('/:article', getArticle);
 
 router.get('/user/articles', authenticateJWT, getUserArticles);
 
+router.post('/', authenticateJWT, createArticle);
+
+router.post('/:article/favorite', authenticateJWT, favoriteArticle);
+
 router.put('/:article', authenticateJWT, updateArticle);
+
+router.delete('/:article/favorite', authenticateJWT, unfavoriteArticle);
+
+router.delete('/:article', authenticateJWT, deleteArticle);
 
 module.exports = router;

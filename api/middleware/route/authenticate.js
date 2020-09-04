@@ -1,7 +1,4 @@
-const {
-	verifyAuthToken,
-	copyUserObj
-} = require('../../helpers/user-auth');
+const { verifyAuthToken, copyUserObj } = require('../../helpers/user-auth');
 const { ValidationError } = require('../utils/errors');
 const UserModel = require('../../models/user');
 

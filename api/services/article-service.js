@@ -40,15 +40,13 @@ module.exports = class ArticleDatabaseService {
 		// query by author
 		if (filters.author) {
 			user = await this.user.findOne({ username: filters.author });
-			if (!user)
-				return this.articleError("sorry that author doesn't exist");
+			if (!user) return this.articleError("sorry that author doesn't exist");
 			query['author'] = user._id.toString('hex');
 		}
 		// query by users favorite articles
 		if (filters.favorites) {
 			user = await this.user.findOne({ username: filters.favorites });
-			if (!user)
-				return this.articleError("sorry that username doesn't exist");
+			if (!user) return this.articleError("sorry that username doesn't exist");
 			query['_id'] = {
 				$in: formatFavorites(user.favorites)
 			};
@@ -56,20 +54,16 @@ module.exports = class ArticleDatabaseService {
 		// aggregate for individual filter or all filters
 		const query$Or = { $or: [ query ] };
 		const articlesCount = await this.article.countDocuments();
-		const articles = await this.article
-			.find(query$Or, null, options)
-			.populate({
-				path: 'author',
-				model: 'User',
-				select: [ 'username', 'name', 'bio', 'image' ]
-			});
+		const articles = await this.article.find(query$Or, null, options).populate({
+			path: 'author',
+			model: 'User',
+			select: [ 'username', 'name', 'bio', 'image' ]
+		});
 
 		if (!articles) {
 			return this.articleError('error fetching all articles');
 		}
-		const copyArticles = articles.map(article =>
-			copyArticleObj(article)
-		);
+		const copyArticles = articles.map(article => copyArticleObj(article));
 
 		return {
 			articles: await Promise.all(copyArticles),
@@ -77,36 +71,27 @@ module.exports = class ArticleDatabaseService {
 		};
 	};
 	// get all articles by logged in user
-	getArticlesByUser = async (
-		authUser,
-		sortBy = 'desc',
-		limit = 5,
-		offset = 0
-	) => {
+	getArticlesByUser = async (authUser, filters) => {
 		const userId = authUser.id;
 		const query = { author: userId };
 		const options = {
-			sort: { updatedAt: sortBy },
-			limit: Number(limit),
-			skip: Number(offset)
+			sort: { updatedAt: filters.sortBy },
+			limit: Number(filters.limit),
+			skip: Number(filters.offset)
 		};
 
 		if (isValidObjId(userId)) {
-			const articles = await this.article
-				.find(query, null, options)
-				.populate({
-					path: 'author',
-					model: 'User',
-					select: [ 'username', 'name', 'bio', 'image' ]
-				});
+			const articles = await this.article.find(query, null, options).populate({
+				path: 'author',
+				model: 'User',
+				select: [ 'username', 'name', 'bio', 'image' ]
+			});
 			const user = await this.user.findOne({ _id: userId });
 			if (!articles || !user) {
 				return this.articleError('error initializing get articles');
 			}
 			const articlesCount = await this.article.countDocuments();
-			const copyArticles = articles.map(article =>
-				copyArticleObj(article, user)
-			);
+			const copyArticles = articles.map(article => copyArticleObj(article, user));
 			console.log(await Promise.all(copyArticles));
 			return {
 				articles: await Promise.all(copyArticles),
@@ -119,13 +104,11 @@ module.exports = class ArticleDatabaseService {
 	// get articles by slug (title + unique id)
 	getArticleBySlug = async slug => {
 		const query = { slug };
-		const article = await this.article
-			.findOne({ ...query })
-			.populate({
-				path: 'author',
-				model: 'User',
-				select: [ 'username', 'name', 'bio', 'image' ]
-			});
+		const article = await this.article.findOne({ ...query }).populate({
+			path: 'author',
+			model: 'User',
+			select: [ 'username', 'name', 'bio', 'image' ]
+		});
 		if (!article) {
 			return this.articleError('error fetching article slug');
 		}

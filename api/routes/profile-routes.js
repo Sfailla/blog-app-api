@@ -9,18 +9,12 @@ const router = express.Router();
 const profileService = new ProfileDbService(UserModel);
 const profileController = new ProfileController(profileService);
 
-router.get('/:username', profileController.getProfile);
+const { getProfile, followUser, unfollowUser } = profileController;
 
-router.post(
-	'/:username/follow',
-	authenticateJWT,
-	profileController.followUser
-);
+router.get('/:username', getProfile);
 
-router.delete(
-	'/:username/unfollow',
-	authenticateJWT,
-	profileController.unfollowUser
-);
+router.post('/:username/follow', authenticateJWT, followUser);
+
+router.delete('/:username/unfollow', authenticateJWT, unfollowUser);
 
 module.exports = router;

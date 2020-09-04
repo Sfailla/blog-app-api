@@ -1,21 +1,14 @@
 // cool function I made for development to change terminal colors ✨🌈✨
 const colorTerminal = terminalColor => {
 	terminalColor = terminalColor.toLowerCase();
-	const acceptedColors = [
-		'red',
-		'green',
-		'yellow',
-		'blue',
-		'magenta',
-		'cyan'
-	];
+	const acceptedColors = [ 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan' ];
 
-	const RED = 31,
-		GREEN = 32,
-		YELLOW = 33,
-		BLUE = 34,
-		MAGENTA = 35,
-		CYAN = 36;
+	const RED = 31;
+	const GREEN = 32;
+	const YELLOW = 33;
+	const BLUE = 34;
+	const MAGENTA = 35;
+	const CYAN = 36;
 
 	const checkColorReturnCode = color => {
 		if (color === 'red') return RED;
@@ -26,9 +19,7 @@ const colorTerminal = terminalColor => {
 		if (color === 'cyan') return CYAN;
 	};
 
-	const verifiedColor = acceptedColors.find(
-		color => color === terminalColor
-	);
+	const verifiedColor = acceptedColors.find(color => color === terminalColor);
 
 	const colorModel = acceptedColors.reduce((obj, items) => {
 		if (verifiedColor) {
@@ -46,9 +37,7 @@ const colorTerminal = terminalColor => {
 		return obj;
 	}, {});
 
-	const model = verifiedColor
-		? colorModel[verifiedColor]
-		: colorModel['error'];
+	const model = verifiedColor ? colorModel[verifiedColor] : colorModel['error'];
 
 	const { colorCode, message } = model;
 

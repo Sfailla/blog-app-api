@@ -24,11 +24,7 @@ module.exports = class ArticleController {
 
 	getArticles = async (req, res, next) => {
 		try {
-			const {
-				articles,
-				articlesCount,
-				err
-			} = await this.service.getAllArticles({
+			const { articles, articlesCount, err } = await this.service.getAllArticles({
 				limit: req.query.limit || 10,
 				offset: req.query.offset || 0,
 				sortBy: req.query.sortBy || 'desc',
@@ -49,11 +45,11 @@ module.exports = class ArticleController {
 				articles,
 				articlesCount,
 				err
-			} = await this.service.getArticlesByUser(
-				req.user,
-				req.query.limit,
-				req.query.offset
-			);
+			} = await this.service.getArticlesByUser(req.user, {
+				limit: req.query.limit || 5,
+				offset: req.query.offset || 0,
+				sortBy: req.query.sortBy || 'desc'
+			});
 			if (err) throw err;
 			return await res.status(200).json({ articles, articlesCount });
 		} catch (error) {
@@ -91,10 +87,7 @@ module.exports = class ArticleController {
 
 	unfavoriteArticle = async (req, res, next) => {
 		try {
-			const {
-				article,
-				err
-			} = await this.service.removeFavoriteArticle(
+			const { article, err } = await this.service.removeFavoriteArticle(
 				req.user,
 				req.params.article
 			);
@@ -110,10 +103,7 @@ module.exports = class ArticleController {
 
 	updateArticle = async (req, res, next) => {
 		try {
-			const {
-				article,
-				err
-			} = await this.service.findAndUpdateArticle(
+			const { article, err } = await this.service.findAndUpdateArticle(
 				req.user,
 				req.params.article,
 				req.body
