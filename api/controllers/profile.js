@@ -24,8 +24,8 @@ module.exports = class ProfileController {
 			);
 			if (err) throw err;
 			return await res.status(200).json({
-				message: `now following ${username} 😎`,
-				data: profile
+				message: `now following author: ${username} 😎`,
+				profile
 			});
 		} catch (error) {
 			return next(error);
@@ -41,8 +41,8 @@ module.exports = class ProfileController {
 			);
 			if (err) throw err;
 			return await res.status(200).json({
-				message: `unfollowed ${username} 🤔`,
-				data: profile
+				message: `unfollowed author: ${username} 🤔`,
+				profile
 			});
 		} catch (error) {
 			return next(error);
