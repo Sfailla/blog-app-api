@@ -19,23 +19,23 @@ const options = {
 
 const ArticleSchema = new Schema(
 	{
+		author: { type: ObjectId, ref: 'User' },
+		title: { ...requiredString, ...typeProps },
+		description: { ...requiredString, trim: true },
+		body: { ...requiredString, trim: true },
+		image: { type: String, default: null },
+		comments: [ { type: ObjectId, ref: 'Comment' } ],
+		tags: [ { type: String, trim: true, lowercase: true, default: [] } ],
+		favoriteCount: { type: Number, default: 0 },
+		createdAt: { type: Date, default: Date.now },
+		updatedAt: { type: Date, default: Date.now },
 		slug: {
 			...requiredString,
 			...typeProps,
 			default: function() {
 				return formatSlug(this.title);
 			}
-		},
-		author: { type: ObjectId, ref: 'User' },
-		title: { ...requiredString, unique: true, index: true },
-		description: { ...requiredString },
-		body: { ...requiredString },
-		articleImg: { type: String, defualt: null },
-		comments: [ { type: ObjectId, ref: 'Comment' } ],
-		tags: [ { type: String, lowercase: true, default: [] } ],
-		favoriteCount: { type: Number, default: 0 },
-		createdAt: { type: Date, default: Date.now },
-		updatedAt: { type: Date, default: Date.now }
+		}
 	},
 	{ toJSON: options }
 );

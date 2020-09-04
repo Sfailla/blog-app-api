@@ -5,13 +5,8 @@ module.exports = class ArticleController {
 
 	createArticle = async (req, res, next) => {
 		try {
-			const { article, err } = await this.service.createArticle({
-				author: req.user.id,
-				title: req.body.title,
-				description: req.body.description,
-				body: req.body.body,
-				tags: req.body.tags
-			});
+			const requiredFields = { author: req.user.id, ...req.body };
+			const { article, err } = await this.service.createArticle(requiredFields);
 			if (err) throw err;
 			return await res.status(200).json({
 				message: 'successfully created article 📄🚀',
@@ -103,6 +98,8 @@ module.exports = class ArticleController {
 
 	updateArticle = async (req, res, next) => {
 		try {
+			console.log(req.body);
+			console.log({ ...req.body });
 			const { article, err } = await this.service.findAndUpdateArticle(
 				req.user,
 				req.params.article,
