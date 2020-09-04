@@ -15,41 +15,40 @@ module.exports = class ProfileDatabaseService {
 		return { profile: await makeUserProfile(profile) };
 	};
 
-	fetchFollowService = async (authUser, username) => {
+	followService = async (authUser, username) => {
 		const follower = await this.profile.findOne({
 			username
 		});
 		const user = await this.profile.findOne({ _id: authUser.id });
-		if (!follower || !user) {
+		const updatedUser = await user.follow(follower._id);
+		if (!follower || !user || !updatedUser) {
 			const err = new ValidationError(
 				400,
 				'error initializing fetch to follow user'
 			);
 			return { err };
-		} else {
-			const updatedUser = await user.follow(follower._id);
-			return {
-				profile: await makeUserProfile(updatedUser, follower)
-			};
 		}
+		return {
+			profile: await makeUserProfile(follower, updatedUser)
+		};
 	};
 
-	fetchUnfollowService = async (authUser, username) => {
+	unfollowService = async (authUser, username) => {
 		const follower = await this.profile.findOne({
 			username
 		});
 		const user = await this.profile.findOne({ _id: authUser.id });
-		if (!follower || !user) {
+		const updatedUser = await user.unfollow(follower._id);
+		if (!follower || !user || !updatedUser) {
 			const err = new ValidationError(
 				400,
 				'error initializing fetch to follow user'
 			);
 			return { err };
-		} else {
-			const updatedUser = await user.unfollow(follower._id);
-			return {
-				profile: await makeUserProfile(updatedUser, follower)
-			};
 		}
+
+		return {
+			profile: await makeUserProfile(follower, updatedUser)
+		};
 	};
 };

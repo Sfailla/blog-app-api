@@ -18,7 +18,7 @@ module.exports = class ProfileController {
 	followUser = async (req, res, next) => {
 		try {
 			const username = req.params.username;
-			const { profile, err } = await this.service.fetchFollowService(
+			const { profile, err } = await this.service.followService(
 				req.user,
 				username
 			);
@@ -35,14 +35,13 @@ module.exports = class ProfileController {
 	unfollowUser = async (req, res, next) => {
 		try {
 			const username = req.params.username;
-			const {
-				profile,
-				err
-			} = await this.service.fetchUnfollowService(req.user, username);
+			const { profile, err } = await this.service.unfollowService(
+				req.user,
+				username
+			);
 			if (err) throw err;
-			console.log('profile %s', profile);
 			return await res.status(200).json({
-				message: `unfollowed ${username} 👨‍💻`,
+				message: `unfollowed ${username} 🤔`,
 				data: profile
 			});
 		} catch (error) {
