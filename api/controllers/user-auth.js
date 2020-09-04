@@ -5,11 +5,8 @@ module.exports = class AuthController {
 
 	registerUser = async (req, res, next) => {
 		try {
-			const { user, token, err } = await this.service.createUser({
-				username: req.body.username,
-				email: req.body.email,
-				password: req.body.password
-			});
+			const requiredFields = { ...req.body };
+			const { user, token, err } = await this.service.createUser(requiredFields);
 			if (err) throw err;
 			return await res.header('x-auth-token', token).status(201).json({
 				message: `successfully created user: ${user.username} 🤴🏻🚀`,
