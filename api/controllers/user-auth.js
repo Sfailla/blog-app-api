@@ -5,6 +5,7 @@ module.exports = class AuthController {
 
 	registerUser = async (req, res, next) => {
 		try {
+			console.log((requiredFields = { ...req.body.trim() }));
 			const requiredFields = { ...req.body };
 			const { user, token, err } = await this.service.createUser(requiredFields);
 			if (err) throw err;
@@ -62,7 +63,7 @@ module.exports = class AuthController {
 		);
 		if (err) throw err;
 		return await res.status(200).json({
-			message: `successfully removed user: {${user.id}:${user.username}} 🔥😱`,
+			message: `successfully removed user: {${user.username}:${user.id}} 🔥😱`,
 			user
 		});
 	};
