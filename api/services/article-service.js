@@ -62,6 +62,7 @@ module.exports = class ArticleDatabaseService {
 				model: 'User',
 				select: [ 'username', 'name', 'bio', 'image' ]
 			});
+		const articleCount = await this.article.countDocuments();
 
 		if (!articles) {
 			return this.articleError('error fetching all articles');
@@ -70,7 +71,10 @@ module.exports = class ArticleDatabaseService {
 			return copyArticleObj(article);
 		});
 
-		return { articles: await Promise.all(copyArticles) };
+		return {
+			articles: await Promise.all(copyArticles),
+			articleCount
+		};
 	};
 	// get all articles by logged in user
 	getArticlesByUser = async (
@@ -99,10 +103,14 @@ module.exports = class ArticleDatabaseService {
 			if (!articles || !user) {
 				return this.articleError('error initializing get articles');
 			}
+			const articleCount = this.article.countDocuments();
 			const copyArticles = articles.map(article => {
 				return copyArticleObj(article, user);
 			});
-			return { articles: await Promise.all(copyArticles) };
+			return {
+				articles: await Promise.all(copyArticles),
+				articleCount
+			};
 		} else {
 			return this.articleError(`invalid object id => ${userId}`);
 		}

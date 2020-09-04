@@ -21,7 +21,11 @@ module.exports = class ArticleController {
 
 	getArticles = async (req, res, next) => {
 		try {
-			const { articles, err } = await this.service.getAllArticles({
+			const {
+				articles,
+				articleCount,
+				err
+			} = await this.service.getAllArticles({
 				limit: req.query.limit || 10,
 				offset: req.query.offset || 0,
 				sortBy: req.query.sortBy || 'desc',
@@ -30,7 +34,7 @@ module.exports = class ArticleController {
 				favorites: req.query.favorites
 			});
 			if (err) throw err;
-			return await res.status(200).json({ articles });
+			return await res.status(200).json({ articles, articleCount });
 		} catch (error) {
 			return next(error);
 		}
@@ -38,13 +42,17 @@ module.exports = class ArticleController {
 
 	getUserArticles = async (req, res, next) => {
 		try {
-			const { articles, err } = await this.service.getArticlesByUser(
+			const {
+				articles,
+				articleCount,
+				err
+			} = await this.service.getArticlesByUser(
 				req.user,
 				req.query.limit,
 				req.query.offset
 			);
 			if (err) throw err;
-			return await res.status(200).json({ articles });
+			return await res.status(200).json({ articles, articleCount });
 		} catch (error) {
 			return next(error);
 		}
