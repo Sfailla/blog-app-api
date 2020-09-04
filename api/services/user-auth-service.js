@@ -46,7 +46,7 @@ class UserDatabaseService {
 			return { err };
 		}
 
-		user = copyUserObj(user);
+		user = makeAuthUser(user);
 		const token = generateAuthToken(user);
 		return { user, token };
 	};
