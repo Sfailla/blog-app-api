@@ -55,7 +55,7 @@ module.exports = class ArticleDatabaseService {
 		}
 		// aggregate for individual filter or all filters
 		const query$Or = { $or: [ query ] };
-		const articleCount = await this.article.countDocuments();
+		const articlesCount = await this.article.countDocuments();
 		const articles = await this.article
 			.find(query$Or, null, options)
 			.populate({
@@ -73,7 +73,7 @@ module.exports = class ArticleDatabaseService {
 
 		return {
 			articles: await Promise.all(copyArticles),
-			articleCount
+			articlesCount
 		};
 	};
 	// get all articles by logged in user
@@ -103,13 +103,13 @@ module.exports = class ArticleDatabaseService {
 			if (!articles || !user) {
 				return this.articleError('error initializing get articles');
 			}
-			const articleCount = this.article.countDocuments();
+			const articlesCount = this.article.countDocuments();
 			const copyArticles = articles.map(article =>
 				copyArticleObj(article, user)
 			);
 			return {
 				articles: await Promise.all(copyArticles),
-				articleCount
+				articlesCount
 			};
 		} else {
 			return this.articleError(`invalid object id => ${userId}`);

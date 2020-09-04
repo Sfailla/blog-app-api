@@ -37,7 +37,7 @@ module.exports = class ArticleController {
 				favorites: req.query.favorites
 			});
 			if (err) throw err;
-			return await res.status(200).json({ articles, articleCount });
+			return await res.status(200).json({ articles, articlesCount });
 		} catch (error) {
 			return next(error);
 		}
@@ -55,7 +55,7 @@ module.exports = class ArticleController {
 				req.query.offset
 			);
 			if (err) throw err;
-			return await res.status(200).json({ articles, articleCount });
+			return await res.status(200).json({ articles, articlesCount });
 		} catch (error) {
 			return next(error);
 		}
