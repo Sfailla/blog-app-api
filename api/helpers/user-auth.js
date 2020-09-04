@@ -27,16 +27,14 @@ const makeAuthUser = user => {
 	return { id, username, email, name, bio, image };
 };
 
-const makeUserProfile = async (user, follower) => {
+const makeUserProfile = async (follower, user) => {
 	return {
-		id: user.id,
-		username: user.username,
-		name: user.name,
-		bio: user.bio,
-		image: user.image,
-		isFollowing: follower
-			? await user.isFollowing(follower._id)
-			: false
+		id: follower.id,
+		username: follower.username,
+		name: follower.name,
+		bio: follower.bio,
+		image: follower.image,
+		isFollowing: user ? await user.isFollowing(follower._id) : false
 	};
 };
 
