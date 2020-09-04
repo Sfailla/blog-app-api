@@ -62,7 +62,7 @@ class UserDatabaseService {
 	};
 
 	getUserById = async userId => {
-		if (userId && isValidObjId(userId.toString('hex'))) {
+		if (userId && isValidObjId(userId)) {
 			let user = await this.userModel.findOne({ _id: userId });
 			if (!user) {
 				const errMsg = 'user does not match our records';

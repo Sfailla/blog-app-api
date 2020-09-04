@@ -14,7 +14,10 @@ module.exports = class AuthController {
 			return await res
 				.header('x-auth-token', token)
 				.status(201)
-				.json({ user });
+				.json({
+					message: `successfully created user: ${user.username}`,
+					user
+				});
 		} catch (error) {
 			return next(error);
 		}
