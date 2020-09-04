@@ -26,7 +26,7 @@ module.exports = class ArticleController {
 		try {
 			const {
 				articles,
-				articleCount,
+				articlesCount,
 				err
 			} = await this.service.getAllArticles({
 				limit: req.query.limit || 10,
@@ -47,7 +47,7 @@ module.exports = class ArticleController {
 		try {
 			const {
 				articles,
-				articleCount,
+				articlesCount,
 				err
 			} = await this.service.getArticlesByUser(
 				req.user,
