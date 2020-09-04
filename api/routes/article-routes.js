@@ -15,7 +15,8 @@ const {
 	getArticles,
 	createArticle,
 	getUserArticles,
-	updateArticle
+	updateArticle,
+	deleteArticle
 } = articleController;
 
 const router = Router();
@@ -29,6 +30,8 @@ router.delete(
 	authenticateJWT,
 	unfavoriteArticle
 );
+
+router.delete('/:article', authenticateJWT, deleteArticle);
 
 router.get('/', getArticles);
 

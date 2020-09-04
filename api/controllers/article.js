@@ -13,7 +13,10 @@ module.exports = class ArticleController {
 				tags: req.body.tags
 			});
 			if (err) throw err;
-			return await res.status(200).json({ article });
+			return await res.status(200).json({
+				message: 'successfully created article',
+				article
+			});
 		} catch (error) {
 			return next(error);
 		}
@@ -78,7 +81,7 @@ module.exports = class ArticleController {
 			);
 			if (err) throw err;
 			return await res.status(200).json({
-				message: `${article.title}: 📑 marked as favorite!`,
+				message: `${article.title}: marked as favorite!`,
 				data: article
 			});
 		} catch (error) {
@@ -97,7 +100,7 @@ module.exports = class ArticleController {
 			);
 			if (err) throw err;
 			return await res.status(200).json({
-				message: `${article.title}: 📑 removed from favorite!`,
+				message: `${article.title}: removed from favorite!`,
 				data: articles
 			});
 		} catch (error) {
@@ -116,9 +119,23 @@ module.exports = class ArticleController {
 				req.body
 			);
 			if (err) throw err;
-			return await res.status(200).json({ article });
+			return await res.status(200).json({
+				message: `successfully updated article: ${article.title}`,
+				article
+			});
 		} catch (error) {
 			return next(error);
 		}
+	};
+
+	deleteArticle = async (req, res, next) => {
+		const { article } = await this.service.findAndDeleteArticle(
+			req.user,
+			req.params.article
+		);
+		return await res.status(200).json({
+			message: `successfully removed article: ${article.title}`,
+			article
+		});
 	};
 };

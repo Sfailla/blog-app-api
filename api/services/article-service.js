@@ -53,8 +53,9 @@ module.exports = class ArticleDatabaseService {
 				$in: formatFavorites(user.favorites)
 			};
 		}
-		// query for individual filter or all filters
+		// aggregate for individual filter or all filters
 		const query$Or = { $or: [ query ] };
+		const articleCount = await this.article.countDocuments();
 		const articles = await this.article
 			.find(query$Or, null, options)
 			.populate({
@@ -62,7 +63,6 @@ module.exports = class ArticleDatabaseService {
 				model: 'User',
 				select: [ 'username', 'name', 'bio', 'image' ]
 			});
-		const articleCount = await this.article.countDocuments();
 
 		if (!articles) {
 			return this.articleError('error fetching all articles');
@@ -180,5 +180,15 @@ module.exports = class ArticleDatabaseService {
 			return this.articleError('error updating article');
 		}
 		return { article: await copyArticleObj(article) };
+	};
+
+	findAndDeleteArticle = async (authUser, slug) => {
+		const article = await this.article.findOneAndDelete({
+			author: authUser.id,
+			slug
+		});
+
+		console.log(article);
+		return { article };
 	};
 };
