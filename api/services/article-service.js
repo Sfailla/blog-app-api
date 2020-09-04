@@ -67,9 +67,9 @@ module.exports = class ArticleDatabaseService {
 		if (!articles) {
 			return this.articleError('error fetching all articles');
 		}
-		const copyArticles = articles.map(article => {
-			return copyArticleObj(article);
-		});
+		const copyArticles = articles.map(article =>
+			copyArticleObj(article)
+		);
 
 		return {
 			articles: await Promise.all(copyArticles),
@@ -104,9 +104,9 @@ module.exports = class ArticleDatabaseService {
 				return this.articleError('error initializing get articles');
 			}
 			const articleCount = this.article.countDocuments();
-			const copyArticles = articles.map(article => {
-				return copyArticleObj(article, user);
-			});
+			const copyArticles = articles.map(article =>
+				copyArticleObj(article, user)
+			);
 			return {
 				articles: await Promise.all(copyArticles),
 				articleCount
