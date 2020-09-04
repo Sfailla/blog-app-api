@@ -1,4 +1,4 @@
-const { isValidObjId } = require('../../config/index');
+const { isValidObjId } = require('../database/db/config');
 const { ValidationError } = require('../middleware/utils/errors');
 const {
 	copyArticleObj,
@@ -22,7 +22,7 @@ module.exports = class ArticleDatabaseService {
 		if (!article) {
 			return this.articleError('error creating article');
 		}
-		return { article: copyArticleObj(article) };
+		return { article: await copyArticleObj(article) };
 	};
 	// get all articles with filters
 	getAllArticles = async filters => {
@@ -48,7 +48,7 @@ module.exports = class ArticleDatabaseService {
 		if (filters.favorites) {
 			user = await this.user.findOne({ username: filters.favorites });
 			if (!user)
-				return this.articleError("sorry that name doesn't exist");
+				return this.articleError("sorry that username doesn't exist");
 			query['_id'] = {
 				$in: formatFavorites(user.favorites)
 			};
@@ -67,9 +67,10 @@ module.exports = class ArticleDatabaseService {
 			return this.articleError('error fetching all articles');
 		}
 		const copyArticles = articles.map(article => {
-			return copyArticleObj(article, user);
+			return copyArticleObj(article);
 		});
-		return { articles: copyArticles };
+
+		return { articles: await Promise.all(copyArticles) };
 	};
 	// get all articles by logged in user
 	getArticlesByUser = async (
@@ -86,7 +87,7 @@ module.exports = class ArticleDatabaseService {
 			skip: Number(offset)
 		};
 
-		if (isValidObjId(userId.toString('hex'))) {
+		if (isValidObjId(userId)) {
 			const articles = await this.article
 				.find(query, null, options)
 				.populate({
@@ -94,13 +95,14 @@ module.exports = class ArticleDatabaseService {
 					model: 'User',
 					select: [ 'username', 'name', 'bio', 'image' ]
 				});
-			if (!articles) {
-				return this.articleError('error fetching user articles');
+			const user = await this.user.findOne({ _id: userId });
+			if (!articles || !user) {
+				return this.articleError('error initializing get articles');
 			}
-			const copyArticles = articles.map(article =>
-				copyArticleObj(article)
-			);
-			return { articles: copyArticles };
+			const copyArticles = articles.map(article => {
+				return copyArticleObj(article, user);
+			});
+			return { articles: await Promise.all(copyArticles) };
 		} else {
 			return this.articleError(`invalid object id => ${userId}`);
 		}
@@ -118,7 +120,7 @@ module.exports = class ArticleDatabaseService {
 		if (!article) {
 			return this.articleError('error fetching article slug');
 		}
-		return { article: copyArticleObj(article) };
+		return { article: await copyArticleObj(article) };
 	};
 	// set favorite articles
 	setFavoriteArticle = async (authUser, slug) => {
@@ -132,7 +134,7 @@ module.exports = class ArticleDatabaseService {
 		if (!user || !article) {
 			return this.articleError('error setting favorite article');
 		}
-		return { article: copyArticleObj(article, user) };
+		return { article: await copyArticleObj(article, user) };
 	};
 	// remove favorite article
 	removeFavoriteArticle = async (authUser, slug) => {
@@ -147,7 +149,7 @@ module.exports = class ArticleDatabaseService {
 		if (!user || !article) {
 			return this.articleError('error setting unfavorite article');
 		}
-		return { article: copyArticleObj(article, user) };
+		return { article: await copyArticleObj(article, user) };
 	};
 
 	findAndUpdateArticle = async (authUser, slug, updates) => {
@@ -169,6 +171,6 @@ module.exports = class ArticleDatabaseService {
 		if (!article) {
 			return this.articleError('error updating article');
 		}
-		return { article: copyArticleObj(article) };
+		return { article: await copyArticleObj(article) };
 	};
 };
