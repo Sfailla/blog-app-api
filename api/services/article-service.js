@@ -171,6 +171,11 @@ module.exports = class ArticleDatabaseService {
 			author: authUser.id,
 			slug
 		});
-		return { article };
+		if (!article) {
+			const errMsg = 'error deleting article';
+			const err = new ValidationError(400, errMsg);
+			return { err };
+		}
+		return { article: await copyArticleObj(article) };
 	};
 };

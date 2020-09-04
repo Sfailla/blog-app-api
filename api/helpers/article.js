@@ -14,6 +14,7 @@ const copyArticleObj = async (article, authUser) => {
 		title: article.title,
 		description: article.description,
 		body: article.body,
+		image: article.image,
 		comments: article.comments,
 		tags: article.tags,
 		isFavorite: authUser ? await authUser.isFavorite(article._id) : null,

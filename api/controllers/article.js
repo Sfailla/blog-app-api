@@ -98,8 +98,6 @@ module.exports = class ArticleController {
 
 	updateArticle = async (req, res, next) => {
 		try {
-			console.log(req.body);
-			console.log({ ...req.body });
 			const { article, err } = await this.service.findAndUpdateArticle(
 				req.user,
 				req.params.article,
@@ -116,10 +114,11 @@ module.exports = class ArticleController {
 	};
 
 	deleteArticle = async (req, res, next) => {
-		const { article } = await this.service.findAndDeleteArticle(
+		const { article, err } = await this.service.findAndDeleteArticle(
 			req.user,
 			req.params.article
 		);
+		if (err) throw err;
 		return await res.status(200).json({
 			message: `successfully removed article: ${article.title} 🔥😱`,
 			article
