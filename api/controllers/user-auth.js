@@ -5,7 +5,6 @@ module.exports = class AuthController {
 
 	registerUser = async (req, res, next) => {
 		try {
-			console.log((requiredFields = { ...req.body.trim() }));
 			const requiredFields = { ...req.body };
 			const { user, token, err } = await this.service.createUser(requiredFields);
 			if (err) throw err;
@@ -22,8 +21,8 @@ module.exports = class AuthController {
 		try {
 			const { getUserByEmailAndPassword } = this.service;
 			const { user, token, err } = await getUserByEmailAndPassword(
-				req.body.email,
-				req.body.password
+				req.body.email.trim(),
+				req.body.password.trim()
 			);
 			if (err) throw err;
 			return await res.header('x-auth-token', token).status(200).json({ user });
@@ -63,7 +62,7 @@ module.exports = class AuthController {
 		);
 		if (err) throw err;
 		return await res.status(200).json({
-			message: `successfully removed user: {${user.username}:${user.id}} 🔥😱`,
+			message: `successfully removed user: ${user.username} 🔥😱`,
 			user
 		});
 	};
