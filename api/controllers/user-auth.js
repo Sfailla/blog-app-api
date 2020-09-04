@@ -15,7 +15,7 @@ module.exports = class AuthController {
 				.header('x-auth-token', token)
 				.status(201)
 				.json({
-					message: `successfully created user: ${user.username}`,
+					message: `successfully created user: ${user.username} 🤴🏻🚀`,
 					user
 				});
 		} catch (error) {
@@ -70,5 +70,17 @@ module.exports = class AuthController {
 		} catch (error) {
 			return next(error);
 		}
+	};
+
+	deleteUserAdmin = async (req, res, next) => {
+		const { user, err } = await this.service.findAndRemoveUserAdmin(
+			req.user,
+			req.params.id
+		);
+		if (err) throw err;
+		return await res.status(200).json({
+			message: `successfully removed user: {${user.id}:${user.username}} 🔥😱`,
+			user
+		});
 	};
 };

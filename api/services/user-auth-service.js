@@ -26,7 +26,7 @@ class UserDatabaseService {
 			const err = new ValidationError(400, 'error creating user');
 			return { err };
 		} else {
-			user = copyUserObj(user);
+			user = makeAuthUser(user);
 			const token = generateAuthToken(user);
 			return { user, token };
 		}
@@ -81,12 +81,21 @@ class UserDatabaseService {
 	getAllUsers = async () => {
 		const users = await this.userModel.find({});
 		if (!users) {
-			const errMsg = 'there was an error locating users';
+			const errMsg = 'error retrieving users';
 			const err = new ValidationError(400, errMsg);
 			return { err };
 		}
 		const copiedUsers = users.map(user => copyUserObj(user));
 		return { users: copiedUsers };
+	};
+
+	findAndRemoveUserAdmin = async (authUser, userId) => {
+		const user = await this.userModel.findOneAndDelete({
+			_id: userId
+		});
+		const errMsg = 'error retrieving user from database';
+		if (!user) return { err: new ValidationError(400, errMsg) };
+		return { user: makeAuthUser(user) };
 	};
 }
 
