@@ -13,4 +13,36 @@ const validate = (value, field) => {
 	return true;
 };
 
-module.exports = validate;
+const trimRequest = object => {
+	const trimValue = str => str.trim();
+	const type = Object.prototype.toString.call(object).slice(8, -1).toLowerCase();
+
+	if (type === 'object') {
+		let cloned = {};
+		for (let key in object) {
+			if (object.hasOwnProperty(key)) {
+				cloned[key] = trimRequest(object[key]);
+			}
+		}
+		return cloned;
+	}
+
+	// If an array, create a new array and recursively trim
+	if (type === 'array') {
+		return object.map(item => {
+			return trimRequest(item);
+		});
+	}
+
+	// If the data is a string, trim it
+	if (type === 'string') {
+		return trimValue(object);
+	}
+
+	// Otherwise, return object as is
+	return object;
+};
+
+module.exports = {
+	trimRequest
+};
