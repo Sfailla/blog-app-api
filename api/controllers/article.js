@@ -1,3 +1,5 @@
+const { trimRequest } = require('../helpers/validation');
+
 module.exports = class ArticleController {
 	constructor(databaseService) {
 		this.service = databaseService;
@@ -98,6 +100,7 @@ module.exports = class ArticleController {
 
 	updateArticle = async (req, res, next) => {
 		try {
+			console.log(req.body);
 			const { article, err } = await this.service.findAndUpdateArticle(
 				req.user,
 				req.params.article,

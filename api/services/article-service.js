@@ -145,6 +145,7 @@ module.exports = class ArticleDatabaseService {
 	};
 	// update user article
 	findAndUpdateArticle = async (authUser, slug, updates) => {
+		console.log(updates);
 		let article = await this.article
 			.findOneAndUpdate(
 				{ author: authUser.id, slug },
