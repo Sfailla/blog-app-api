@@ -1,3 +1,5 @@
+const { trimRequest } = require('../helpers/validation');
+
 module.exports = class AuthController {
 	constructor(databaseService) {
 		this.service = databaseService;
@@ -20,10 +22,10 @@ module.exports = class AuthController {
 	loginUser = async (req, res, next) => {
 		try {
 			const { getUserByEmailAndPassword } = this.service;
-			const { user, token, err } = await getUserByEmailAndPassword(
-				req.body.email.trim(),
-				req.body.password.trim()
-			);
+			const sanitizedRequest = trimRequest(req.body);
+			const { user, token, err } = await getUserByEmailAndPassword({
+				...sanitizedRequest
+			});
 			if (err) throw err;
 			return await res.header('x-auth-token', token).status(200).json({ user });
 		} catch (error) {

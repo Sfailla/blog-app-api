@@ -30,11 +30,15 @@ class UserDatabaseService {
 		}
 	};
 
-	getUserByEmailAndPassword = async (email, password) => {
-		let { user, err } = await this.getUserByEmail(email);
+	getUserByEmailAndPassword = async fields => {
+		console.log(fields);
+		let { user, err } = await this.getUserByEmail(fields.email);
 		if (err) return { err };
 
-		const isValidPassword = await comparePasswordBcrypt(password, user.password);
+		const isValidPassword = await comparePasswordBcrypt(
+			fields.password,
+			user.password
+		);
 		if (!isValidPassword) {
 			const errMsg = 'user password does not match our records';
 			const err = new ValidationError(400, errMsg);
