@@ -21,7 +21,7 @@ module.exports = class ProfileController {
 			const { profile, err } = await this.service.followService(req.user, username);
 			if (err) throw err;
 			return await res.status(200).json({
-				message: `now following author: ${username} 😎`,
+				message: `now following author: ${username} 😎✨`,
 				profile
 			});
 		} catch (error) {
@@ -43,6 +43,20 @@ module.exports = class ProfileController {
 			});
 		} catch (error) {
 			return next(error);
+		}
+	};
+
+	updateUserProfile = async (req, res, next) => {
+		try {
+			const username = req.params.username;
+			const profile = await this.service.findProfileAndUpdate(req.user, req.body);
+			if (err) throw err;
+			return await res.status(200).json({
+				message: `successfully updated profile: ${username} 😎✨`,
+				profile
+			});
+		} catch (error) {
+			next(error);
 		}
 	};
 };

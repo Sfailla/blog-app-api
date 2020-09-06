@@ -1,5 +1,6 @@
 const { makeUserProfile } = require('../helpers/user-auth');
 const { ValidationError } = require('../middleware/utils/errors');
+const { trimRequest } = require('../helpers/validation');
 
 module.exports = class ProfileDatabaseService {
 	constructor(userModel) {
@@ -46,5 +47,19 @@ module.exports = class ProfileDatabaseService {
 		return {
 			profile: await makeUserProfile(follower, updatedUser)
 		};
+	};
+
+	findProfileAndUpdate = async (authUser, updates) => {
+		const query = { _id: authUser.id };
+		const update = { ...trimRequest(updates) };
+		const profile = await this.profile.findOneAndUpdate(query, update, {
+			new: true
+		});
+		if (!profile) {
+			const errMsg = 'error updating user profile';
+			const err = ValidationError(400, errMsg);
+			return { err };
+		}
+		return { profile: await makeUserProfile(profile) };
 	};
 };
