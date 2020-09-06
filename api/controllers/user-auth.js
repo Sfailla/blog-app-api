@@ -1,5 +1,3 @@
-const { trimRequest } = require('../helpers/validation');
-
 module.exports = class AuthController {
 	constructor(databaseService) {
 		this.service = databaseService;
@@ -7,8 +5,9 @@ module.exports = class AuthController {
 
 	registerUser = async (req, res, next) => {
 		try {
-			const requiredFields = { ...req.body };
-			const { user, token, err } = await this.service.createUser(requiredFields);
+			const { user, token, err } = await this.service.createUser({
+				...req.body
+			});
 			if (err) throw err;
 			return await res.header('x-auth-token', token).status(201).json({
 				message: `successfully created user: ${user.username} 🤴🏻🚀`,
@@ -22,10 +21,7 @@ module.exports = class AuthController {
 	loginUser = async (req, res, next) => {
 		try {
 			const { getUserByEmailAndPassword } = this.service;
-			const sanitizedRequest = trimRequest(req.body);
-			const { user, token, err } = await getUserByEmailAndPassword({
-				...sanitizedRequest
-			});
+			const { user, token, err } = await getUserByEmailAndPassword(req.body);
 			if (err) throw err;
 			return await res.header('x-auth-token', token).status(200).json({ user });
 		} catch (error) {
@@ -57,15 +53,19 @@ module.exports = class AuthController {
 		}
 	};
 
-	deleteUserAdmin = async (req, res, next) => {
-		const { user, err } = await this.service.findAndRemoveUserAdmin(
-			req.user,
-			req.params.id
-		);
-		if (err) throw err;
-		return await res.status(200).json({
-			message: `successfully removed user: ${user.username} 🔥😱`,
-			user
-		});
+	deleteUser = async (req, res, next) => {
+		try {
+			const { user, err } = await this.service.findAndRemoveUser(
+				req.user,
+				req.params.id
+			);
+			if (err) throw err;
+			return await res.status(200).json({
+				message: `successfully removed user: ${user.username} 🔥😱`,
+				user
+			});
+		} catch (error) {
+			next(error);
+		}
 	};
 };

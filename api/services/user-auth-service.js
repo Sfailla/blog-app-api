@@ -1,5 +1,6 @@
 const { ValidationError } = require('../middleware/utils/errors');
 const { isValidObjId } = require('../database/db/config');
+const { trimRequest } = require('../helpers/validation');
 const {
 	generateAuthToken,
 	hashPasswordBcrypt,
@@ -14,9 +15,10 @@ class UserDatabaseService {
 	}
 
 	createUser = async userFields => {
-		const hashedPassword = await hashPasswordBcrypt(userFields.password);
+		const sanitized = trimRequest(userFields);
+		const hashedPassword = await hashPasswordBcrypt(sanitized.password);
 		let user = await this.userModel.create({
-			...userFields,
+			...sanitized,
 			password: hashedPassword
 		});
 
@@ -31,12 +33,12 @@ class UserDatabaseService {
 	};
 
 	getUserByEmailAndPassword = async fields => {
-		console.log(fields);
-		let { user, err } = await this.getUserByEmail(fields.email);
+		const sanitized = trimRequest(fields);
+		let { user, err } = await this.getUserByEmail(sanitized.email);
 		if (err) return { err };
 
 		const isValidPassword = await comparePasswordBcrypt(
-			fields.password,
+			sanitized.password,
 			user.password
 		);
 		if (!isValidPassword) {
@@ -88,13 +90,17 @@ class UserDatabaseService {
 		return { users: copiedUsers };
 	};
 
-	findAndRemoveUserAdmin = async (authUser, userId) => {
-		const user = await this.userModel.findOneAndDelete({
-			_id: userId
-		});
-		const errMsg = 'error retrieving user from database';
-		if (!user) return { err: new ValidationError(400, errMsg) };
-		return { user: makeAuthUser(user) };
+	findAndRemoveUser = async (authUser, userId) => {
+		if (authUser.id.toString() === userId.toString() || authUser.role === 'admin') {
+			const user = await this.userModel.findOneAndDelete({
+				_id: userId
+			});
+			const errMsg = 'error retrieving user from database';
+			if (!user) return { err: new ValidationError(400, errMsg) };
+			return { user: makeAuthUser(user) };
+		} else {
+			return { err: new ValidationError(401, 'unauthorized request') };
+		}
 	};
 }
 
