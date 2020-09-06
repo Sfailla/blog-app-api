@@ -13,7 +13,7 @@ const {
 	registerUser,
 	getAllUsers,
 	getCurrentUser,
-	deleteUserAdmin
+	deleteUser
 } = authController;
 
 const router = Router();
@@ -46,6 +46,6 @@ router.get('/', authenticateJWT, requireAdmin('admin'), getAllUsers);
 router.get('/user/:id', authenticateJWT, requireAdmin('admin'), getCurrentUser);
 
 // delete user admin route
-router.delete('/user/:id', authenticateJWT, requireAdmin('admin'), deleteUserAdmin);
+router.delete('/user/:id', authenticateJWT, deleteUser);
 
 module.exports = router;
