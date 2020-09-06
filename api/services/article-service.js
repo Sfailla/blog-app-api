@@ -1,5 +1,7 @@
 const { isValidObjId } = require('../database/db/config');
 const { ValidationError } = require('../middleware/utils/errors');
+const { trimRequest } = require('../helpers/validation');
+
 const {
 	copyArticleObj,
 	formatTags,
@@ -17,8 +19,11 @@ module.exports = class ArticleDatabaseService {
 		return { err: new ValidationError(400, errMsg) };
 	};
 	// create article
-	createArticle = async articleFields => {
-		const article = await this.article.create({ ...articleFields });
+	createArticle = async (userId, articleFields) => {
+		const article = await this.article.create({
+			author: userId,
+			...trimRequest(articleFields)
+		});
 		if (!article) {
 			return this.articleError('error creating article');
 		}
@@ -145,13 +150,12 @@ module.exports = class ArticleDatabaseService {
 	};
 	// update user article
 	findAndUpdateArticle = async (authUser, slug, updates) => {
-		console.log(updates);
 		let article = await this.article
 			.findOneAndUpdate(
 				{ author: authUser.id, slug },
 				{
-					...updates,
-					slug: formatSlug(updates.title),
+					...trimRequest(updates),
+					slug: formatSlug(trimRequest(updates.title)),
 					updatedAt: Date.now()
 				},
 				{ new: true }
