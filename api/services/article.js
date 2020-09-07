@@ -150,16 +150,14 @@ module.exports = class ArticleDatabaseService {
 	};
 	// update user article
 	findAndUpdateArticle = async (authUser, slug, updates) => {
+		const query = { author: authUser.id, slug };
+		const update = {
+			...trimRequest(updates),
+			slug: formatSlug(trimRequest(updates.title)),
+			updatedAt: Date.now()
+		};
 		let article = await this.article
-			.findOneAndUpdate(
-				{ author: authUser.id, slug },
-				{
-					...trimRequest(updates),
-					slug: formatSlug(trimRequest(updates.title)),
-					updatedAt: Date.now()
-				},
-				{ new: true }
-			)
+			.findOneAndUpdate(query, update, { new: true })
 			.populate({
 				path: 'author',
 				model: 'User',
@@ -177,9 +175,7 @@ module.exports = class ArticleDatabaseService {
 			slug
 		});
 		if (!article) {
-			const errMsg = 'error deleting article';
-			const err = new ValidationError(400, errMsg);
-			return { err };
+			return this.articleError('error deleting article');
 		}
 		return { article: await copyArticleObj(article) };
 	};
