@@ -4,10 +4,7 @@ module.exports = class TagsController {
 	}
 
 	getAllTags = async (req, res, next) => {
-		const options = {
-			limit: Number(req.query.limit)
-		};
-		const tags = await this.tags.find({}, null, options).distinct('tags');
+		const tags = await this.tags.find({}).distinct('tags');
 		if (!tags) {
 			const errMsg = 'error fetching all tags';
 			const err = new ValidationError(400, errMsg);
