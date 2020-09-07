@@ -1,6 +1,6 @@
 const express = require('express');
 const ProfileController = require('../controllers/profile');
-const ProfileDbService = require('../services/profile-service');
+const ProfileDbService = require('../services/profile');
 const UserModel = require('../models/user');
 const authenticateJWT = require('../middleware/route/authenticate');
 

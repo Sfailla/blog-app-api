@@ -14,10 +14,10 @@ const {
 	handleListen
 } = require('./api/middleware/route/handlers');
 
-const articleApiRoutes = require('./api/routes/article-routes');
-const userApiRoutes = require('./api/routes/user-routes');
-const profileApiRoutes = require('./api/routes/profile-routes');
-const tagsApiRoute = require('./api/routes/tags-route');
+const articleApiRoutes = require('./api/routes/article');
+const userApiRoutes = require('./api/routes/user');
+const profileApiRoutes = require('./api/routes/profile');
+const tagsApiRoute = require('./api/routes/tags');
 
 const app = express();
 

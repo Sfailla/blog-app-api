@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const ArticleController = require('../controllers/article');
-const ArticleDbService = require('../services/article-service');
+const ArticleDbService = require('../services/article');
 const ArticleModel = require('../models/article');
 const UserModel = require('../models/user');
 const { authenticateJWT } = require('../middleware/index');

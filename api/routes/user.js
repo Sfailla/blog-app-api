@@ -1,6 +1,6 @@
 const UserModel = require('../models/user');
-const UserDatabaseService = require('../services/user-auth-service');
-const AuthController = require('../controllers/user-auth');
+const UserDatabaseService = require('../services/user');
+const AuthController = require('../controllers/user');
 const { Router } = require('express');
 const { authenticateJWT, requireAdmin } = require('../middleware/index');
 
