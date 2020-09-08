@@ -199,7 +199,12 @@ module.exports = class ArticleDatabaseService {
 		return { comment: copyCommentObj(comment) };
 	};
 
-	fetchCommentsForArticle = async authUser => {
-		// hello
+	fetchCommentsForArticle = async articleId => {
+		const comments = await this.comment.find({ article: articleId }).populate({
+			path: 'author',
+			model: 'User',
+			select: [ 'name', 'bio', 'image' ]
+		});
+		console.log(comments);
 	};
 };

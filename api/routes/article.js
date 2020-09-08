@@ -29,9 +29,9 @@ router.get('/', getArticles);
 
 router.get('/:article', getArticle);
 
-router.get('/user/articles', authenticateJWT, getUserArticles);
+router.get('/user/article', authenticateJWT, getUserArticles);
 
-router.get('/:article/comment', getArticleComments);
+router.get('/:articleId/comment', getArticleComments);
 
 router.post('/', authenticateJWT, createArticle);
 
