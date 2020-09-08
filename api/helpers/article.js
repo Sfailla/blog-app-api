@@ -15,7 +15,6 @@ const copyArticleObj = async (article, authUser) => {
 		description: article.description,
 		body: article.body,
 		image: article.image,
-		comments: article.comments,
 		tags: article.tags,
 		isFavorite: authUser ? await authUser.isFavorite(article._id) : null,
 		favoriteCount: article.favoriteCount,
@@ -24,15 +23,9 @@ const copyArticleObj = async (article, authUser) => {
 	};
 };
 
-const copyCommentObj = comment => {
-	return {
-		id: comment._id,
-		comment: comment.comment,
-		author: comment.author,
-		article: comment.article,
-		updatedAt: comment.updatedAt,
-		createdAt: comment.createdAt
-	};
+const copyCommentObj = comments => {
+	const { id, comment, author, article, updatedAt, createdAt } = comments;
+	return { id, comment, author, article, updatedAt, createdAt };
 };
 
 const formatTags = tags => {
