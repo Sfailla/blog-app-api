@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const logger = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
-const { makeDbConnection } = require('./api/database/db/config');
+const { makeDbConnection } = require('./api/database/db/index');
 const {
 	errorHandler,
 	notFoundHandler,

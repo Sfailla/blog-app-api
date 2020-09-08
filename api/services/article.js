@@ -1,4 +1,4 @@
-const { isValidObjId } = require('../database/db/config');
+const { isValidObjId } = require('../database/db/index');
 const { ValidationError } = require('../middleware/utils/errors');
 const { trimRequest } = require('../helpers/validation');
 
