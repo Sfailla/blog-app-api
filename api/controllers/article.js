@@ -142,6 +142,6 @@ module.exports = class ArticleController {
 	};
 
 	getArticleComments = async (req, res, next) => {
-		await this.service.fetchCommentsForArticle(req.user, req.params.articleId);
+		await this.service.fetchCommentsForArticle(req.params.articleId);
 	};
 };
