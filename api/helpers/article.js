@@ -24,6 +24,17 @@ const copyArticleObj = async (article, authUser) => {
 	};
 };
 
+const copyCommentObj = comment => {
+	return {
+		id: comment._id,
+		comment: comment.comment,
+		author: comment.author,
+		article: comment.article,
+		updatedAt: comment.updatedAt,
+		createdAt: comment.createdAt
+	};
+};
+
 const formatTags = tags => {
 	return tags.split(',').map(tag => tag.toLowerCase());
 };
@@ -40,6 +51,7 @@ const formatSlug = slug => {
 
 module.exports = {
 	copyArticleObj,
+	copyCommentObj,
 	formatSlug,
 	formatTags,
 	formatFavorites
