@@ -6,13 +6,16 @@ const {
 	copyArticleObj,
 	formatTags,
 	formatFavorites,
-	formatSlug
+	formatSlug,
+	copyCommentObj
 } = require('../helpers/article');
+const { makeUserProfile } = require('../helpers/user-auth');
 
 module.exports = class ArticleDatabaseService {
-	constructor(articleModel, userModel) {
+	constructor(articleModel, userModel, commentModel) {
 		this.article = articleModel;
 		this.user = userModel;
+		this.comment = commentModel;
 	}
 	// article error method to keep class DRY
 	articleError = errMsg => {
@@ -97,7 +100,6 @@ module.exports = class ArticleDatabaseService {
 			}
 			const articlesCount = await this.article.countDocuments();
 			const copyArticles = articles.map(article => copyArticleObj(article, user));
-			console.log(await Promise.all(copyArticles));
 			return {
 				articles: await Promise.all(copyArticles),
 				articlesCount
@@ -178,5 +180,26 @@ module.exports = class ArticleDatabaseService {
 			return this.articleError('error deleting article');
 		}
 		return { article: await copyArticleObj(article) };
+	};
+
+	createCommentForArticle = async (authUser, articleId, commentFields) => {
+		const user = await this.user.findOne({ _id: authUser.id });
+		const addCommentFields = {
+			...commentFields,
+			article: articleId,
+			author: user._id
+		};
+		const comment = await this.comment.create({ ...addCommentFields });
+		const article = await this.article.findOneAndUpdate(
+			{ _id: articleId },
+			{ $push: { comments: comment } },
+			{ new: true }
+		);
+
+		return { comment: copyCommentObj(comment) };
+	};
+
+	fetchCommentsForArticle = async authUser => {
+		// hello
 	};
 };

@@ -116,14 +116,32 @@ module.exports = class ArticleController {
 	};
 
 	deleteArticle = async (req, res, next) => {
-		const { article, err } = await this.service.findAndDeleteArticle(
+		try {
+			const { article, err } = await this.service.findAndDeleteArticle(
+				req.user,
+				req.params.article
+			);
+			if (err) throw err;
+			return await res.status(200).json({
+				message: `successfully removed article: ${article.title} 🔥😱`,
+				article
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	createComment = async (req, res, next) => {
+		const { comment, err } = await this.service.createCommentForArticle(
 			req.user,
-			req.params.article
+			req.params.articleId,
+			req.body
 		);
-		if (err) throw err;
-		return await res.status(200).json({
-			message: `successfully removed article: ${article.title} 🔥😱`,
-			article
-		});
+
+		return await res.status(200).json({ comment });
+	};
+
+	getArticleComments = async (req, res, next) => {
+		await this.service.fetchCommentsForArticle(req.user);
 	};
 };
