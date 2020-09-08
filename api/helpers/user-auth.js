@@ -28,7 +28,6 @@ const makeAuthUser = user => {
 };
 
 const makeUserProfile = async (follower, user) => {
-	console.log(follower);
 	return {
 		id: follower._id,
 		username: follower.username,
