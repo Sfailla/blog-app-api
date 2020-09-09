@@ -55,7 +55,7 @@ ArticleSchema.methods.addComment = async function(articleId, comment) {
 	return await this.save();
 };
 
-ArticleSchema.methods.deleteComment = async function(userId, commentId) {
+ArticleSchema.methods.deleteComment = async function(commentId) {
 	if (this.comments.includes(commentId)) {
 		await this.comments.remove(commentId);
 	}
