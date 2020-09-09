@@ -107,7 +107,7 @@ module.exports = class ArticleDatabaseService {
 			return this.articleError(`invalid object id => ${userId}`);
 		}
 	};
-	// get articles by slug (title + unique id)
+	// get articles by slug
 	getArticleBySlug = async slug => {
 		const query = { slug };
 		const article = await this.article.findOne({ ...query }).populate({
@@ -215,7 +215,7 @@ module.exports = class ArticleDatabaseService {
 		const article = await this.article.findOne({ slug: articleSlug });
 		const comment = await this.comment.findOne({ _id: commentId });
 
-		const updatedArticle = await article.deleteComment(authUser.id, commentId);
+		const updatedArticle = await article.deleteComment(commentId);
 		await comment.deleteComment(authUser.id, commentId);
 
 		return {
