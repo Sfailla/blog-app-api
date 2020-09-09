@@ -20,7 +20,8 @@ const {
 	getUserArticles,
 	updateArticle,
 	deleteArticle,
-	createComment
+	createComment,
+	deleteComment
 } = articleController;
 
 const router = Router();
@@ -31,18 +32,20 @@ router.get('/:article', getArticle);
 
 router.get('/user/article', authenticateJWT, getUserArticles);
 
-router.get('/:articleId/comment', getArticleComments);
+router.get('/:article/comment', getArticleComments);
 
 router.post('/', authenticateJWT, createArticle);
 
 router.post('/:article/favorite', authenticateJWT, favoriteArticle);
 
-router.post('/:articleId/comment', authenticateJWT, createComment);
+router.post('/:article/comment', authenticateJWT, createComment);
 
 router.put('/:article', authenticateJWT, updateArticle);
 
 router.delete('/:article/favorite', authenticateJWT, unfavoriteArticle);
 
 router.delete('/:article', authenticateJWT, deleteArticle);
+
+router.delete('/:article/comment/:comment', authenticateJWT, deleteComment);
 
 module.exports = router;

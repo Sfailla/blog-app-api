@@ -9,7 +9,6 @@ const {
 	formatSlug,
 	copyCommentObj
 } = require('../helpers/article');
-const { makeUserProfile } = require('../helpers/user-auth');
 
 module.exports = class ArticleDatabaseService {
 	constructor(articleModel, userModel, commentModel) {
@@ -182,29 +181,46 @@ module.exports = class ArticleDatabaseService {
 		return { article: await copyArticleObj(article) };
 	};
 
-	createCommentForArticle = async (authUser, articleId, commentFields) => {
+	createCommentForArticle = async (authUser, articleSlug, commentFields) => {
 		const user = await this.user.findOne({ _id: authUser.id });
+		const article = await this.article.findOne({ slug: articleSlug });
 		const addCommentFields = {
 			...commentFields,
-			article: articleId,
+			article: article._id,
 			author: user._id
 		};
 		const comment = await this.comment.create({ ...addCommentFields });
-		const article = await this.article.findOneAndUpdate(
-			{ _id: articleId },
-			{ $push: { comments: comment } },
-			{ new: true }
-		);
+		await article.addComment(article._id, comment);
 
 		return { comment: copyCommentObj(comment) };
 	};
 
-	fetchCommentsForArticle = async articleId => {
-		const comments = await this.comment.find({ article: articleId }).populate({
+	fetchCommentsForArticle = async articleSlug => {
+		const article = await this.article.findOne({ slug: articleSlug });
+		const comments = await this.comment.find({ article: article._id }).populate({
 			path: 'author',
 			model: 'User',
-			select: [ 'name', 'bio', 'image' ]
+			select: [ 'username', 'name', 'bio', 'image' ]
 		});
-		console.log(comments);
+		const copyComments = comments.map(comment => copyCommentObj(comment));
+		const commentsCount = copyComments.length;
+
+		return {
+			comments: copyComments,
+			commentsCount
+		};
+	};
+
+	removeUserComment = async (authUser, articleSlug, commentId) => {
+		const article = await this.article.findOne({ slug: articleSlug });
+		const comment = await this.comment.findOne({ _id: commentId });
+
+		const updatedArticle = await article.deleteComment(authUser.id, commentId);
+		await comment.deleteComment(authUser.id, commentId);
+
+		return {
+			article: copyArticleObj(updatedArticle),
+			comment: copyCommentObj(comment)
+		};
 	};
 };

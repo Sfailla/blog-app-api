@@ -134,14 +134,29 @@ module.exports = class ArticleController {
 	createComment = async (req, res, next) => {
 		const { comment, err } = await this.service.createCommentForArticle(
 			req.user,
-			req.params.articleId,
+			req.params.article,
 			req.body
 		);
-
 		return await res.status(200).json({ comment });
 	};
 
 	getArticleComments = async (req, res, next) => {
-		await this.service.fetchCommentsForArticle(req.params.articleId);
+		const { comments, commentsCount } = await this.service.fetchCommentsForArticle(
+			req.params.article
+		);
+		return await res.status(200).json({ comments, commentsCount });
+	};
+
+	deleteComment = async (req, res, next) => {
+		const { article, comment } = await this.service.removeUserComment(
+			req.user,
+			req.params.article,
+			req.params.comment
+		);
+		return await res.status(200).json({
+			message: `successfully deleted comment: ${req.params.comment} `,
+			article,
+			comment
+		});
 	};
 };
