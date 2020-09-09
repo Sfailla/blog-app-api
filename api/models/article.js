@@ -48,4 +48,18 @@ ArticleSchema.methods.updateCount = async function() {
 	return this.save();
 };
 
+ArticleSchema.methods.addComment = async function(articleId, comment) {
+	if (this._id.toString() === articleId.toString()) {
+		await this.comments.push(comment);
+	}
+	return await this.save();
+};
+
+ArticleSchema.methods.deleteComment = async function(userId, commentId) {
+	if (this.comments.includes(commentId)) {
+		await this.comments.remove(commentId);
+	}
+	return await this.save();
+};
+
 module.exports = model('Article', ArticleSchema);
