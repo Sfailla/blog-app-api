@@ -132,31 +132,48 @@ module.exports = class ArticleController {
 	};
 
 	createComment = async (req, res, next) => {
-		const { comment, err } = await this.service.createCommentForArticle(
-			req.user,
-			req.params.article,
-			req.body
-		);
-		return await res.status(200).json({ comment });
+		try {
+			const { comment, err } = await this.service.createCommentForArticle(
+				req.user,
+				req.params.article,
+				req.body
+			);
+			if (err) throw err;
+			return await res.status(200).json({ comment });
+		} catch (error) {
+			next(error);
+		}
 	};
 
 	getArticleComments = async (req, res, next) => {
-		const { comments, commentsCount } = await this.service.fetchCommentsForArticle(
-			req.params.article
-		);
-		return await res.status(200).json({ comments, commentsCount });
+		try {
+			const {
+				comments,
+				commentsCount,
+				err
+			} = await this.service.fetchCommentsForArticle(req.params.article);
+			if (err) throw err;
+			return await res.status(200).json({ comments, commentsCount });
+		} catch (error) {
+			next(error);
+		}
 	};
 
 	deleteComment = async (req, res, next) => {
-		const { article, comment } = await this.service.removeUserComment(
-			req.user,
-			req.params.article,
-			req.params.comment
-		);
-		return await res.status(200).json({
-			message: `successfully deleted comment: ${req.params.comment} `,
-			article,
-			comment
-		});
+		try {
+			const { article, comment, err } = await this.service.removeUserComment(
+				req.user,
+				req.params.article,
+				req.params.comment
+			);
+			if (err) throw err;
+			return await res.status(200).json({
+				message: `successfully deleted comment: ${req.params.comment} `,
+				article,
+				comment
+			});
+		} catch (error) {
+			next(err);
+		}
 	};
 };

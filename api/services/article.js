@@ -189,7 +189,11 @@ module.exports = class ArticleDatabaseService {
 			article: article._id,
 			author: user._id
 		};
+		if (!user || !article) {
+			this.articleError('error initializing create comment');
+		}
 		const comment = await this.comment.create({ ...addCommentFields });
+		if (!comment) return this.articleError('error creating comment');
 		await article.addComment(article._id, comment);
 
 		return { comment: copyCommentObj(comment) };
@@ -202,6 +206,9 @@ module.exports = class ArticleDatabaseService {
 			model: 'User',
 			select: [ 'username', 'name', 'bio', 'image' ]
 		});
+		if (!article || !comments) {
+			return this.articleError('error initializing fetch comments');
+		}
 		const copyComments = comments.map(comment => copyCommentObj(comment));
 		const commentsCount = copyComments.length;
 
@@ -215,9 +222,15 @@ module.exports = class ArticleDatabaseService {
 		const article = await this.article.findOne({ slug: articleSlug });
 		const comment = await this.comment.findOne({ _id: commentId });
 
+		if (!article || !comment) {
+			return this.articleError('error initializing delete comment');
+		}
 		const updatedArticle = await article.deleteComment(commentId);
 		await comment.deleteComment(authUser.id, commentId);
 
+		if (!updatedArticle) {
+			return this.articleError('error updating comment;');
+		}
 		return {
 			article: copyArticleObj(updatedArticle),
 			comment: copyCommentObj(comment)
