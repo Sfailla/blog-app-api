@@ -21,6 +21,7 @@ const {
 	updateArticle,
 	deleteArticle,
 	createComment,
+	updateComment,
 	deleteComment
 } = articleController;
 
@@ -41,6 +42,8 @@ router.post('/:article/favorite', authenticateJWT, favoriteArticle);
 router.post('/:article/comment', authenticateJWT, createComment);
 
 router.put('/:article', authenticateJWT, updateArticle);
+
+router.put('/:article/comment/:comment', authenticateJWT, updateComment);
 
 router.delete('/:article/favorite', authenticateJWT, unfavoriteArticle);
 

@@ -218,6 +218,24 @@ module.exports = class ArticleDatabaseService {
 		};
 	};
 
+	findAndUpdateComment = async (authUser, updateField, commentId) => {
+		const updates = {
+			...trimRequest(updateField),
+			updatedAt: Date.now()
+		};
+		const comment = false;
+		// await this.comment.findOneAndUpdate(
+		// 	{ _id: commentId, author: authUser.id },
+		// 	updates,
+		// 	{ new: true }
+		// );
+		if (!comment) {
+			return this.articleError('error updating comment');
+		}
+
+		return { comment };
+	};
+
 	removeUserComment = async (authUser, articleSlug, commentId) => {
 		const article = await this.article.findOne({ slug: articleSlug });
 		const comment = await this.comment.findOne({ _id: commentId });

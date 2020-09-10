@@ -159,6 +159,23 @@ module.exports = class ArticleController {
 		}
 	};
 
+	updateComment = async (req, res, next) => {
+		try {
+			const { comment, err } = await this.service.findAndUpdateComment(
+				req.user,
+				req.body,
+				req.params.comment
+			);
+			if (err) throw err;
+			return await res.status(200).json({
+				message: `successfully updated comment: 😀✨`,
+				comment
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
 	deleteComment = async (req, res, next) => {
 		try {
 			const { article, comment, err } = await this.service.removeUserComment(
