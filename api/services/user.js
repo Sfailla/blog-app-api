@@ -5,7 +5,7 @@ const {
 	generateAuthToken,
 	hashPasswordBcrypt,
 	comparePasswordBcrypt,
-	copyUserObj,
+	makeUserObj,
 	makeAuthUser
 } = require('../helpers/user-auth');
 
@@ -70,7 +70,7 @@ class UserDatabaseService {
 				const err = new ValidationError(400, errMsg);
 				return { err };
 			}
-			user = copyUserObj(user);
+			user = makeUserObj(user);
 			return { user };
 		} else {
 			const errMsg = `invalid object id => ${userId}`;
@@ -86,7 +86,7 @@ class UserDatabaseService {
 			const err = new ValidationError(400, errMsg);
 			return { err };
 		}
-		const copiedUsers = users.map(user => copyUserObj(user));
+		const copiedUsers = users.map(user => makeUserObj(user));
 		return { users: copiedUsers };
 	};
 

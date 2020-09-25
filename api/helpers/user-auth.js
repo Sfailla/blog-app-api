@@ -7,7 +7,7 @@ const { sign, verify } = require('jsonwebtoken');
  * ===============================
  */
 
-const copyUserObj = user => {
+const makeUserObj = user => {
 	return {
 		id: user._id,
 		username: user.username,
@@ -67,7 +67,7 @@ module.exports = {
 	generateAuthToken,
 	verifyAuthToken,
 	comparePasswordBcrypt,
-	copyUserObj,
+	makeUserObj,
 	makeAuthUser,
 	makeUserProfile
 };
