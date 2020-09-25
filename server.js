@@ -29,7 +29,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors({ origin: 'http://localhost:3000/api' }));
 
 makeDbConnection();
-
 // uncomment this line whenever your ready for client code
 // app.use(express.static(path.join(__dirname, 'public')));
 
@@ -38,13 +37,13 @@ app.use('/api/v1/articles', articleApiRoutes);
 app.use('/api/v1/profiles', profileApiRoutes);
 app.use('/api/v1/tags', tagsApiRoute);
 
-// Error and 404 handler middleware
-app.use(notFoundHandler);
-app.use(errorHandler);
-
 app.get('/', (req, res) => {
 	res.status(200).json({ message: 'hello world 🌎🚀🎃🎃🔐🗝' });
 });
+
+// Error and 404 handler middleware
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 const port = process.env.PORT || 3001;
 const environment = process.env.NODE_ENV || 'development';
