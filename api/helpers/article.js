@@ -6,7 +6,7 @@ const { randomBytes } = require('crypto');
  * ===============================
  */
 
-const copyArticleObj = async (article, authUser) => {
+const makeArticleObj = async (article, authUser) => {
 	return {
 		id: article._id,
 		author: article.author,
@@ -23,7 +23,7 @@ const copyArticleObj = async (article, authUser) => {
 	};
 };
 
-const copyCommentObj = comments => {
+const makeCommentObj = comments => {
 	const { id, comment, author, article, updatedAt, createdAt } = comments;
 	return { id, comment, author, article, updatedAt, createdAt };
 };
@@ -43,8 +43,8 @@ const formatSlug = slug => {
 };
 
 module.exports = {
-	copyArticleObj,
-	copyCommentObj,
+	makeArticleObj,
+	makeCommentObj,
 	formatSlug,
 	formatTags,
 	formatFavorites

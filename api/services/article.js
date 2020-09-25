@@ -3,11 +3,11 @@ const { ValidationError } = require('../middleware/utils/errors');
 const { trimRequest } = require('../helpers/validation');
 
 const {
-	copyArticleObj,
+	makeArticleObj,
 	formatTags,
 	formatFavorites,
 	formatSlug,
-	copyCommentObj
+	makeCommentObj
 } = require('../helpers/article');
 
 module.exports = class ArticleDatabaseService {
@@ -29,7 +29,7 @@ module.exports = class ArticleDatabaseService {
 		if (!article) {
 			return this.articleError('error creating article');
 		}
-		return { article: await copyArticleObj(article) };
+		return { article: await makeArticleObj(article) };
 	};
 	// get all articles with filters
 	getAllArticles = async filters => {
@@ -70,7 +70,7 @@ module.exports = class ArticleDatabaseService {
 		if (!articles) {
 			return this.articleError('error fetching all articles');
 		}
-		const copyArticles = articles.map(article => copyArticleObj(article));
+		const copyArticles = articles.map(article => makeArticleObj(article));
 
 		return {
 			articles: await Promise.all(copyArticles),
@@ -98,7 +98,7 @@ module.exports = class ArticleDatabaseService {
 				return this.articleError('error initializing get articles');
 			}
 			const articlesCount = await this.article.countDocuments();
-			const copyArticles = articles.map(article => copyArticleObj(article, user));
+			const copyArticles = articles.map(article => makeArticleObj(article, user));
 			return {
 				articles: await Promise.all(copyArticles),
 				articlesCount
@@ -118,7 +118,7 @@ module.exports = class ArticleDatabaseService {
 		if (!article) {
 			return this.articleError('error fetching article slug');
 		}
-		return { article: await copyArticleObj(article) };
+		return { article: await makeArticleObj(article) };
 	};
 	// set favorite articles
 	setFavoriteArticle = async (authUser, slug) => {
@@ -132,7 +132,7 @@ module.exports = class ArticleDatabaseService {
 		if (!user || !article) {
 			return this.articleError('error setting favorite article');
 		}
-		return { article: await copyArticleObj(article, user) };
+		return { article: await makeArticleObj(article, user) };
 	};
 	// remove favorite article
 	removeFavoriteArticle = async (authUser, slug) => {
@@ -147,7 +147,7 @@ module.exports = class ArticleDatabaseService {
 		if (!user || !article) {
 			return this.articleError('error setting unfavorite article');
 		}
-		return { article: await copyArticleObj(article, user) };
+		return { article: await makeArticleObj(article, user) };
 	};
 	// update user article
 	findAndUpdateArticle = async (authUser, slug, updates) => {
@@ -167,7 +167,7 @@ module.exports = class ArticleDatabaseService {
 		if (!article) {
 			return this.articleError('error updating article');
 		}
-		return { article: await copyArticleObj(article) };
+		return { article: await makeArticleObj(article) };
 	};
 	// remove user article
 	findAndDeleteArticle = async (authUser, slug) => {
@@ -178,7 +178,7 @@ module.exports = class ArticleDatabaseService {
 		if (!article) {
 			return this.articleError('error deleting article');
 		}
-		return { article: await copyArticleObj(article) };
+		return { article: await makeArticleObj(article) };
 	};
 
 	createCommentForArticle = async (authUser, articleSlug, commentFields) => {
@@ -196,7 +196,7 @@ module.exports = class ArticleDatabaseService {
 		if (!comment) return this.articleError('error creating comment');
 		await article.addComment(article._id, comment);
 
-		return { comment: copyCommentObj(comment) };
+		return { comment: makeCommentObj(comment) };
 	};
 
 	fetchCommentsForArticle = async articleSlug => {
@@ -209,7 +209,7 @@ module.exports = class ArticleDatabaseService {
 		if (!article || !comments) {
 			return this.articleError('error initializing fetch comments');
 		}
-		const copyComments = comments.map(comment => copyCommentObj(comment));
+		const copyComments = comments.map(comment => makeCommentObj(comment));
 		const commentsCount = copyComments.length;
 
 		return {
@@ -250,8 +250,8 @@ module.exports = class ArticleDatabaseService {
 			return this.articleError('error updating comment;');
 		}
 		return {
-			article: copyArticleObj(updatedArticle),
-			comment: copyCommentObj(comment)
+			article: makeArticleObj(updatedArticle),
+			comment: makeCommentObj(comment)
 		};
 	};
 };
