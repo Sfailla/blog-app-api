@@ -1,10 +1,10 @@
 module.exports = class TagsController {
 	constructor(articleModel) {
-		this.tags = articleModel;
+		this.article = articleModel;
 	}
 
 	getAllTags = async (req, res, next) => {
-		const tags = await this.tags.find({}).distinct('tags');
+		const tags = await this.article.find({}).distinct('tags');
 		if (!tags) {
 			const errMsg = 'error fetching all tags';
 			const err = new ValidationError(400, errMsg);
