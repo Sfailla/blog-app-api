@@ -56,7 +56,7 @@ const generateAuthToken = user => {
 		role: user.role,
 		username: user.username,
 		access: 'auth-token',
-		exp: Math.floor(Date.now() / 1000) + 60 * process.env.JWT_EXPIRES
+		exp: Math.floor(Date.now() / 1000) + 60 * process.env.JWT_EXPIRES_IN_MINUTES
 	};
 
 	return sign(credentials, process.env.JWT_SECRET);
