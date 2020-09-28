@@ -1,5 +1,6 @@
 const { compare, hash } = require('bcryptjs');
 const { sign, verify } = require('jsonwebtoken');
+const crypto = require('crypto');
 
 /**
  * ===============================
@@ -50,21 +51,35 @@ const verifyAuthToken = async token => {
 	return await verify(token, process.env.JWT_SECRET);
 };
 
+const randomTokenString = () => {
+	return crypto.randomBytes(40).toString('hex');
+};
+
 const generateAuthToken = user => {
 	const credentials = {
 		id: user.id,
 		role: user.role,
 		username: user.username,
-		access: 'auth-token',
-		exp: Math.floor(Date.now() / 1000) + 60 * process.env.JWT_EXPIRES_IN_MINUTES
+		access: 'auth-token'
 	};
+	const expiration = {
+		expiresIn: process.env.ACCESS_TOKEN_EXPIRATION
+	};
+	return sign(credentials, process.env.ACCESS_TOKEN_SECRET, expiration);
+};
 
-	return sign(credentials, process.env.JWT_SECRET);
+const generateRefreshToken = user => {
+	return {
+		id: user.id,
+		token: randomTokenString(),
+		exp: Math.floor(Date.now() / 1000) + 60 * process.env.REFRESH_TOKEN_EXPIRATION
+	};
 };
 
 module.exports = {
 	hashPasswordBcrypt,
 	generateAuthToken,
+	generateRefreshToken,
 	verifyAuthToken,
 	comparePasswordBcrypt,
 	makeUserObj,

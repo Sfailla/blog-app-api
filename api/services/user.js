@@ -10,8 +10,9 @@ const {
 } = require('../helpers/user-auth');
 
 class UserDatabaseService {
-	constructor(userModel) {
+	constructor(userModel, tokenModel) {
 		this.userModel = userModel;
+		this.tokenModel = tokenModel;
 	}
 
 	createUser = async userFields => {
@@ -101,6 +102,10 @@ class UserDatabaseService {
 		} else {
 			return { err: new ValidationError(401, 'unauthorized request') };
 		}
+	};
+
+	getRefreshToken = async () => {
+		const refreshToken = '';
 	};
 }
 
