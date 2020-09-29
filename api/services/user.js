@@ -3,6 +3,7 @@ const { isValidObjId } = require('../database/db/index');
 const { trimRequest } = require('../helpers/validation');
 const {
 	generateAuthToken,
+	generateRefreshToken,
 	hashPasswordBcrypt,
 	comparePasswordBcrypt,
 	makeUserObj,
@@ -22,15 +23,16 @@ class UserDatabaseService {
 			...sanitized,
 			password: hashedPassword
 		});
-
 		if (!user) {
 			const err = new ValidationError(400, 'error creating user');
 			return { err };
-		} else {
-			user = makeAuthUser(user);
-			const token = generateAuthToken(user);
-			return { user, token };
 		}
+		user = makeAuthUser(user);
+		const token = generateAuthToken(user);
+		const refreshToken = await this.tokenModel.create(generateRefreshToken(user));
+		console.log(refreshToken);
+
+		return { user, token, refreshToken };
 	};
 
 	getUserByEmailAndPassword = async fields => {
@@ -50,7 +52,9 @@ class UserDatabaseService {
 
 		user = makeAuthUser(user);
 		const token = generateAuthToken(user);
-		return { user, token };
+		const getRefreshToken = await this.tokenModel.findOne({ user: user.id });
+		const refreshToken = getRefreshToken.token;
+		return { user, token, refreshToken };
 	};
 
 	getUserByEmail = async email => {
@@ -102,10 +106,6 @@ class UserDatabaseService {
 		} else {
 			return { err: new ValidationError(401, 'unauthorized request') };
 		}
-	};
-
-	getRefreshToken = async () => {
-		const refreshToken = '';
 	};
 }
 
