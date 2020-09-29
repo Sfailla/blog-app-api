@@ -5,14 +5,20 @@ module.exports = class AuthController {
 
 	registerUser = async (req, res, next) => {
 		try {
-			const { user, token, err } = await this.service.createUser({
+			const { user, token, refreshToken, err } = await this.service.createUser({
 				...req.body
 			});
 			if (err) throw err;
-			return await res.header('x-auth-token', token).status(201).json({
-				message: `successfully created user: ${user.username} 🤴🏻🚀`,
-				user
-			});
+			return await res
+				.header('x-auth-token', token)
+				.header('x-refresh-token', refreshToken)
+				.status(201)
+				.json({
+					message: `successfully created user: ${user.username} 🤴🏻🚀`,
+					token,
+					refreshToken: refreshToken.token,
+					user
+				});
 		} catch (error) {
 			return next(error);
 		}
@@ -21,9 +27,15 @@ module.exports = class AuthController {
 	loginUser = async (req, res, next) => {
 		try {
 			const { getUserByEmailAndPassword } = this.service;
-			const { user, token, err } = await getUserByEmailAndPassword(req.body);
+			const { user, token, refreshToken, err } = await getUserByEmailAndPassword(
+				req.body
+			);
 			if (err) throw err;
-			return await res.header('x-auth-token', token).status(200).json({ user });
+			return await res
+				.header('x-auth-token', token)
+				.header('x-refresh-token', refreshToken)
+				.status(200)
+				.json({ user });
 		} catch (error) {
 			return next(error);
 		}
