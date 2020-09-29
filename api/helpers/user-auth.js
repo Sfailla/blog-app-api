@@ -70,9 +70,9 @@ const generateAuthToken = user => {
 
 const generateRefreshToken = user => {
 	return {
-		id: user.id,
+		user: user.id,
 		token: randomTokenString(),
-		exp: Math.floor(Date.now() / 1000) + 60 * process.env.REFRESH_TOKEN_EXPIRATION
+		expires: new Date(Date.now() + 10 * 60 * 1000)
 	};
 };
 
