@@ -8,13 +8,12 @@ const authenticateJWT = async (req, res, next) => {
 		const verifiedUser = await verifyAuthToken(token);
 		const user = await UserModel.findById(verifiedUser.id);
 
-		if (!user) {
-			const errMsg = 'error fetching user';
+		if (!user || !verifiedUser) {
+			const errMsg = 'error authenticating user';
 			throw new ValidationError(400, errMsg);
 		}
 
 		req.user = makeUserObj(user);
-		req.token = token;
 
 		return next();
 	} catch (error) {
