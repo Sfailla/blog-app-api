@@ -111,9 +111,16 @@ class UserDatabaseService {
 		}
 	};
 
-	findAndRefreshTokens = async refreshToken => {
-		const tokenModel = await this.tokenModel.find({ token: refreshToken });
-		console.log(tokenModel);
+	findAndRefreshTokens = async req => {
+		const getRefreshToken = findAndRetrieveCookie(req, 'refreshToken');
+		const getUser = await this.tokenModel.findOneAndUpdate({ user: user.id });
+		const user = makeAuthUser(getUser);
+		const token = generateAuthToken(user);
+		const refreshToken = generateRefreshToken(user);
+
+		// await this.tokenModel.findOneAndUpdate({ user: user.id });
+
+		return { token, refreshToken };
 	};
 }
 

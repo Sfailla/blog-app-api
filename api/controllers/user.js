@@ -11,12 +11,9 @@ module.exports = class AuthController {
 				req.body
 			);
 			if (err) throw err;
-			signAndSetCookie(res, refreshToken);
-
+			signAndSetCookie(res, 'refreshToken', refreshToken);
 			return await res.header('x-auth-token', token).status(201).json({
 				message: `successfully created user: ${user.username} 🤴🏻🚀`,
-				token,
-				refreshToken,
 				user
 			});
 		} catch (error) {
@@ -31,12 +28,8 @@ module.exports = class AuthController {
 				req.body
 			);
 			if (err) throw err;
-			signAndSetCookie(res, refreshToken);
-
-			return await res
-				.header('x-auth-token', token)
-				.status(200)
-				.json({ token, refreshToken, user });
+			signAndSetCookie(res, 'refreshToken', refreshToken);
+			return await res.header('x-auth-token', token).status(200).json({ user });
 		} catch (error) {
 			return next(error);
 		}
@@ -83,8 +76,6 @@ module.exports = class AuthController {
 	};
 
 	refreshToken = async (req, res, next) => {
-		const refreshToken = findAndRetrieveCookie(req);
-		console.log(refreshToken);
-		await this.service.findAndRefreshTokens(refreshToken);
+		await this.service.findAndRefreshTokens(req, refreshToken);
 	};
 };

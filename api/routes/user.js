@@ -14,7 +14,8 @@ const {
 	registerUser,
 	getAllUsers,
 	getCurrentUser,
-	deleteUser
+	deleteUser,
+	refreshToken
 } = authController;
 
 const router = Router();
@@ -33,6 +34,9 @@ router.post('/logout', logoutUser);
 
 // create user
 router.post('/register', registerUser);
+
+// refresh token
+router.get('/refresh-token', refreshToken);
 
 /**
  * =======================
