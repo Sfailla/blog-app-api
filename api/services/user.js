@@ -29,8 +29,12 @@ class UserDatabaseService {
 		}
 		user = makeAuthUser(user);
 		const token = generateAuthToken(user);
-		const refreshToken = await this.tokenModel.create(generateRefreshToken(user));
-		console.log(refreshToken);
+		const refreshToken = generateRefreshToken(user);
+		const tokenModel = await this.tokenModel.create({
+			user: user.id,
+			token: refreshToken
+		});
+		console.log(tokenModel);
 
 		return { user, token, refreshToken };
 	};
