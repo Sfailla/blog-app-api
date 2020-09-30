@@ -23,7 +23,7 @@ const app = express();
 
 app.use(logger('dev'));
 app.use(helmet());
-app.use(cookieParser());
+app.use(cookieParser(process.env.SESSION_COOKIE_SECRET));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors({ origin: 'http://localhost:3000/api' }));
