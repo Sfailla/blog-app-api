@@ -59,7 +59,7 @@ const random_uuid = () => {
 	return crypto.randomBytes(10).toString('hex');
 };
 
-const signAndSetCookie = (res, refreshToken) => {
+const signAndSetCookie = (res, name, value) => {
 	let options = {
 		maxAge: 7 * 24 * 60 * 60 * 1000, // would expire after 1 week
 		httpOnly: true, // The cookie only accessible by the web server
@@ -67,11 +67,11 @@ const signAndSetCookie = (res, refreshToken) => {
 		// secure: true // request must come from webserver
 	};
 
-	res.cookie('refreshToken', refreshToken, options);
+	res.cookie(name, value, options);
 };
 
-const findAndRetrieveCookie = req => {
-	const refreshToken = req.signedCookies['refreshToken'];
+const findAndRetrieveCookie = (req, value) => {
+	const refreshToken = req.signedCookies[value];
 	return refreshToken;
 };
 
