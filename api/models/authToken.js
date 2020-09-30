@@ -6,18 +6,20 @@ const options = {
 	virtuals: true,
 	versionKey: false,
 	transform: (_, ret) => {
-		console.log(ret);
+		console.log('here => ', ret);
 		delete ret._id;
 	}
 };
 
+const defaultExpiration = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
 const AuthTokenSchema = new Schema(
 	{
 		user: { type: ObjectId, ref: 'User' },
-		token: { type: String, required: true, unique: true, index: true },
-		newToken: { type: String, unique: true, default: null },
+		token: { type: String, trim: true, unique: true, index: true },
+		newToken: { type: String, trim: true, unique: true, default: null },
 		revoked: { type: Date, default: null },
-		expires: { type: Date },
+		expires: { type: Date, default: defaultExpiration },
 		createdAt: { type: Date, default: Date.now }
 	},
 	{ toJSON: options }
