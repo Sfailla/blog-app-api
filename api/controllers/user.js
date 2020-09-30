@@ -1,3 +1,5 @@
+const { signAndSetCookie, findAndRetrieveCookie } = require('../helpers/user-auth');
+
 module.exports = class AuthController {
 	constructor(databaseService) {
 		this.service = databaseService;
@@ -9,6 +11,8 @@ module.exports = class AuthController {
 				req.body
 			);
 			if (err) throw err;
+			signAndSetCookie(res, refreshToken);
+
 			return await res.header('x-auth-token', token).status(201).json({
 				message: `successfully created user: ${user.username} 🤴🏻🚀`,
 				token,
@@ -27,6 +31,8 @@ module.exports = class AuthController {
 				req.body
 			);
 			if (err) throw err;
+			signAndSetCookie(res, refreshToken);
+
 			return await res
 				.header('x-auth-token', token)
 				.status(200)
@@ -74,5 +80,11 @@ module.exports = class AuthController {
 		} catch (error) {
 			next(error);
 		}
+	};
+
+	refreshToken = async (req, res, next) => {
+		const refreshToken = findAndRetrieveCookie(req);
+		console.log(refreshToken);
+		await this.service.findAndRefreshTokens(refreshToken);
 	};
 };

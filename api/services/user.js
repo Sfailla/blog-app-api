@@ -30,11 +30,10 @@ class UserDatabaseService {
 		user = makeAuthUser(user);
 		const token = generateAuthToken(user);
 		const refreshToken = generateRefreshToken(user);
-		const tokenModel = await this.tokenModel.create({
+		await this.tokenModel.create({
 			user: user.id,
 			token: refreshToken
 		});
-		console.log(tokenModel);
 
 		return { user, token, refreshToken };
 	};
@@ -110,6 +109,11 @@ class UserDatabaseService {
 		} else {
 			return { err: new ValidationError(401, 'unauthorized request') };
 		}
+	};
+
+	findAndRefreshTokens = async refreshToken => {
+		const tokenModel = await this.tokenModel.find({ token: refreshToken });
+		console.log(tokenModel);
 	};
 }
 
