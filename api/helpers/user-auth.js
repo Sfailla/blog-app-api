@@ -48,32 +48,34 @@ const hashPasswordBcrypt = async (password, salt = 10) => {
 };
 
 const verifyAuthToken = async token => {
-	return await verify(token, process.env.JWT_SECRET);
+	return await verify(token, process.env.ACCESS_TOKEN_SECRET);
 };
 
-const randomTokenString = () => {
-	return crypto.randomBytes(40).toString('hex');
+const verifyRefreshToken = async token => {
+	return await verify(token, process.env.REFRESH_TOKEN_SECRET);
+};
+
+const random_uuid = () => {
+	return crypto.randomBytes(10).toString('hex');
 };
 
 const generateAuthToken = user => {
 	const credentials = {
 		id: user.id,
-		role: user.role,
 		username: user.username,
 		access: 'auth-token'
 	};
-	const expiration = {
-		expiresIn: process.env.ACCESS_TOKEN_EXPIRATION
-	};
-	return sign(credentials, process.env.ACCESS_TOKEN_SECRET, expiration);
+	const exp = { expiresIn: process.env.ACCESS_TOKEN_EXP };
+	return sign(credentials, process.env.ACCESS_TOKEN_SECRET, exp);
 };
 
 const generateRefreshToken = user => {
-	return {
+	const credentials = {
 		user: user.id,
-		token: randomTokenString(),
-		expires: new Date(Date.now() + 10 * 60 * 1000)
+		permission: random_uuid()
 	};
+	const exp = { expiresIn: process.env.REFRESH_TOKEN_EXP };
+	return sign(credentials, process.env.REFRESH_TOKEN_SECRET, exp);
 };
 
 module.exports = {
@@ -81,6 +83,7 @@ module.exports = {
 	generateAuthToken,
 	generateRefreshToken,
 	verifyAuthToken,
+	verifyRefreshToken,
 	comparePasswordBcrypt,
 	makeUserObj,
 	makeAuthUser,
