@@ -7,27 +7,33 @@ const {
 	hashPasswordBcrypt,
 	comparePasswordBcrypt,
 	makeUserObj,
-	makeAuthUser
+	makeAuthUser,
+	random_uuid
 } = require('../helpers/user-auth');
 
 class UserDatabaseService {
-	constructor(userModel, tokenModel) {
+	constructor(userModel, tokenModel, profileModel) {
 		this.userModel = userModel;
 		this.tokenModel = tokenModel;
+		this.profileModel = profileModel;
 	}
 
 	createUser = async userFields => {
-		const sanitized = trimRequest(userFields);
-		const hashedPassword = await hashPasswordBcrypt(sanitized.password);
-		let user = await this.userModel.create({
-			...sanitized,
-			password: hashedPassword
+		const trimmedRequest = trimRequest(userFields);
+		const hashedPassword = await hashPasswordBcrypt(trimmedRequest.password);
+		const getUser = await this.userModel.create({
+			...trimmedRequest,
+			password: hashedPassword,
+			verification: random_uuid(8)
 		});
-		if (!user) {
+		if (!getUser) {
 			const err = new ValidationError(400, 'error creating user');
 			return { err };
 		}
-		user = makeAuthUser(user);
+		return { user: makeAuthUser(getUser) };
+	};
+
+	createTokens = async user => {
 		const token = generateAuthToken(user);
 		const refreshToken = generateRefreshToken(user);
 		await this.tokenModel.create({
@@ -35,16 +41,24 @@ class UserDatabaseService {
 			token: refreshToken
 		});
 
-		return { user, token, refreshToken };
+		return { token, refreshToken };
+	};
+
+	createProfile = async user => {
+		const profile = await this.profileModel.create({
+			user: user.id,
+			username: user.username
+		});
+		console.log(profile);
 	};
 
 	getUserByEmailAndPassword = async fields => {
-		const sanitized = trimRequest(fields);
-		let { user, err } = await this.getUserByEmail(sanitized.email);
+		const trimmedRequest = trimRequest(fields);
+		let { user, err } = await this.getUserByEmail(trimmedRequest.email);
 		if (err) return { err };
 
 		const isValidPassword = await comparePasswordBcrypt(
-			sanitized.password,
+			trimmedRequest.password,
 			user.password
 		);
 		if (!isValidPassword) {
@@ -115,8 +129,7 @@ class UserDatabaseService {
 		const getRefreshToken = findAndRetrieveCookie(req, 'refreshToken');
 		const getUser = await this.tokenModel.findOneAndUpdate({ user: user.id });
 		const user = makeAuthUser(getUser);
-		const token = generateAuthToken(user);
-		const refreshToken = generateRefreshToken(user);
+		const { token, refreshToken } = await this.createTokens(user);
 
 		// await this.tokenModel.findOneAndUpdate({ user: user.id });
 

@@ -7,10 +7,15 @@ module.exports = class AuthController {
 
 	registerUser = async (req, res, next) => {
 		try {
-			const { user, token, refreshToken, err } = await this.service.createUser(
-				req.body
-			);
+			const { user, err } = await this.service.createUser(req.body);
 			if (err) throw err;
+			const { token, refreshToken } = await this.service.createTokens(user);
+
+			console.log(token);
+			console.log(refreshToken);
+
+			await this.service.createProfile(user);
+
 			signAndSetCookie(res, 'refreshToken', refreshToken);
 			return await res.header('x-auth-token', token).status(201).json({
 				message: `successfully created user: ${user.username} 🤴🏻🚀`,
