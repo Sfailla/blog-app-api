@@ -1,11 +1,12 @@
-const UserModel = require('../models/user');
-const AuthTokenModel = require('../models/authToken');
 const UserDatabaseService = require('../services/user');
 const AuthController = require('../controllers/user');
 const { Router } = require('express');
 const { authenticateJWT, requireAdmin } = require('../middleware/index');
+const UserModel = require('../models/user');
+const AuthTokenModel = require('../models/authToken');
+const ProfileModel = require('../models/profile');
 
-const authService = new UserDatabaseService(UserModel, AuthTokenModel);
+const authService = new UserDatabaseService(UserModel, AuthTokenModel, ProfileModel);
 const authController = new AuthController(authService);
 
 const {

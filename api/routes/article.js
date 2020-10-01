@@ -5,9 +5,15 @@ const ArticleController = require('../controllers/article');
 const ArticleDbService = require('../services/article');
 const ArticleModel = require('../models/article');
 const UserModel = require('../models/user');
+const ProfileModel = require('../models/profile');
 const CommentModel = require('../models/comment');
 
-const articleService = new ArticleDbService(ArticleModel, UserModel, CommentModel);
+const articleService = new ArticleDbService(
+	ArticleModel,
+	UserModel,
+	ProfileModel,
+	CommentModel
+);
 const articleController = new ArticleController(articleService);
 
 const {
