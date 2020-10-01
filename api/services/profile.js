@@ -3,8 +3,8 @@ const { ValidationError } = require('../middleware/utils/errors');
 const { trimRequest } = require('../helpers/validation');
 
 module.exports = class ProfileDatabaseService {
-	constructor(userModel) {
-		this.profile = userModel;
+	constructor(profileModel) {
+		this.profile = profileModel;
 	}
 
 	fetchUserProfile = async username => {
@@ -14,22 +14,22 @@ module.exports = class ProfileDatabaseService {
 			const err = new ValidationError(400, errMsg);
 			return { err };
 		}
-		return { profile: await makeUserProfile(profile) };
+		return { profile: await makeUserProfile(profile, null) };
 	};
 
 	followService = async (authUser, username) => {
 		const follower = await this.profile.findOne({
 			username
 		});
-		const user = await this.profile.findOne({ _id: authUser.id });
-		const updatedUser = await user.follow(follower._id);
-		if (!follower || !user || !updatedUser) {
+		const getProfile = await this.profile.findOne({ user: authUser.id });
+		const profile = await getProfile.follow(follower._id);
+		if (!follower || !getProfile || !profile) {
 			const errMsg = 'error initializing fetch to follow user';
 			const err = new ValidationError(400, errMsg);
 			return { err };
 		}
 		return {
-			profile: await makeUserProfile(follower, updatedUser)
+			profile: await makeUserProfile(follower, profile)
 		};
 	};
 
@@ -37,15 +37,15 @@ module.exports = class ProfileDatabaseService {
 		const follower = await this.profile.findOne({
 			username
 		});
-		const user = await this.profile.findOne({ _id: authUser.id });
-		const updatedUser = await user.unfollow(follower._id);
-		if (!follower || !user || !updatedUser) {
+		const getProfile = await this.profile.findOne({ _id: authUser.id });
+		const profile = await getProfile.unfollow(follower._id);
+		if (!follower || !getProfile || !profile) {
 			const errMsg = 'error initializing fetch to follow user';
 			const err = new ValidationError(400, errMsg);
 			return { err };
 		}
 		return {
-			profile: await makeUserProfile(follower, updatedUser)
+			profile: await makeUserProfile(follower, profile)
 		};
 	};
 
