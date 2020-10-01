@@ -14,28 +14,25 @@ const makeUserObj = user => {
 		username: user.username,
 		email: user.email,
 		role: user.role,
-		name: user.name,
-		bio: user.bio,
-		image: user.image,
-		favorites: user.favorites,
-		following: user.following,
 		createdAt: user.createdAt
 	};
 };
 
 const makeAuthUser = user => {
-	const { id, username, email, name, bio, image } = user;
-	return { id, username, email, name, bio, image };
+	const { id, username, email, role } = user;
+	return { id, username, email, role };
 };
 
-const makeUserProfile = async (follower, user) => {
+const makeUserProfile = async (user, profile) => {
 	return {
-		id: follower._id,
-		username: follower.username,
-		name: follower.name,
-		bio: follower.bio,
-		image: follower.image,
-		isFollowing: user ? await user.isFollowing(follower._id) : false
+		id: user._id,
+		username: user.username,
+		name: user.name,
+		bio: user.bio,
+		image: user.image,
+		favorites: profile ? profile.favorites : null,
+		following: profile ? profile.following : null,
+		isFollowing: profile ? await profile.isFollowing(user._id) : false
 	};
 };
 
@@ -55,8 +52,8 @@ const verifyRefreshToken = async token => {
 	return await verify(token, process.env.REFRESH_TOKEN_SECRET);
 };
 
-const random_uuid = () => {
-	return crypto.randomBytes(10).toString('hex');
+const random_uuid = encryptionLength => {
+	return crypto.randomBytes(encryptionLength).toString('hex');
 };
 
 const signAndSetCookie = (res, name, value) => {
@@ -77,9 +74,8 @@ const findAndRetrieveCookie = (req, value) => {
 
 const generateAuthToken = user => {
 	const credentials = {
-		id: user.id,
-		username: user.username,
-		access: 'auth-token'
+		userId: user.id,
+		username: user.username
 	};
 	const exp = { expiresIn: process.env.ACCESS_TOKEN_EXP };
 	return sign(credentials, process.env.ACCESS_TOKEN_SECRET, exp);
@@ -87,8 +83,9 @@ const generateAuthToken = user => {
 
 const generateRefreshToken = user => {
 	const credentials = {
-		user: user.id,
-		permission: random_uuid()
+		userId: user.id,
+		username: user.username,
+		verification: user.verification
 	};
 	const exp = { expiresIn: process.env.REFRESH_TOKEN_EXP };
 	return sign(credentials, process.env.REFRESH_TOKEN_SECRET, exp);
@@ -103,6 +100,7 @@ module.exports = {
 	verifyAuthToken,
 	verifyRefreshToken,
 	comparePasswordBcrypt,
+	random_uuid,
 	makeUserObj,
 	makeAuthUser,
 	makeUserProfile
