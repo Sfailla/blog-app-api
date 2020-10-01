@@ -6,7 +6,7 @@ const { randomBytes } = require('crypto');
  * ===============================
  */
 
-const makeArticleObj = async (article, authUser) => {
+const makeArticleObj = async (article, profile) => {
 	return {
 		id: article._id,
 		author: article.author,
@@ -16,7 +16,7 @@ const makeArticleObj = async (article, authUser) => {
 		body: article.body,
 		image: article.image,
 		tags: article.tags,
-		isFavorite: authUser ? await authUser.isFavorite(article._id) : null,
+		isFavorite: profile ? await profile.isFavorite(article._id) : null,
 		favoriteCount: article.favoriteCount,
 		updatedAt: article.updatedAt,
 		createdAt: article.createdAt
