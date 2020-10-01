@@ -6,7 +6,7 @@ const authenticateJWT = async (req, res, next) => {
 	try {
 		const token = req.header('x-auth-token');
 		const verifiedUser = await verifyAuthToken(token);
-		const user = await UserModel.findById(verifiedUser.id);
+		const user = await UserModel.findById(verifiedUser.userId);
 
 		if (!user || !verifiedUser) {
 			const errMsg = 'error authenticating user';
