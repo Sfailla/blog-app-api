@@ -11,9 +11,10 @@ const {
 } = require('../helpers/article');
 
 module.exports = class ArticleDatabaseService {
-	constructor(articleModel, userModel, commentModel) {
+	constructor(articleModel, userModel, profileModel, commentModel) {
 		this.article = articleModel;
 		this.user = userModel;
+		this.profile = profileModel;
 		this.comment = commentModel;
 	}
 	// article error method to keep class DRY
@@ -88,17 +89,18 @@ module.exports = class ArticleDatabaseService {
 		};
 
 		if (isValidObjId(userId)) {
+			const profile = await this.profile.findOne({ user: userId });
 			const articles = await this.article.find(query, null, options).populate({
 				path: 'author',
-				model: 'User',
+				model: 'Profile',
 				select: [ 'username', 'name', 'bio', 'image' ]
 			});
-			const user = await this.user.findOne({ _id: userId });
-			if (!articles || !user) {
+			console.log(profile);
+			if (!articles || !profile) {
 				return this.articleError('error initializing get articles');
 			}
 			const articlesCount = await this.article.countDocuments();
-			const copyArticles = articles.map(article => makeArticleObj(article, user));
+			const copyArticles = articles.map(article => makeArticleObj(article, profile));
 			return {
 				articles: await Promise.all(copyArticles),
 				articlesCount
