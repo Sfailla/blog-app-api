@@ -49,7 +49,10 @@ module.exports = class ProfileController {
 	updateUserProfile = async (req, res, next) => {
 		try {
 			const username = req.params.username;
-			const profile = await this.service.findProfileAndUpdate(req.user, req.body);
+			const { profile, err } = await this.service.findProfileAndUpdate(
+				req.user,
+				req.body
+			);
 			if (err) throw err;
 			return await res.status(200).json({
 				message: `successfully updated profile: ${username} 😎✨`,
