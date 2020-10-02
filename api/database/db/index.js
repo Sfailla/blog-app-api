@@ -19,7 +19,7 @@ const makeDbConnection = async () => {
 	// 	console.log(`${collectionName}.${method}`, JSON.stringify(query), doc);
 	// });
 
-	mongoose.set('debug', true);
+	// mongoose.set('debug', true);
 
 	mongoose.connection.on('connected', () => {
 		const msg = `Mongoose connection established to MLAB database`;
