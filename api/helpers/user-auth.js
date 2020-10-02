@@ -23,16 +23,16 @@ const makeAuthUser = user => {
 	return { id, username, email, role };
 };
 
-const makeUserProfile = async (user, profile) => {
+const makeUserProfile = async (profile, user) => {
 	return {
-		id: user._id,
-		username: user.username,
-		name: user.name,
-		bio: user.bio,
-		image: user.image,
-		favorites: profile ? profile.favorites : null,
-		following: profile ? profile.following : null,
-		isFollowing: profile ? await profile.isFollowing(user._id) : false
+		id: profile._id,
+		username: profile.username,
+		name: profile.name,
+		bio: profile.bio,
+		image: profile.image,
+		favorites: user ? user.favorites : profile.favorites,
+		following: user ? user.following : profile.following,
+		isFollowing: user ? await profile.isFollowing(user._id) : false
 	};
 };
 
@@ -68,8 +68,7 @@ const signAndSetCookie = (res, name, value) => {
 };
 
 const findAndRetrieveCookie = (req, value) => {
-	const refreshToken = req.signedCookies[value];
-	return refreshToken;
+	return req.signedCookies[value];
 };
 
 const generateAuthToken = user => {
