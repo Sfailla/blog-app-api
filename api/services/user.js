@@ -49,14 +49,13 @@ class UserDatabaseService {
 			user: user.id,
 			username: user.username
 		});
-		console.log(profile);
+		return { profile };
 	};
 
 	getUserByEmailAndPassword = async fields => {
 		const trimmedRequest = trimRequest(fields);
-		let { user, err } = await this.getUserByEmail(trimmedRequest.email);
+		const { user, err } = await this.getUserByEmail(trimmedRequest.email);
 		if (err) return { err };
-
 		const isValidPassword = await comparePasswordBcrypt(
 			trimmedRequest.password,
 			user.password
@@ -66,12 +65,7 @@ class UserDatabaseService {
 			const err = new ValidationError(400, errMsg);
 			return { err };
 		}
-
-		user = makeAuthUser(user);
-		const token = generateAuthToken(user);
-		const getRefreshToken = await this.tokenModel.findOne({ user: user.id });
-		const refreshToken = getRefreshToken.token;
-		return { user, token, refreshToken };
+		return { user: makeAuthUser(user) };
 	};
 
 	getUserByEmail = async email => {
@@ -92,8 +86,7 @@ class UserDatabaseService {
 				const err = new ValidationError(400, errMsg);
 				return { err };
 			}
-			user = makeUserObj(user);
-			return { user };
+			return { user: makeAuthUser(user) };
 		} else {
 			const errMsg = `invalid object id => ${userId}`;
 			const err = new ValidationError(400, errMsg);

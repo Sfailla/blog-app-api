@@ -14,7 +14,7 @@ module.exports = class ProfileDatabaseService {
 			const err = new ValidationError(400, errMsg);
 			return { err };
 		}
-		return { profile: await makeUserProfile(profile, null) };
+		return { profile: await makeUserProfile(profile) };
 	};
 
 	followService = async (authUser, username) => {
@@ -50,14 +50,15 @@ module.exports = class ProfileDatabaseService {
 	};
 
 	findProfileAndUpdate = async (authUser, updates) => {
-		const query = { _id: authUser.id };
+		const query = { user: authUser.id };
 		const update = { ...trimRequest(updates) };
 		const profile = await this.profile.findOneAndUpdate(query, update, {
 			new: true
 		});
+		console.log(profile);
 		if (!profile) {
 			const errMsg = 'error updating user profile';
-			const err = ValidationError(400, errMsg);
+			const err = new ValidationError(400, errMsg);
 			return { err };
 		}
 		return { profile: await makeUserProfile(profile) };

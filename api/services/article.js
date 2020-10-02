@@ -13,8 +13,8 @@ const {
 module.exports = class ArticleDatabaseService {
 	constructor(articleModel, userModel, profileModel, commentModel) {
 		this.article = articleModel;
-		this.user = userModel;
 		this.profile = profileModel;
+		this.user = userModel;
 		this.comment = commentModel;
 	}
 	// article error method to keep class DRY
@@ -23,8 +23,10 @@ module.exports = class ArticleDatabaseService {
 	};
 	// create article
 	createArticle = async (userId, articleFields) => {
+		const profile = await this.profile.findOne({ user: userId });
+		console.log(profile);
 		const article = await this.article.create({
-			author: userId,
+			author: profile._id,
 			...trimRequest(articleFields)
 		});
 		if (!article) {
@@ -81,7 +83,8 @@ module.exports = class ArticleDatabaseService {
 	// get all articles by logged in user
 	getArticlesByUser = async (authUser, filters) => {
 		const userId = authUser.id;
-		const query = { author: userId };
+		const profile = await this.profile.findOne({ user: userId });
+		const query = { author: profile._id };
 		const options = {
 			sort: { updatedAt: filters.sortBy },
 			limit: Number(filters.limit),
@@ -89,13 +92,12 @@ module.exports = class ArticleDatabaseService {
 		};
 
 		if (isValidObjId(userId)) {
-			const profile = await this.profile.findOne({ user: userId });
 			const articles = await this.article.find(query, null, options).populate({
 				path: 'author',
 				model: 'Profile',
 				select: [ 'username', 'name', 'bio', 'image' ]
 			});
-			console.log(profile);
+
 			if (!articles || !profile) {
 				return this.articleError('error initializing get articles');
 			}
@@ -184,14 +186,14 @@ module.exports = class ArticleDatabaseService {
 	};
 
 	createCommentForArticle = async (authUser, articleSlug, commentFields) => {
-		const user = await this.user.findOne({ _id: authUser.id });
+		const profile = await this.profile.findOne({ user: authUser.id });
 		const article = await this.article.findOne({ slug: articleSlug });
 		const addCommentFields = {
 			...commentFields,
 			article: article._id,
-			author: user._id
+			author: profile._id
 		};
-		if (!user || !article) {
+		if (!profile || !article) {
 			this.articleError('error initializing create comment');
 		}
 		const comment = await this.comment.create({ ...addCommentFields });
@@ -205,7 +207,7 @@ module.exports = class ArticleDatabaseService {
 		const article = await this.article.findOne({ slug: articleSlug });
 		const comments = await this.comment.find({ article: article._id }).populate({
 			path: 'author',
-			model: 'User',
+			model: 'Profile',
 			select: [ 'username', 'name', 'bio', 'image' ]
 		});
 		if (!article || !comments) {
