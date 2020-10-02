@@ -2,14 +2,6 @@ const mongoose = require('mongoose');
 const { Schema, Types, model } = mongoose;
 const { ObjectId } = Types;
 
-const options = {
-	virtuals: true,
-	versionKey: false,
-	transform: (_, ret) => {
-		delete ret._id;
-	}
-};
-
 const ProfileSchema = new Schema(
 	{
 		user: { type: ObjectId, ref: 'User' },
@@ -17,10 +9,18 @@ const ProfileSchema = new Schema(
 		name: { type: String, default: null },
 		bio: { type: String, default: null },
 		image: { type: String, default: null },
-		favorites: [ { type: ObjectId, ref: 'Article' } ],
-		following: [ { type: ObjectId, ref: 'User' } ]
+		favorites: [ { type: ObjectId, ref: 'Article', default: [] } ],
+		following: [ { type: ObjectId, ref: 'User', default: [] } ]
 	},
-	{ toJSON: options }
+	{
+		toJSON: {
+			virtuals: true,
+			versionKey: false,
+			transform: (_, ret) => {
+				delete ret._id;
+			}
+		}
+	}
 );
 
 ProfileSchema.methods.favorite = async function(articleId) {

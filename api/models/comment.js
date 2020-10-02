@@ -30,4 +30,5 @@ CommentSchema.methods.deleteComment = async function(userId, commentId) {
 	return;
 };
 
+module.exports = CommentSchema;
 module.exports = model('Comment', CommentSchema);
