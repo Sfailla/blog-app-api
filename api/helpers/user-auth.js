@@ -30,8 +30,8 @@ const makeUserProfile = async (profile, user) => {
 		name: profile.name,
 		bio: profile.bio,
 		image: profile.image,
-		favorites: user ? user.favorites : profile.favorites,
-		following: user ? user.following : profile.following,
+		favorites: profile.favorites,
+		following: profile.following,
 		isFollowing: user ? await profile.isFollowing(user._id) : false
 	};
 };
