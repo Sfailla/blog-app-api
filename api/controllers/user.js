@@ -1,5 +1,3 @@
-const { signAndSetCookie, findAndRetrieveCookie } = require('../helpers/user-auth');
-
 module.exports = class AuthController {
 	constructor(databaseService) {
 		this.service = databaseService;
@@ -11,10 +9,12 @@ module.exports = class AuthController {
 			if (err) throw err;
 			const { token, refreshToken } = await this.service.createTokens(user);
 			await this.service.createProfile(user);
-			signAndSetCookie(res, 'refreshToken', refreshToken);
+			await this.service.createCookie(res, refreshToken);
 
 			return await res.header('x-auth-token', token).status(201).json({
 				message: `successfully created user: ${user.username} 🤴🏻🚀`,
+				token,
+				refreshToken,
 				user
 			});
 		} catch (error) {
@@ -30,9 +30,13 @@ module.exports = class AuthController {
 			if (err) throw err;
 
 			const { token, refreshToken } = await this.service.createTokens(user);
-			signAndSetCookie(res, 'refreshToken', refreshToken);
+			await this.service.createCookie(res, refreshToken);
 
-			return await res.header('x-auth-token', token).status(200).json({ user });
+			return await res.header('x-auth-token', token).status(200).json({
+				token,
+				refreshToken,
+				user
+			});
 		} catch (error) {
 			return next(error);
 		}
@@ -40,6 +44,17 @@ module.exports = class AuthController {
 
 	logoutUser = async (req, res, next) => {
 		return await res.send('this is the logout route!');
+	};
+
+	refreshToken = async (req, res, next) => {
+		const { token, refreshToken } = await this.service.findAndRefreshTokens(
+			req,
+			res
+		);
+		res.header('x-auth-token', token).status(200).json({
+			token,
+			refreshToken
+		});
 	};
 
 	getCurrentUser = async (req, res, next) => {
@@ -76,9 +91,5 @@ module.exports = class AuthController {
 		} catch (error) {
 			next(error);
 		}
-	};
-
-	refreshToken = async (req, res, next) => {
-		await this.service.findAndRefreshTokens(req, refreshToken);
 	};
 };
