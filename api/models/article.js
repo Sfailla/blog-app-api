@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
+const Profile = require('./profile');
 const { formatSlug } = require('../helpers/article');
+
 const { Schema, Types, model } = mongoose;
 const { ObjectId } = Types;
 
@@ -45,7 +47,7 @@ ArticleSchema.set('debug', (collectionName, method, query, doc) => {
 });
 
 ArticleSchema.methods.updateCount = async function() {
-	const count = await User.countDocuments({
+	const count = await Profile.countDocuments({
 		favorites: { $in: [ this._id ] }
 	});
 	this.favoriteCount = count;
