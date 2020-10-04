@@ -13,8 +13,8 @@ const {
 module.exports = class ArticleDatabaseService {
 	constructor(articleModel, userModel, profileModel, commentModel) {
 		this.article = articleModel;
-		this.profile = profileModel;
 		this.user = userModel;
+		this.profile = profileModel;
 		this.comment = commentModel;
 	}
 	// article error method to keep class DRY
@@ -24,7 +24,6 @@ module.exports = class ArticleDatabaseService {
 	// create article
 	createArticle = async (userId, articleFields) => {
 		const profile = await this.profile.findOne({ user: userId });
-		console.log(profile);
 		const article = await this.article.create({
 			author: profile._id,
 			...trimRequest(articleFields)
@@ -36,7 +35,7 @@ module.exports = class ArticleDatabaseService {
 	};
 	// get all articles with filters
 	getAllArticles = async filters => {
-		let user;
+		let profile;
 		let query = {};
 		const options = {
 			sort: { updatedAt: filters.sortBy },
@@ -49,16 +48,16 @@ module.exports = class ArticleDatabaseService {
 		}
 		// query by author
 		if (filters.author) {
-			user = await this.user.findOne({ username: filters.author });
-			if (!user) return this.articleError("sorry that author doesn't exist");
-			query['author'] = user._id.toString('hex');
+			profile = await this.profile.findOne({ username: filters.author });
+			if (!profile) return this.articleError("sorry that author doesn't exist");
+			query['author'] = profile._id.toString();
 		}
 		// query by users favorite articles
 		if (filters.favorites) {
-			user = await this.user.findOne({ username: filters.favorites });
-			if (!user) return this.articleError("sorry that username doesn't exist");
+			profile = await this.profile.findOne({ username: filters.favorites });
+			if (!profile) return this.articleError("sorry that username doesn't exist");
 			query['_id'] = {
-				$in: formatFavorites(user.favorites)
+				$in: formatFavorites(profile.favorites)
 			};
 		}
 		// aggregate for individual filter or all filters
@@ -66,7 +65,7 @@ module.exports = class ArticleDatabaseService {
 		const articlesCount = await this.article.countDocuments();
 		const articles = await this.article.find(query$Or, null, options).populate({
 			path: 'author',
-			model: 'User',
+			model: 'Profile',
 			select: [ 'username', 'name', 'bio', 'image' ]
 		});
 
@@ -92,11 +91,21 @@ module.exports = class ArticleDatabaseService {
 		};
 
 		if (isValidObjId(userId)) {
-			const articles = await this.article.find(query, null, options).populate({
-				path: 'author',
-				model: 'Profile',
-				select: [ 'username', 'name', 'bio', 'image' ]
-			});
+			const articles = await this.article
+				.find(query, null, options)
+				.populate({
+					path: 'author',
+					model: 'Profile',
+					select: [ 'username', 'name', 'bio', 'image' ]
+				})
+				.populate({
+					path: 'comments',
+					model: 'Comment',
+					populate: {
+						path: 'author',
+						model: 'Profile'
+					}
+				});
 
 			if (!articles || !profile) {
 				return this.articleError('error initializing get articles');
@@ -127,31 +136,31 @@ module.exports = class ArticleDatabaseService {
 	// set favorite articles
 	setFavoriteArticle = async (authUser, slug) => {
 		const articleSchema = await this.article.findOne({ slug });
-		const userSchema = await this.user.findOne({ _id: authUser.id });
-		if (!articleSchema || !userSchema) {
+		const getProfile = await this.profile.findOne({ user: authUser.id });
+		if (!articleSchema || !getProfile) {
 			return this.articleError('error initializing favorite article');
 		}
-		const user = await userSchema.favorite(articleSchema._id);
+		const profile = await getProfile.favorite(articleSchema._id);
 		const article = await articleSchema.updateCount('inc');
-		if (!user || !article) {
+		if (!profile || !article) {
 			return this.articleError('error setting favorite article');
 		}
-		return { article: await makeArticleObj(article, user) };
+		return { article: await makeArticleObj(article, profile) };
 	};
 	// remove favorite article
 	removeFavoriteArticle = async (authUser, slug) => {
 		const articleSchema = await this.article.findOne({ slug });
-		const userSchema = await this.user.findById(authUser.id);
-		if (!articleSchema || !userSchema) {
+		const getProfile = await this.profile.findOne({ user: authUser.id });
+		if (!articleSchema || !getProfile) {
 			return this.articleError('err initializing unfavorite article');
 		}
 
-		const user = await userSchema.unfavorite(articleSchema._id);
+		const profile = await getProfile.unfavorite(articleSchema._id);
 		const article = await articleSchema.updateCount();
-		if (!user || !article) {
+		if (!profile || !article) {
 			return this.articleError('error setting unfavorite article');
 		}
-		return { article: await makeArticleObj(article, user) };
+		return { article: await makeArticleObj(article, profile) };
 	};
 	// update user article
 	findAndUpdateArticle = async (authUser, slug, updates) => {
@@ -205,38 +214,36 @@ module.exports = class ArticleDatabaseService {
 
 	fetchCommentsForArticle = async articleSlug => {
 		const article = await this.article.findOne({ slug: articleSlug });
-		const comments = await this.comment.find({ article: article._id }).populate({
+		const getComments = await this.comment.find({ article: article._id }).populate({
 			path: 'author',
 			model: 'Profile',
 			select: [ 'username', 'name', 'bio', 'image' ]
 		});
-		if (!article || !comments) {
+		if (!article || !getComments) {
 			return this.articleError('error initializing fetch comments');
 		}
-		const copyComments = comments.map(comment => makeCommentObj(comment));
-		const commentsCount = copyComments.length;
+		const comments = getComments.map(comment => makeCommentObj(comment));
+		const commentsCount = comments.length;
 
 		return {
-			comments: copyComments,
+			comments,
 			commentsCount
 		};
 	};
 
 	findAndUpdateComment = async (authUser, updateField, commentId) => {
+		const query = { _id: commentId, author: authUser.id };
 		const updates = {
 			...trimRequest(updateField),
 			updatedAt: Date.now()
 		};
-		const comment = false;
-		// await this.comment.findOneAndUpdate(
-		// 	{ _id: commentId, author: authUser.id },
-		// 	updates,
-		// 	{ new: true }
-		// );
+		const comment = await this.comment.findOneAndUpdate(query, updates, {
+			new: true
+		});
+
 		if (!comment) {
 			return this.articleError('error updating comment');
 		}
-
 		return { comment };
 	};
 
