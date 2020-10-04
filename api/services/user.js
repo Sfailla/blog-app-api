@@ -4,11 +4,14 @@ const { trimRequest } = require('../helpers/validation');
 const {
 	generateAuthToken,
 	generateRefreshToken,
+	signAndSetCookie,
+	findAndRetrieveCookie,
 	hashPasswordBcrypt,
 	comparePasswordBcrypt,
 	makeUserObj,
 	makeAuthUser,
-	random_uuid
+	random_uuid,
+	verifyRefreshToken
 } = require('../helpers/user-auth');
 
 class UserDatabaseService {
@@ -33,6 +36,10 @@ class UserDatabaseService {
 		return { user: makeAuthUser(getUser) };
 	};
 
+	createCookie = async (res, token) => signAndSetCookie(res, 'refreshToken', token);
+
+	readCookie = async req => findAndRetrieveCookie(req);
+
 	createTokens = async user => {
 		const token = generateAuthToken(user);
 		const refreshToken = generateRefreshToken(user);
@@ -42,6 +49,42 @@ class UserDatabaseService {
 		});
 
 		return { token, refreshToken };
+	};
+
+	findAndRefreshTokens = async (req, res) => {
+		const getRefreshToken = findAndRetrieveCookie(req, 'refreshToken');
+		const verifyToken = verifyRefreshToken(getRefreshToken);
+		const user = await this.userModel.findOne({ _id: verifyToken.userId });
+
+		const verified = user.verification === verifyToken.verification;
+
+		const maxTokens = tokens => {
+			return tokens.slice(0, 4).map(token => token);
+		};
+
+		const token = await this.tokenModel.findOne({ token: getRefreshToken });
+		console.log(token);
+
+		// if (verified) {
+		// 	const { token, refreshToken } = await this.createTokens(user);
+		// 	await this.createCookie(res, refreshToken);
+
+		// 	console.log(refreshToken);
+		// 	console.log(token);
+
+		// 	return { token, refreshToken };
+		// }
+
+		// const sortedTokens = getTokens.sort((a, b) => {
+		// 	return b.createdAt - a.createdAt;
+		// });
+
+		// const sortedTokenLength = sortedTokens.length;
+		// const tokens = sortedTokenLength > 5 ? maxTokens(sortedTokens) : sortedTokens;
+
+		// console.log(tokens);
+
+		// return { token, refreshToken };
 	};
 
 	createProfile = async user => {
@@ -116,17 +159,6 @@ class UserDatabaseService {
 		} else {
 			return { err: new ValidationError(401, 'unauthorized request') };
 		}
-	};
-
-	findAndRefreshTokens = async req => {
-		const getRefreshToken = findAndRetrieveCookie(req, 'refreshToken');
-		const getUser = await this.tokenModel.findOneAndUpdate({ user: user.id });
-		const user = makeAuthUser(getUser);
-		const { token, refreshToken } = await this.createTokens(user);
-
-		// await this.tokenModel.findOneAndUpdate({ user: user.id });
-
-		return { token, refreshToken };
 	};
 }
 
