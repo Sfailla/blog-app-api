@@ -19,8 +19,8 @@ const makeUserObj = user => {
 };
 
 const makeAuthUser = user => {
-	const { id, username, email, role } = user;
-	return { id, username, email, role };
+	const { id, username, email, verification, role } = user;
+	return { id, username, email, verification, role };
 };
 
 const makeUserProfile = async (profile, user) => {
@@ -44,12 +44,12 @@ const hashPasswordBcrypt = async (password, salt = 10) => {
 	return await hash(password, salt);
 };
 
-const verifyAuthToken = async token => {
-	return await verify(token, process.env.ACCESS_TOKEN_SECRET);
+const verifyAuthToken = token => {
+	return verify(token, process.env.ACCESS_TOKEN_SECRET);
 };
 
-const verifyRefreshToken = async token => {
-	return await verify(token, process.env.REFRESH_TOKEN_SECRET);
+const verifyRefreshToken = token => {
+	return verify(token, process.env.REFRESH_TOKEN_SECRET);
 };
 
 const random_uuid = encryptionLength => {
