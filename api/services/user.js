@@ -2,8 +2,7 @@ const { ValidationError } = require('../middleware/utils/errors');
 const { isValidObjId } = require('../database/db/index');
 const { trimRequest } = require('../helpers/validation');
 const {
-	generateAuthToken,
-	generateRefreshToken,
+	generateTokens,
 	signAndSetCookie,
 	findAndRetrieveCookie,
 	hashPasswordBcrypt,
@@ -11,7 +10,7 @@ const {
 	makeUserObj,
 	makeAuthUser,
 	random_uuid,
-	verifyRefreshToken
+	verifyToken
 } = require('../helpers/user-auth');
 
 class UserDatabaseService {
@@ -38,53 +37,34 @@ class UserDatabaseService {
 
 	createCookie = async (res, token) => signAndSetCookie(res, 'refreshToken', token);
 
-	readCookie = async req => findAndRetrieveCookie(req);
+	readCookie = async req => await findAndRetrieveCookie(req, 'refreshToken');
 
-	createTokens = async user => {
-		const token = generateAuthToken(user);
-		const refreshToken = generateRefreshToken(user);
+	createAndSaveTokens = async user => {
+		const { token, refreshToken } = generateTokens(user);
 		await this.tokenModel.create({
 			user: user.id,
 			token: refreshToken
 		});
-
 		return { token, refreshToken };
 	};
 
 	findAndRefreshTokens = async (req, res) => {
-		const getRefreshToken = findAndRetrieveCookie(req, 'refreshToken');
-		const verifyToken = verifyRefreshToken(getRefreshToken);
-		const user = await this.userModel.findOne({ _id: verifyToken.userId });
+		const getRefreshToken = await this.readCookie(req);
+		const verifiedToken = await verifyToken(
+			getRefreshToken,
+			process.env.REFRESH_TOKEN_SECRET
+		);
+		const user = await this.userModel.findOne({ _id: verifiedToken.userId });
+		const verified = user.verification === verifiedToken.verification;
 
-		const verified = user.verification === verifyToken.verification;
-
-		const maxTokens = tokens => {
-			return tokens.slice(0, 4).map(token => token);
-		};
-
-		const token = await this.tokenModel.findOne({ token: getRefreshToken });
-		console.log(token);
-
-		// if (verified) {
-		// 	const { token, refreshToken } = await this.createTokens(user);
-		// 	await this.createCookie(res, refreshToken);
-
-		// 	console.log(refreshToken);
-		// 	console.log(token);
-
-		// 	return { token, refreshToken };
-		// }
-
-		// const sortedTokens = getTokens.sort((a, b) => {
-		// 	return b.createdAt - a.createdAt;
-		// });
-
-		// const sortedTokenLength = sortedTokens.length;
-		// const tokens = sortedTokenLength > 5 ? maxTokens(sortedTokens) : sortedTokens;
-
-		// console.log(tokens);
-
-		// return { token, refreshToken };
+		if (verified) {
+			const { token, refreshToken } = await this.createAndSaveTokens(user);
+			await this.createCookie(res, refreshToken);
+			return { token, refreshToken, user };
+		} else {
+			const errMsg = 'could not issue new tokens. user must log in again';
+			return { err: new ValidationError(403, errMsg) };
+		}
 	};
 
 	createProfile = async user => {
