@@ -3,5 +3,6 @@
   "prettier.javascriptEnable": [
     "javascript",
     "javascriptreact"
-  ]
+  ],
+  "editor.fontSize": 16
 }
