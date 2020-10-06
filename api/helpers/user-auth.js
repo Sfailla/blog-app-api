@@ -44,12 +44,8 @@ const hashPasswordBcrypt = async (password, salt = 10) => {
 	return await hash(password, salt);
 };
 
-const verifyAuthToken = token => {
-	return verify(token, process.env.ACCESS_TOKEN_SECRET);
-};
-
-const verifyRefreshToken = token => {
-	return verify(token, process.env.REFRESH_TOKEN_SECRET);
+const verifyToken = async (token, secret) => {
+	return verify(token, secret);
 };
 
 const random_uuid = encryptionLength => {
@@ -96,13 +92,27 @@ const generateTokens = user => {
 	return { token: accessToken, refreshToken };
 };
 
+const refreshTokenSecurity = () => {
+	// const tokens = await this.tokenModel.findOne({ token: getRefreshToken });
+	// console.log(tokens);
+	// const maxTokens = tokens => {
+	// 	return tokens.slice(0, 4).map(token => token);
+	// };
+	// const sortedTokens = getTokens.sort((a, b) => {
+	// 	return b.createdAt - a.createdAt;
+	// });
+	// const sortedTokenLength = sortedTokens.length;
+	// const tokens = sortedTokenLength > 5 ? maxTokens(sortedTokens) : sortedTokens;
+	// console.log(tokens);
+	// return { token, refreshToken, user };
+};
+
 module.exports = {
 	signAndSetCookie,
 	findAndRetrieveCookie,
 	hashPasswordBcrypt,
 	generateTokens,
-	verifyAuthToken,
-	verifyRefreshToken,
+	verifyToken,
 	comparePasswordBcrypt,
 	random_uuid,
 	makeUserObj,
