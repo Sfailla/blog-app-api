@@ -90,12 +90,17 @@ const generateRefreshToken = user => {
 	return sign(credentials, process.env.REFRESH_TOKEN_SECRET, exp);
 };
 
+const generateTokens = user => {
+	const accessToken = generateAuthToken(user);
+	const refreshToken = generateRefreshToken(user);
+	return { token: accessToken, refreshToken };
+};
+
 module.exports = {
 	signAndSetCookie,
 	findAndRetrieveCookie,
 	hashPasswordBcrypt,
-	generateAuthToken,
-	generateRefreshToken,
+	generateTokens,
 	verifyAuthToken,
 	verifyRefreshToken,
 	comparePasswordBcrypt,
