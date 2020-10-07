@@ -1,26 +1,17 @@
 const { compare, hash } = require('bcryptjs');
 const { sign, verify } = require('jsonwebtoken');
+const { networkInterfaces } = require('os');
 const crypto = require('crypto');
 
 /**
  * ===============================
- * ==  PUBLIC HELPER FUNCTIONS  ==
+ * ==  	  HELPER FUNCTIONS    	==
  * ===============================
  */
 
-const makeUserObj = user => {
-	return {
-		id: user._id,
-		username: user.username,
-		email: user.email,
-		role: user.role,
-		createdAt: user.createdAt
-	};
-};
-
 const makeAuthUser = user => {
-	const { id, username, email, verification, role } = user;
-	return { id, username, email, verification, role };
+	const { id, username, email, verification, ipAddress, role } = user;
+	return { id, username, email, verification, ipAddress, role };
 };
 
 const makeUserProfile = async (profile, user) => {
@@ -36,6 +27,24 @@ const makeUserProfile = async (profile, user) => {
 	};
 };
 
+const getIpAddress = () => {
+	const nets = networkInterfaces();
+	const results = Object.create(null);
+
+	for (const name of Object.keys(nets)) {
+		for (const net of nets[name]) {
+			// skip over non-ipv4 and internal (i.e. 127.0.0.1) addresses
+			if (net.family === 'IPv4' && !net.internal) {
+				if (!results[name]) {
+					results[name] = [];
+				}
+				results[name].push(net.address);
+			}
+		}
+	}
+	return results['Wi-Fi'][0];
+};
+
 const comparePasswordBcrypt = async (password, userPassword) => {
 	return await compare(password, userPassword);
 };
@@ -46,6 +55,16 @@ const hashPasswordBcrypt = async (password, salt = 10) => {
 
 const verifyToken = async (token, secret) => {
 	return verify(token, secret);
+};
+
+const verifyRefreshTokenAndUser = (token, user) => {
+	const verifiedToken = verifyToken(token, process.env.REFRESH_TOKEN_SECRET);
+	const verifiedUser = user.verification === verifiedToken.verification;
+	if (verifiedToken && verifiedUser) {
+		return { verifiedToken, verifiedUser };
+	} else {
+		return { errorMessage: 'error verifying user and/or token' };
+	}
 };
 
 const random_uuid = encryptionLength => {
@@ -59,7 +78,6 @@ const signAndSetCookie = (res, name, value) => {
 		signed: true // Indicates if the cookie should be signed
 		// secure: true // request must come from webserver
 	};
-
 	res.cookie(name, value, options);
 };
 
@@ -80,7 +98,8 @@ const generateRefreshToken = user => {
 	const credentials = {
 		userId: user.id,
 		username: user.username,
-		verification: user.verification
+		verification: user.verification,
+		ipAddress: user.ipAddress
 	};
 	const exp = { expiresIn: process.env.REFRESH_TOKEN_EXP };
 	return sign(credentials, process.env.REFRESH_TOKEN_SECRET, exp);
@@ -92,7 +111,7 @@ const generateTokens = user => {
 	return { token: accessToken, refreshToken };
 };
 
-const refreshTokenSecurity = () => {
+const refreshTokenJob = () => {
 	// const tokens = await this.tokenModel.findOne({ token: getRefreshToken });
 	// console.log(tokens);
 	// const maxTokens = tokens => {
@@ -113,9 +132,10 @@ module.exports = {
 	hashPasswordBcrypt,
 	generateTokens,
 	verifyToken,
+	verifyRefreshTokenAndUser,
 	comparePasswordBcrypt,
 	random_uuid,
-	makeUserObj,
 	makeAuthUser,
-	makeUserProfile
+	makeUserProfile,
+	getIpAddress
 };
