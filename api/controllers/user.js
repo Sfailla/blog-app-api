@@ -1,14 +1,6 @@
 module.exports = class AuthController {
-	constructor(databaseService, taskRunner) {
+	constructor(databaseService) {
 		this.service = databaseService;
-		this.cron = taskRunner;
-		this.task = this.cron.schedule(
-			'* * * * *',
-			() => {
-				console.log('scheduled task');
-			},
-			{ scheduled: false }
-		);
 	}
 
 	// may need below to expose tokens to client
@@ -22,7 +14,7 @@ module.exports = class AuthController {
 			if (err) throw err;
 			await this.service.createProfile(user);
 			await this.service.createCookie(res, refreshToken);
-			await this.task.start();
+
 			res.set('x-auth-token', token);
 			res.set('x-refresh-token', refreshToken);
 			return await res.status(201).json({
@@ -37,13 +29,11 @@ module.exports = class AuthController {
 	loginUser = async (req, res, next) => {
 		try {
 			const { getUserByEmailAndPassword } = this.service;
-			const { user, err } = await getUserByEmailAndPassword(req.body);
+			const { user, err } = await getUserByEmailAndPassword(req.body, req);
 			if (err) throw err;
 			const { token, refreshToken } = await this.service.createAndSaveTokens(user);
 			await this.service.createCookie(res, refreshToken);
-
-			await this.task.start();
-
+			console.log(user);
 			res.set('x-auth-token', token);
 			res.set('x-refresh-token', refreshToken);
 			return await res.status(200).json({ user });
@@ -53,23 +43,7 @@ module.exports = class AuthController {
 	};
 
 	logoutUser = async (req, res, next) => {
-		await this.task.stop();
-		await this.task.destroy();
 		return await res.send('this is the logout route!');
-	};
-
-	refreshTokens = async (req, res, next) => {
-		const { token, refreshToken, user } = await this.service.findAndRefreshTokens(
-			req,
-			res
-		);
-		res.set('x-auth-token', token);
-		res.set('x-refresh-token', refreshToken);
-		return await res.status(200).json({
-			token,
-			refreshToken,
-			user
-		});
 	};
 
 	getCurrentUser = async (req, res, next) => {
@@ -103,6 +77,40 @@ module.exports = class AuthController {
 				message: `successfully removed user: ${user.username} 🔥😱`,
 				user
 			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	refreshTokens = async (req, res, next) => {
+		try {
+			const {
+				token,
+				refreshToken,
+				user,
+				err
+			} = await this.service.findAndRefreshTokens(req, res);
+			if (err) throw err;
+			res.set('x-auth-token', token);
+			res.set('x-refresh-token', refreshToken);
+			return await res.status(200).json({
+				token,
+				refreshToken,
+				user
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	revokeToken = async (req, res, next) => {
+		try {
+			const { revokedToken, revokedUser, err } = await this.service.revokeUserToken(
+				req.user,
+				req.params.token
+			);
+			if (err) throw err;
+			return await res.status(200).json({ revokedToken, revokedUser });
 		} catch (error) {
 			next(error);
 		}
