@@ -31,6 +31,7 @@ const UserSchema = new Schema(
 			default: 'user'
 		},
 		verification: { type: String, required: true, unique: true },
+		ipAddress: { type: String, required: true },
 		createdAt: { type: Date, default: Date.now }
 	},
 	{

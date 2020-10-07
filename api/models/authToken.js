@@ -9,6 +9,7 @@ const AuthTokenSchema = new Schema(
 		user: { type: ObjectId, ref: 'User' },
 		token: { type: String, trim: true, unique: true, index: true },
 		revoked: { type: Boolean, default: false },
+		createdByIp: { type: String, default: null },
 		expires: { type: Date, default: defaultExpiration },
 		createdAt: { type: Date, default: Date.now }
 	},
