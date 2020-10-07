@@ -7,10 +7,11 @@ const {
 	findAndRetrieveCookie,
 	hashPasswordBcrypt,
 	comparePasswordBcrypt,
-	makeUserObj,
+	getIpAddress,
 	makeAuthUser,
 	random_uuid,
-	verifyToken
+	verifyToken,
+	verifyRefreshTokenAndUser
 } = require('../helpers/user-auth');
 
 class UserDatabaseService {
@@ -26,7 +27,8 @@ class UserDatabaseService {
 		const getUser = await this.userModel.create({
 			...trimmedRequest,
 			password: hashedPassword,
-			verification: random_uuid(8)
+			verification: random_uuid(8),
+			ipAddress: getIpAddress()
 		});
 		if (!getUser) {
 			const err = new ValidationError(400, 'error creating user');
@@ -43,7 +45,8 @@ class UserDatabaseService {
 		const { token, refreshToken } = generateTokens(user);
 		await this.tokenModel.create({
 			user: user.id,
-			token: refreshToken
+			token: refreshToken,
+			createdByIp: user.ipAddress
 		});
 		return { token, refreshToken };
 	};
@@ -54,10 +57,27 @@ class UserDatabaseService {
 			getRefreshToken,
 			process.env.REFRESH_TOKEN_SECRET
 		);
+		const token = await this.tokenModel.findOne({
+			user: verifiedToken.userId,
+			token: getRefreshToken
+		});
 		const user = await this.userModel.findOne({ _id: verifiedToken.userId });
-		const verified = user.verification === verifiedToken.verification;
 
-		if (verified) {
+		if (!getRefreshToken || !verifiedToken || !user) {
+			const errMsg = 'error refreshing token';
+			return { err: new ValidationError(401, errMsg) };
+		}
+
+		const verified = user.verification === verifiedToken.verification;
+		const isSameIp = user.ipAddress === verifiedToken.ipAddress;
+
+		if (verified && token.isActive) {
+			if (isSameIp) {
+				await this.tokenModel.findOneAndDelete({
+					user: verifiedToken.userId,
+					token: getRefreshToken
+				});
+			}
 			const { token, refreshToken } = await this.createAndSaveTokens(user);
 			await this.createCookie(res, refreshToken);
 			return { token, refreshToken, user };
@@ -65,6 +85,28 @@ class UserDatabaseService {
 			const errMsg = 'could not issue new tokens. user must log in again';
 			return { err: new ValidationError(403, errMsg) };
 		}
+	};
+
+	revokeUserToken = async (authUser, token) => {
+		const userId = authUser.id;
+		const { verifiedUser } = verifyRefreshTokenAndUser(token, user);
+		if (verifiedUser) {
+			const query = { user: userId, token };
+			const updates = { revoked: true, expires: Date.now() };
+			const userToken = await this.tokenModel.findOneAndUpdate(query, updates, {
+				new: true
+			});
+
+			return { revokedToken: userToken, revokedUser: authUser };
+		} else {
+			const errMsg = 'could not revoke token, check user credentials';
+			return { err: new ValidationError(401, errMsg) };
+		}
+	};
+
+	deleteUserTokenOnLogout = async (authUser, token) => {
+		const userId = authUser.id;
+		const userToken = '';
 	};
 
 	createProfile = async user => {
@@ -92,7 +134,11 @@ class UserDatabaseService {
 	};
 
 	getUserByEmail = async email => {
-		const user = await this.userModel.findOne({ email });
+		const user = await this.userModel.findOneAndUpdate(
+			{ email },
+			{ ipAddress: getIpAddress() },
+			{ new: true }
+		);
 		if (!user) {
 			const errMsg = 'user email does not match our records';
 			const err = new ValidationError(400, errMsg);
@@ -124,7 +170,7 @@ class UserDatabaseService {
 			const err = new ValidationError(400, errMsg);
 			return { err };
 		}
-		const copiedUsers = users.map(user => makeUserObj(user));
+		const copiedUsers = users.map(user => makeAuthUser(user));
 		return { users: copiedUsers };
 	};
 
