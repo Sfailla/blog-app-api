@@ -1,8 +1,8 @@
 const checkUserPermissions = async (user, validationError, next) => {
 	return new Promise((resolve, reject) => {
-		const { role, requiredRole } = user;
+		const { role, userRole } = user;
 
-		if (role === requiredRole) {
+		if (role === userRole) {
 			return resolve(next());
 		}
 		const errMsg = 'admin level authorization is required';
