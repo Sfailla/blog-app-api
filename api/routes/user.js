@@ -33,21 +33,16 @@ const router = Router();
 router.post('/login', loginUser);
 
 // logout user
-router.post('/logout', logoutUser);
+router.post('/logout', requiredRole('user'), logoutUser);
 
 // create user
 router.post('/register', registerUser);
 
 // refresh token
-router.get('/refresh-tokens', refreshTokens);
+router.get('/refresh-tokens', requiredRole('user'), refreshTokens);
 
 // revoke token
-router.put(
-	'/revoke-token/:token',
-	authenticateJWT,
-	requiredRole('admin'),
-	revokeToken
-);
+router.put('/revoke-token/:token', requiredRole('admin'), revokeToken);
 
 /**
  * =======================
