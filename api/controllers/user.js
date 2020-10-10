@@ -33,7 +33,6 @@ module.exports = class AuthController {
 			if (err) throw err;
 			const { token, refreshToken } = await this.service.createAndSaveTokens(user);
 			await this.service.createCookie(res, refreshToken);
-			console.log(user);
 			res.set('x-auth-token', token);
 			res.set('x-refresh-token', refreshToken);
 			return await res.status(200).json({ user });
@@ -43,7 +42,11 @@ module.exports = class AuthController {
 	};
 
 	logoutUser = async (req, res, next) => {
-		return await res.send('this is the logout route!');
+		const refreshToken = await this.service.readCookie(req);
+		await this.service.deleteUserTokenOnLogout(res, req.user, refreshToken);
+		return await res.json({
+			message: 'user successfully logged out!'
+		});
 	};
 
 	getCurrentUser = async (req, res, next) => {
