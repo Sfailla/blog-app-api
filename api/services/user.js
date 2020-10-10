@@ -58,10 +58,10 @@ class UserDatabaseService {
 			process.env.REFRESH_TOKEN_SECRET
 		);
 		const token = await this.tokenModel.findOne({
-			user: verifiedToken.userId,
+			user: verifiedToken.id,
 			token: getRefreshToken
 		});
-		const user = await this.userModel.findOne({ _id: verifiedToken.userId });
+		const user = await this.userModel.findOne({ _id: verifiedToken.id });
 
 		if (!getRefreshToken || !verifiedToken || !user) {
 			const errMsg = 'error refreshing token';
@@ -74,7 +74,7 @@ class UserDatabaseService {
 		if (verified && token.isActive) {
 			if (isSameIp) {
 				await this.tokenModel.findOneAndDelete({
-					user: verifiedToken.userId,
+					user: verifiedToken.id,
 					token: getRefreshToken
 				});
 			}
@@ -89,7 +89,7 @@ class UserDatabaseService {
 
 	revokeUserToken = async (authUser, token) => {
 		const userId = authUser.id;
-		const { verifiedUser } = verifyRefreshTokenAndUser(token, user);
+		const { verifiedUser } = await verifyRefreshTokenAndUser(token, authUser);
 		if (verifiedUser) {
 			const query = { user: userId, token };
 			const updates = { revoked: true, expires: Date.now() };
@@ -97,16 +97,17 @@ class UserDatabaseService {
 				new: true
 			});
 
-			return { revokedToken: userToken, revokedUser: authUser };
+			return { revokedToken: userToken, revokedUser: userId };
 		} else {
 			const errMsg = 'could not revoke token, check user credentials';
 			return { err: new ValidationError(401, errMsg) };
 		}
 	};
 
-	deleteUserTokenOnLogout = async (authUser, token) => {
+	deleteUserTokenOnLogout = async (res, authUser, token) => {
 		const userId = authUser.id;
-		const userToken = '';
+		await res.clearCookie('refreshToken');
+		await this.tokenModel.findOneAndDelete({ user: userId, token });
 	};
 
 	createProfile = async user => {
