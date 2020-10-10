@@ -18,7 +18,6 @@ const AuthTokenSchema = new Schema(
 			virtuals: true,
 			versionKey: false,
 			transform: (_, ret) => {
-				console.log('here => ', ret);
 				delete ret._id;
 			}
 		}

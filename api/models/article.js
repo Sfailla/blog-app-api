@@ -42,10 +42,6 @@ const ArticleSchema = new Schema(
 	}
 );
 
-ArticleSchema.set('debug', (collectionName, method, query, doc) => {
-	console.log(`${collectionName}.${method}`, JSON.stringify(query), doc);
-});
-
 ArticleSchema.methods.updateCount = async function() {
 	const count = await Profile.countDocuments({
 		favorites: { $in: [ this._id ] }
