@@ -30,7 +30,6 @@ const makeUserProfile = async (profile, user) => {
 const getIpAddress = () => {
 	const nets = networkInterfaces();
 	const results = Object.create(null);
-
 	for (const name of Object.keys(nets)) {
 		for (const net of nets[name]) {
 			// skip over non-ipv4 and internal (i.e. 127.0.0.1) addresses
@@ -57,8 +56,8 @@ const verifyToken = async (token, secret) => {
 	return verify(token, secret);
 };
 
-const verifyRefreshTokenAndUser = (token, user) => {
-	const verifiedToken = verifyToken(token, process.env.REFRESH_TOKEN_SECRET);
+const verifyRefreshTokenAndUser = async (token, user) => {
+	const verifiedToken = await verifyToken(token, process.env.REFRESH_TOKEN_SECRET);
 	const verifiedUser = user.verification === verifiedToken.verification;
 	if (verifiedToken && verifiedUser) {
 		return { verifiedToken, verifiedUser };
@@ -96,8 +95,9 @@ const generateAuthToken = user => {
 
 const generateRefreshToken = user => {
 	const credentials = {
-		userId: user.id,
+		id: user.id,
 		username: user.username,
+		role: user.role,
 		verification: user.verification,
 		ipAddress: user.ipAddress
 	};
@@ -109,21 +109,6 @@ const generateTokens = user => {
 	const accessToken = generateAuthToken(user);
 	const refreshToken = generateRefreshToken(user);
 	return { token: accessToken, refreshToken };
-};
-
-const refreshTokenJob = () => {
-	// const tokens = await this.tokenModel.findOne({ token: getRefreshToken });
-	// console.log(tokens);
-	// const maxTokens = tokens => {
-	// 	return tokens.slice(0, 4).map(token => token);
-	// };
-	// const sortedTokens = getTokens.sort((a, b) => {
-	// 	return b.createdAt - a.createdAt;
-	// });
-	// const sortedTokenLength = sortedTokens.length;
-	// const tokens = sortedTokenLength > 5 ? maxTokens(sortedTokens) : sortedTokens;
-	// console.log(tokens);
-	// return { token, refreshToken, user };
 };
 
 module.exports = {
