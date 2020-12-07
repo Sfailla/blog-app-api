@@ -10,7 +10,7 @@ module.exports = class AuthController {
 	registerUser = async (req, res, next) => {
 		try {
 			const { user, err } = await this.service.createUser(req.body);
-			const { token, refreshToken } = await this.service.createTokens(user);
+			const { token, refreshToken } = await this.service.createAndSaveTokens(user);
 			if (err) throw err;
 			await this.service.createProfile(user);
 			await this.service.createCookie(res, refreshToken);
