@@ -1,5 +1,5 @@
 // bring in env variables and all configuration
-require('./config/index');
+require('dotenv').config();
 
 const express = require('express');
 const cookieParser = require('cookie-parser');
