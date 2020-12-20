@@ -8,8 +8,6 @@ const authenticateJWT = async (req, res, next) => {
 		const verifiedUser = await verifyToken(token, process.env.ACCESS_TOKEN_SECRET);
 		const user = await UserModel.findById(verifiedUser.userId);
 
-		console.log(user);
-		console.log(verifiedUser);
 		if (!verifiedUser || !user) {
 			const errMsg = 'error authenticating user';
 			throw new ValidationError(400, errMsg);
