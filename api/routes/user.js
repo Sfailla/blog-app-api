@@ -33,7 +33,7 @@ const router = Router();
 router.post('/login', loginUser);
 
 // logout user
-router.post('/logout', requiredRole('user'), logoutUser);
+router.post('/logout/:token', requiredRole('user'), logoutUser);
 
 // create user
 router.post('/register', registerUser);
@@ -41,8 +41,6 @@ router.post('/register', registerUser);
 // refresh token
 router.get('/refresh-tokens', requiredRole('user'), refreshTokens);
 
-// revoke token
-router.put('/revoke-token/:token', requiredRole('admin'), revokeToken);
 
 /**
  * =======================
@@ -51,12 +49,15 @@ router.put('/revoke-token/:token', requiredRole('admin'), revokeToken);
  */
 
 // get all users
-router.get('/', authenticateJWT, requiredRole('admin'), getAllUsers);
+router.get('/admin', authenticateJWT, requiredRole('admin'), getAllUsers);
 
 // get specific user
-router.get('/user/:id', authenticateJWT, requiredRole('admin'), getCurrentUser);
+router.get('/admin/user/:id', authenticateJWT, requiredRole('admin'), getCurrentUser);
+
+// revoke token
+router.put('/admin/revoke-token/:token', requiredRole('admin'), revokeToken);
 
 // delete user admin route
-router.delete('/user/:id', authenticateJWT, deleteUser);
+router.delete('/admin/user/:id', authenticateJWT, requiredRole('admin'), deleteUser);
 
 module.exports = router;
