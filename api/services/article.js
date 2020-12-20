@@ -214,6 +214,7 @@ module.exports = class ArticleDatabaseService {
 
 	fetchCommentsForArticle = async articleSlug => {
 		const article = await this.article.findOne({ slug: articleSlug });
+		console.log(article)
 		const getComments = await this.comment.find({ article: article._id }).populate({
 			path: 'author',
 			model: 'Profile',
