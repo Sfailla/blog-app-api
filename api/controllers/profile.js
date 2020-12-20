@@ -21,7 +21,7 @@ module.exports = class ProfileController {
 			const { profile, err } = await this.service.followService(req.user, username);
 			if (err) throw err;
 			return await res.status(200).json({
-				message: `now following author: ${username} 😎✨`,
+				message: `now following author: ${username}`,
 				profile
 			});
 		} catch (error) {
@@ -38,7 +38,7 @@ module.exports = class ProfileController {
 			);
 			if (err) throw err;
 			return await res.status(200).json({
-				message: `unfollowed author: ${username} 🤔`,
+				message: `unfollowed author: ${username}`,
 				profile
 			});
 		} catch (error) {
@@ -55,7 +55,7 @@ module.exports = class ProfileController {
 			);
 			if (err) throw err;
 			return await res.status(200).json({
-				message: `successfully updated profile: ${username} 😎✨`,
+				message: `successfully updated profile: ${username}`,
 				profile
 			});
 		} catch (error) {

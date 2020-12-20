@@ -18,7 +18,7 @@ module.exports = class AuthController {
 			res.set('x-auth-token', token);
 			res.set('x-refresh-token', refreshToken);
 			return await res.status(201).json({
-				message: `successfully created user: ${user.username} 🤴🏻🚀`,
+				message: `successfully created user: ${user.username}`,
 				user
 			});
 		} catch (error) {
@@ -77,7 +77,7 @@ module.exports = class AuthController {
 			);
 			if (err) throw err;
 			return await res.status(200).json({
-				message: `successfully removed user: ${user.username} 🔥😱`,
+				message: `successfully removed user: ${user.username}`,
 				user
 			});
 		} catch (error) {
