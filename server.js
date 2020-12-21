@@ -1,6 +1,7 @@
 // bring in env variables and all configuration
 require('dotenv').config();
 
+// todo: add file compression
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
