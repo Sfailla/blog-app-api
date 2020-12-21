@@ -5,10 +5,9 @@ const { authenticateJWT, requiredRole } = require('../middleware/index');
 const UserModel = require('../models/user');
 const AuthTokenModel = require('../models/authToken');
 const ProfileModel = require('../models/profile');
-const cron = require('node-cron');
 
 const authService = new UserDatabaseService(UserModel, AuthTokenModel, ProfileModel);
-const authController = new AuthController(authService, cron);
+const authController = new AuthController(authService);
 
 const {
 	loginUser,

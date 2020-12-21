@@ -14,7 +14,6 @@
 		"jsonwebtoken": "^8.5.1",
 		"mongoose": "^5.9.20",
 		"morgan": "^1.10.0",
-		"node-cron": "^2.0.3",
 		"validator": "^13.1.1"
 	},
 	"devDependencies": {},
