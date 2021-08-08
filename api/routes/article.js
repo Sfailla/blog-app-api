@@ -9,26 +9,26 @@ const ProfileModel = require('../models/profile');
 const CommentModel = require('../models/comment');
 
 const articleService = new ArticleDbService(
-	ArticleModel,
-	UserModel,
-	ProfileModel,
-	CommentModel
+  ArticleModel,
+  UserModel,
+  ProfileModel,
+  CommentModel
 );
 const articleController = new ArticleController(articleService);
 
 const {
-	unfavoriteArticle,
-	favoriteArticle,
-	getArticle,
-	getArticles,
-	getArticleComments,
-	createArticle,
-	getUserArticles,
-	updateArticle,
-	deleteArticle,
-	createComment,
-	updateComment,
-	deleteComment
+  unfavoriteArticle,
+  favoriteArticle,
+  getArticle,
+  getArticles,
+  getComments,
+  createArticle,
+  getUserArticles,
+  updateArticle,
+  deleteArticle,
+  createComment,
+  updateComment,
+  deleteComment,
 } = articleController;
 
 const router = Router();
@@ -39,7 +39,7 @@ router.get('/:article', getArticle);
 
 router.get('/user/article', authenticateJWT, getUserArticles);
 
-router.get('/:article/comment', getArticleComments);
+router.get('/:article/comment', getComments);
 
 router.post('/', authenticateJWT, createArticle);
 
