@@ -191,21 +191,20 @@ module.exports = class ArticleDatabaseService {
   }
 
   // update user article
-  findAndUpdateArticle = async (authUser, slug, updates) => {
-    const query = { author: authUser.id, slug }
-    const update = {
-      ...trimRequest(updates),
-      slug: formatSlug(trimRequest(updates.title)),
-      updatedAt: Date.now()
-    }
+  findAndUpdateArticle = async (slug, updates) => {
+    const query = { slug }
+    const update = { ...trimRequest(updates), updatedAt: Date.now() }
+
     let article = await this.article.findOneAndUpdate(query, update, { new: true }).populate({
       path: 'author',
-      model: 'User',
+      model: 'Profile',
       select: ['username', 'name', 'bio', 'image']
     })
+
     if (!article) {
       return this.articleError('error updating article')
     }
+
     return {
       article: await makeArticleObj(article),
       message: 'successfully updated article'
@@ -269,7 +268,10 @@ module.exports = class ArticleDatabaseService {
       path: 'author',
       model: 'Profile',
       select: ['username', 'name', 'bio', 'image']
+      // select: ['author', 'title', 'slug', 'tags']
     })
+
+    console.log(getComments)
 
     if (!getComments) {
       return this.articleError(`error fetching comments for ${article.title}`)
