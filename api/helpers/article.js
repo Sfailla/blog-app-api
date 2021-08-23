@@ -16,7 +16,7 @@ const makeArticleObj = async (article, profile) => {
     body: article.body,
     image: article.image,
     tags: article.tags,
-    isFavorite: profile ? await profile.isFavorite(article._id) : null,
+    isFavorite: profile ? await profile.isFavorite(article._id) : false,
     favoriteCount: article.favoriteCount,
     updatedAt: article.updatedAt,
     createdAt: article.createdAt

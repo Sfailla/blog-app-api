@@ -46,7 +46,7 @@ module.exports = class ArticleDatabaseService {
   }
 
   // get all articles with filters
-  getAllArticles = async filters => {
+  getAllArticles = async (user, filters) => {
     let profile
     let query = {}
     const options = {
@@ -72,6 +72,8 @@ module.exports = class ArticleDatabaseService {
         $in: formatFavorites(profile.favorites)
       }
     }
+
+    console.log(user)
     // aggregate for individual filter or all filters
     const query$Or = { $or: [query] }
     const articles = await this.article.find(query$Or, null, options).populate({

@@ -39,6 +39,9 @@ ProfileSchema.methods.unfavorite = async function (articleId) {
 
 ProfileSchema.methods.isFavorite = function (articleId) {
   return this.favorites.some(favoriteId => {
+    console.log(articleId)
+    console.log(favoriteId)
+    console.log(articleId === favoriteId)
     return favoriteId.toString() === articleId.toString()
   })
 }
