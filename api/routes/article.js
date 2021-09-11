@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const { authenticateJWT, requiredRole } = require('../middleware/index')
+const { authenticateJWT, optionalAuth, requiredRole } = require('../middleware/index')
 
 const ArticleController = require('../controllers/article')
 const ArticleDbService = require('../services/article')
@@ -28,9 +28,9 @@ const {
 
 const router = Router()
 
-router.get('/', requiredRole('user'), getArticles)
+router.get('/', optionalAuth, getArticles)
 
-router.get('/:article', getArticle)
+router.get('/:article', optionalAuth, getArticle)
 
 router.get('/user/article', authenticateJWT, getUserArticles)
 

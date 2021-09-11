@@ -17,7 +17,6 @@ module.exports = class ArticleController {
   }
 
   getArticles = async (req, res, next) => {
-    console.log(req.user)
     try {
       const { articles, articlesCount, err } = await this.service.getAllArticles(req.user, {
         limit: req.query.limit || 10,
@@ -50,7 +49,7 @@ module.exports = class ArticleController {
 
   getArticle = async (req, res, next) => {
     try {
-      const { article, err } = await this.service.getArticleBySlug(req.params.article)
+      const { article, err } = await this.service.getArticleBySlug(req.user, req.params.article)
       if (err) throw err
       return await res.status(200).json({ article })
     } catch (error) {

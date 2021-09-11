@@ -64,7 +64,9 @@ module.exports = class ArticleDatabaseService {
       if (!profile) return this.articleError("sorry that author doesn't exist")
       query['author'] = profile._id.toString()
     }
-    // query by users favorite articles
+    // query by current users favorite articles.
+    // This would be done by frontend filtering by favorites then sending the current
+    // user as the filter value.  filter => favorites:steve
     if (filters.favorites) {
       profile = await this.profile.findOne({ username: filters.favorites })
       if (!profile) return this.articleError("sorry that username doesn't exist")
@@ -73,7 +75,8 @@ module.exports = class ArticleDatabaseService {
       }
     }
 
-    console.log(user)
+    const userProfile = user ? await this.profile.findOne({ username: user.username }) : null
+
     // aggregate for individual filter or all filters
     const query$Or = { $or: [query] }
     const articles = await this.article.find(query$Or, null, options).populate({
@@ -85,7 +88,7 @@ module.exports = class ArticleDatabaseService {
     if (!articles) {
       return this.articleError('error fetching all articles')
     }
-    const copyArticles = articles.map(article => makeArticleObj(article))
+    const copyArticles = articles.map(article => makeArticleObj(article, userProfile))
 
     return {
       articles: await Promise.all(copyArticles),
@@ -133,7 +136,7 @@ module.exports = class ArticleDatabaseService {
   }
 
   // get articles by slug
-  getArticleBySlug = async slug => {
+  getArticleBySlug = async (user, slug) => {
     const query = { slug }
     const article = await this.article.findOne({ ...query }).populate({
       path: 'author',
@@ -143,7 +146,10 @@ module.exports = class ArticleDatabaseService {
     if (!article) {
       return this.articleError('error fetching article slug')
     }
-    return { article: await makeArticleObj(article) }
+
+    const userProfile = user ? await this.profile.findOne({ username: user.username }) : null
+
+    return { article: await makeArticleObj(article, userProfile) }
   }
   // set favorite articles
   setFavoriteArticle = async (authUser, slug) => {
@@ -272,8 +278,6 @@ module.exports = class ArticleDatabaseService {
       select: ['username', 'name', 'bio', 'image']
       // select: ['author', 'title', 'slug', 'tags']
     })
-
-    console.log(getComments)
 
     if (!getComments) {
       return this.articleError(`error fetching comments for ${article.title}`)

@@ -14,7 +14,7 @@ const authenticateJWT = async (req, res, next) => {
     }
     req.user = makeAuthUser(user)
 
-    return next()
+    next()
   } catch (error) {
     if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError') {
       error.status = 403

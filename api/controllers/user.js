@@ -46,7 +46,7 @@ module.exports = class AuthController {
   }
 
   logoutUser = async (req, res, next) => {
-    await this.service.destroyRefreshTokenOnLogout(res)
+    await this.service.destroyRefreshTokenOnLogout(req, res)
     return await res.json({
       message: 'user successfully logged out!'
     })

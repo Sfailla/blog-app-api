@@ -86,8 +86,10 @@ class UserDatabaseService {
     // }
   }
 
-  destroyRefreshTokenOnLogout = res => {
+  destroyRefreshTokenOnLogout = (req, res) => {
     res.clearCookie('refreshToken')
+    res.set('x-auth-token', null)
+    req.user = null
   }
 
   deleteUserTokenOnLogout = async (res, authUser, token) => {
@@ -96,9 +98,10 @@ class UserDatabaseService {
     await this.tokenModel.findOneAndDelete({ user: userId, token })
   }
 
-  getUserByEmailAndPassword = async fields => {
+  getUserByEmailAndPassword = async (fields, req) => {
     const trimmedRequest = trimRequest(fields)
     const { user, err } = await this.getUserByEmail(trimmedRequest.email)
+    req.user = user
     if (err) return { err }
     const isValidPassword = await comparePasswordBcrypt(trimmedRequest.password, user.password)
     if (!isValidPassword) {
