@@ -14,6 +14,7 @@ const articleApiRoutes = require('./api/routes/article')
 const userApiRoutes = require('./api/routes/user')
 const profileApiRoutes = require('./api/routes/profile')
 const tagsApiRoute = require('./api/routes/tags')
+const isProduction = process.env.NODE_ENV === 'production'
 
 const app = express()
 
@@ -37,9 +38,25 @@ app.get('/', (req, res) => {
   res.status(200).json({ message: 'hello world 🌎🚀🎃🎃🔐🗝' })
 })
 
-// Error and 404 handler middleware
+// error and 404 handler middleware
 app.use(notFoundHandler)
+// dev error handler
+// will print stacktrace
 app.use(errorHandler)
+
+// production error handler
+// no stacktraces leaked to user
+if (isProduction) {
+  app.use((err, req, res, next) => {
+    res.status(err.status || 500)
+    res.json({
+      errors: {
+        message: err.message,
+        error: {}
+      }
+    })
+  })
+}
 
 const port = process.env.PORT || 3001
 const environment = process.env.NODE_ENV || 'development'
