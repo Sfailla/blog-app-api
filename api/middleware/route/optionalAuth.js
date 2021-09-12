@@ -12,6 +12,7 @@ const optionalAuth = async (req, res, next) => {
   try {
     const token = req.header('x-auth-token')
     const rtoken = findAndRetrieveCookie(req, 'refreshToken')
+
     if (rtoken) {
       const verifiedUser = await verifyToken(token, process.env.ACCESS_TOKEN_SECRET)
       const user = await UserModel.findById(verifiedUser.userId)
@@ -25,7 +26,7 @@ const optionalAuth = async (req, res, next) => {
       req.user = null
     }
 
-    next()
+    return await next()
   } catch (error) {
     console.log('opt auth error')
     if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError') {

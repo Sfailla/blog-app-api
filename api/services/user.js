@@ -7,9 +7,7 @@ const {
   findAndRetrieveCookie,
   hashPasswordBcrypt,
   comparePasswordBcrypt,
-  getIpAddress,
   makeAuthUser,
-  random_uuid,
   verifyToken
 } = require('../helpers/user-auth')
 
@@ -65,25 +63,6 @@ class UserDatabaseService {
     const { token, refreshToken } = await this.createUserTokens(user)
     await this.createRefreshTokenCookie(res, refreshToken)
     return { token, refreshToken, user }
-  }
-
-  revokeUserToken = async (authUser, token) => {
-    const userId = authUser.id
-    // const { verifiedUser } = await verifyRefreshTokenAndUser(token, authUser)
-    // this needs to be changed
-    // let verifiedUser = null
-    // if (verifiedUser) {
-    //   const query = { user: userId, token }
-    //   const updates = { revoked: true, expires: Date.now() }
-    //   const userToken = await this.tokenModel.findOneAndUpdate(query, updates, {
-    //     new: true
-    //   })
-
-    //   return { revokedToken: userToken, revokedUser: userId }
-    // } else {
-    //   const errMsg = 'could not revoke token, check user credentials'
-    //   return { err: new ValidationError(401, errMsg) }
-    // }
   }
 
   destroyRefreshTokenOnLogout = (req, res) => {

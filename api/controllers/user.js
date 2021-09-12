@@ -102,17 +102,4 @@ module.exports = class AuthController {
       next(error)
     }
   }
-
-  revokeToken = async (req, res, next) => {
-    try {
-      const { revokedToken, revokedUser, err } = await this.service.revokeUserToken(
-        req.user,
-        req.params.token
-      )
-      if (err) throw err
-      return await res.status(200).json({ revokedToken, revokedUser })
-    } catch (error) {
-      next(error)
-    }
-  }
 }

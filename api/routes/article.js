@@ -1,12 +1,9 @@
 const { Router } = require('express')
-const { authenticateJWT, optionalAuth, requiredRole } = require('../middleware/index')
+const { authenticateJWT, optionalAuth } = require('../middleware/index')
 
 const ArticleController = require('../controllers/article')
 const ArticleDbService = require('../services/article')
-const ArticleModel = require('../models/article')
-const UserModel = require('../models/user')
-const ProfileModel = require('../models/profile')
-const CommentModel = require('../models/comment')
+const { ArticleModel, UserModel, ProfileModel, CommentModel } = require('../models')
 
 const articleService = new ArticleDbService(ArticleModel, UserModel, ProfileModel, CommentModel)
 const articleController = new ArticleController(articleService)

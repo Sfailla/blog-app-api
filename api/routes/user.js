@@ -28,14 +28,14 @@ const router = Router()
  * =================
  */
 
+// create user
+router.post('/register', registerUser)
+
 // login user
 router.post('/login', loginUser)
 
 // logout user
 router.get('/logout', requiredRole('user'), logoutUser)
-
-// create user
-router.post('/register', registerUser)
 
 // refresh token
 router.get('/refresh-tokens', requiredRole('user'), refreshTokens)
@@ -55,7 +55,7 @@ router.get('/admin/user/:id', authenticateJWT, requiredRole('admin'), getUserByI
 // revoke token
 router.put('/admin/revoke-token/:token', requiredRole('admin'), revokeToken)
 
-// delete user admin route
+// delete user
 router.delete('/admin/user/:id', authenticateJWT, requiredRole('admin'), deleteUser)
 
 module.exports = router

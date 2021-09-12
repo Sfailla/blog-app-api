@@ -48,7 +48,7 @@ module.exports = class ArticleDatabaseService {
   // get all articles with filters
   getAllArticles = async (user, filters) => {
     let profile
-    let query = {}
+    let buildQuery = {}
     const options = {
       sort: { updatedAt: filters.sortBy },
       limit: Number(filters.limit),
@@ -56,13 +56,13 @@ module.exports = class ArticleDatabaseService {
     }
     // query by tags
     if (filters.tags) {
-      query['tags'] = { $in: formatTags(filters.tags) }
+      buildQuery['tags'] = { $in: formatTags(filters.tags) }
     }
     // query by author
     if (filters.author) {
       profile = await this.profile.findOne({ username: filters.author })
       if (!profile) return this.articleError("sorry that author doesn't exist")
-      query['author'] = profile._id.toString()
+      buildQuery['author'] = profile._id.toString()
     }
     // query by current users favorite articles.
     // This would be done by frontend filtering by favorites then sending the current
@@ -70,7 +70,7 @@ module.exports = class ArticleDatabaseService {
     if (filters.favorites) {
       profile = await this.profile.findOne({ username: filters.favorites })
       if (!profile) return this.articleError("sorry that username doesn't exist")
-      query['_id'] = {
+      buildQuery['_id'] = {
         $in: formatFavorites(profile.favorites)
       }
     }
@@ -78,8 +78,8 @@ module.exports = class ArticleDatabaseService {
     const userProfile = user ? await this.profile.findOne({ username: user.username }) : null
 
     // aggregate for individual filter or all filters
-    const query$Or = { $or: [query] }
-    const articles = await this.article.find(query$Or, null, options).populate({
+    const query = { $or: [buildQuery] }
+    const articles = await this.article.find(query, null, options).populate({
       path: 'author',
       model: 'Profile',
       select: ['username', 'name', 'bio', 'image']
